@@ -19,6 +19,8 @@ metadata:
   name: actions-deployment
   labels:
     app: actions
+  annotations:
+    fluxcd.io/automated: "true"
 spec:
   replicas: 1
   selector:
