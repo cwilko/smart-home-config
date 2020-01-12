@@ -233,7 +233,7 @@ spec:
         # https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/user/repository.git
         - --git-url=git@github.com:cwilko/smart-home-config
         - --git-branch=master
-        - --git-path=workloads
+        - --git-path=namespaces,workloads
         - --git-label=flux
         - --git-user=cwilko
         - --git-email=cwilko@users.noreply.github.com
