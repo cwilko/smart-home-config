@@ -10,6 +10,7 @@ spec:
   selector:
     app: mosquitto
   type: LoadBalancer
+  loadBalancerIP: 192.168.1.202
   ports:
   - name: mosquitto
     port: 1883
