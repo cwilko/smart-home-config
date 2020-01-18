@@ -21,3 +21,10 @@ spec:
         image: cwilko/rpi-stats:arm32v7
         securityContext:
           privileged: true
+        env:
+        - name: MQTT_HOST
+          value: "192.168.1.202"
+        - name: MQTT_TOPIC
+          value: "/stats/rpi"
+        - name: INTERVAL_SEC
+          value: 5
