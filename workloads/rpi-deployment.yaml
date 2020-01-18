@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rpi-deployment
+  labels:
+    app: rpi-stats
+  annotations:
+    fluxcd.io/automated: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rpi-stats
+  template:
+    metadata:
+      labels:
+        app: rpi-stats
+    spec:
+      containers:
+      - name: rpi-stats
+        image: cwilko/rpi-stats:arm32v7
+        securityContext:
+          privileged: true

@@ -14,3 +14,12 @@ metadata:
     app: mosquitto
   name: mosquitto
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: sensors
+  name: sensors
+
