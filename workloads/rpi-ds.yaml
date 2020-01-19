@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: rpi-deployment
+  name: rpi-stats
+  namespace: triggers
   labels:
     app: rpi-stats
   annotations:
     fluxcd.io/automated: "true"
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: rpi-stats
@@ -19,12 +19,17 @@ spec:
       containers:
       - name: rpi-stats
         image: cwilko/rpi-stats:arm32v7
+        imagePullPolicy: Always
         securityContext:
           privileged: true
         env:
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         - name: MQTT_HOST
           value: "192.168.1.202"
         - name: MQTT_TOPIC
-          value: "/stats/rpi"
+          value: "/stats/rpi/$(HOST_NAME)"
         - name: INTERVAL_SEC
-          value: 5
+          value: "5"
