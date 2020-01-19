@@ -16,6 +16,9 @@ spec:
       labels:
         app: rpi-stats
     spec:
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
       containers:
       - name: rpi-stats
         image: cwilko/rpi-stats:arm32v7
