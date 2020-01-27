@@ -23,3 +23,21 @@ metadata:
     app: triggers
   name: triggers
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: actions
+  name: actions
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: storage
+  name: storage
+
