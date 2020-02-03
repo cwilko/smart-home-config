@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-listener
+  namespace: triggers
+spec:
+  selector:
+    matchLabels:
+      app: mqtt-listener
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: mqtt-listener
+    spec:
+      containers:
+        - image: cwilko/telegraf:1.13.2-alpine-arm32v7
+          name: telegraf
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/telegraf/telegraf.conf
+              name: mqtt-listener-config
+              subPath: telegraf.conf
+              readOnly: true
+          envFrom:
+            - secretRef:
+                name: telegraf-secrets
+      volumes:
+        - name: mqtt-listener-config
+          configMap:
+            name: mqtt-listener-config
