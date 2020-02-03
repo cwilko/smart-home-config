@@ -3,7 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     app: influxdb
-  name: influxdb
+  name: influxdb-data
+  namespace: storage
   annotations:
     volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
 spec:
