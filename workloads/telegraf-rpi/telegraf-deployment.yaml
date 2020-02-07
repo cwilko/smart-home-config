@@ -16,6 +16,7 @@ spec:
       tolerations:
         - operator: Exists
           effect: NoSchedule
+      serviceAccountName: telegraf
       containers:
         - image: cwilko/telegraf:1.13.2-alpine-arm32v7
           name: telegraf
