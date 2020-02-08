@@ -22,7 +22,7 @@ rules:
   resources:
   - configmaps
   verbs: ["get"]
-- nonResourceURLs: ["/metrics"]
+- nonResourceURLs: ["/metrics","/stats"]
   verbs: ["get"]
 
 ---

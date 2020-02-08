@@ -300,7 +300,7 @@ data:
 
     [[inputs.kubernetes]]
       ## URL for the Kubernetes API
-      url = "https://127.0.0.1:10250"
+      url = "https://$NODE_IP_ADDRESS:10250"
 
       ## Namespace to use. Set to "" to use all namespaces.
       #namespace = ""
