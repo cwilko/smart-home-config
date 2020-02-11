@@ -331,3 +331,20 @@ data:
       # tls_key = "/path/to/keyfile"
       ## Use TLS but skip chain & host verification
       insecure_skip_verify = true
+
+    [[inputs.docker]]
+      endpoint = "unix:///var/run/docker.sock"
+      
+      gather_services = false
+
+      container_name_include = []
+      container_name_exclude = []
+
+      timeout = "10s"
+
+      docker_label_include = []
+      docker_label_exclude = []
+
+      perdevice = true
+
+      total = false
