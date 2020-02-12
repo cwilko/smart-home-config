@@ -21,7 +21,7 @@ spec:
           name: grafana
           volumeMounts:
           - mountPath: /etc/grafana/provisioning/datasources/influxdb-datasource.yaml
-            name: grafana-cm
+            name: influxdb-ds-secret
             readOnly: true
             subPath: influxdb-datasource.yaml
           - mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -38,6 +38,6 @@ spec:
       - name: grafana-data
         persistentVolumeClaim:
           claimName: grafana-data           
-      - name: grafana-cm
+      - name: influxdb-ds-secret
         secret:
-          secretName: grafana-sec
+          secretName: influxdb-ds-secret
