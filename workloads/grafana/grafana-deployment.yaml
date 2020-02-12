@@ -39,5 +39,5 @@ spec:
         persistentVolumeClaim:
           claimName: grafana-data           
       - name: grafana-cm
-        configMap:
-          name: grafana-cm
+        secret:
+          secretName: grafana-sec
