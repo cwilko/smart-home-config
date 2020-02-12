@@ -28,15 +28,16 @@ spec:
             name: grafana-config
             readOnly: true
             subPath: dashboards.yaml
-          - mountPath: /var/lib/grafana/dashboards/analysis-server.json
-            name: grafana-config
-            readOnly: true
-            subPath: analysis-server.json
+          - mountPath: /var/lib/grafana/dashboards
+            name: grafana-data
       restartPolicy: Always
       volumes:
       - name: grafana-config
         configMap:
-          name: grafana-config        
+          name: grafana-config 
+      - name: grafana-data
+        persistentVolumeClaim:
+          claimName: grafana-data           
       - name: influxdb-ds-secret
         secret:
           secretName: influxdb-ds-secret
