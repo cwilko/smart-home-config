@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: grafana
 spec:
   selector:
     matchLabels:
@@ -19,7 +20,7 @@ spec:
               name: grafana-secrets
           name: grafana
           volumeMounts:
-          - mountPath: /etc/grafana/provisioning/datasources/influxdb-datasource.yml
+          - mountPath: /etc/grafana/provisioning/datasources/influxdb-datasource.yaml
             name: influxdb-ds-secret
             readOnly: true
             subPath: influxdb-datasource.yml

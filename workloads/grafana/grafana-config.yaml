@@ -1,4 +1,12 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: grafana
+  creationTimestamp: "2020-01-29T21:50:38Z"
+  resourceVersion: "2311209"
+  selfLink: /api/v1/namespaces/default/configmaps/grafana-config
+  uid: d10cf14c-f016-4381-9ae6-2821c9b84487
 data:
   analysis-server.json: |-
     {
@@ -3422,11 +3430,3 @@ data:
       updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
       options:
         path: /var/lib/grafana/dashboards
-kind: ConfigMap
-metadata:
-  creationTimestamp: "2020-01-29T21:50:38Z"
-  name: grafana-config
-  namespace: default
-  resourceVersion: "2311209"
-  selfLink: /api/v1/namespaces/default/configmaps/grafana-config
-  uid: d10cf14c-f016-4381-9ae6-2821c9b84487
