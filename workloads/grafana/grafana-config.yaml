@@ -3427,6 +3427,7 @@ data:
       folder: ''
       type: file
       disableDeletion: true
+      editable: true
       updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
       options:
         path: /var/lib/grafana/dashboards
