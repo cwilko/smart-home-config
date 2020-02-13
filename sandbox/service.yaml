@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/part-of: ingress-nginx
 spec:
   type: LoadBalancer
+  loadBalancerIP: 192.168.1.203
   ports:
     - name: http
       port: 80
@@ -27,7 +28,13 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: smart-home-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  backend:
-    serviceName: actions-service
-    servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /actions(/|$)(.*)
+        backend:
+          serviceName: actions-service
+          servicePort: 80
