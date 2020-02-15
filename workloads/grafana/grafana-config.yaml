@@ -727,7 +727,7 @@ kind: ConfigMap
 metadata:
   creationTimestamp: "2020-02-15T19:53:32Z"
   name: grafana-config
-  namespace: default
+  namespace: grafana
   resourceVersion: "6697421"
   selfLink: /api/v1/namespaces/default/configmaps/grafana-config
   uid: e4787b05-6e1c-4ca6-897d-8498ac629895
