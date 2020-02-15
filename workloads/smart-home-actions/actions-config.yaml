@@ -278,9 +278,6 @@ data:
     }
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2020-02-15T21:30:16Z"
   name: actions-config
-  namespace: default
-  resourceVersion: "6715720"
-  selfLink: /api/v1/namespaces/default/configmaps/actions-config
-  uid: 71067449-7d2b-4d98-babb-fa66ff981d89
+  namespace: actions
+
