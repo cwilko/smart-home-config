@@ -38,3 +38,12 @@ spec:
         image: cwilko/smart-home-actions:latest
         ports:
         - containerPort: 1880
+        volumeMounts:
+          - mountPath: /data/settings.js
+            name: actions-config
+            readOnly: true
+            subPath: settings.js
+      volumes:
+      - name: actions-config
+        configMap:
+          name: actions-config 
