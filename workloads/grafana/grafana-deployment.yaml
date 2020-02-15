@@ -28,6 +28,10 @@ spec:
             name: grafana-config
             readOnly: true
             subPath: dashboards.yaml
+          - mountPath: /etc/grafana/grafana.ini
+            name: grafana-config
+            readOnly: true
+            subPath: grafana.ini
           - mountPath: /var/lib/grafana/dashboards
             name: grafana-data
       restartPolicy: Always
