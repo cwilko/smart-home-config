@@ -27,37 +27,17 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: smart-home-ingress
-  namespace: actions
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      rewrite ^(/actions)$ $1/ redirect;
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /actions(/|$)(.*)
-        backend:
-          serviceName: actions-service
-          servicePort: 80
-
----
-
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
   name: grafana-ingress
   namespace: grafana
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      rewrite ^(/grafana)$ $1/ redirect;
 spec:
   rules:
-  - http:
+  - host: mycluster.com
+    http:
       paths:
-      - path: /grafana(/|$)(.*)
+      - path: /grafana
         backend:
           serviceName: grafana-service
           servicePort: 80
+
+
+
