@@ -50,10 +50,10 @@ data:
     ;http_addr =
 
     # The http port  to use
-    ;http_port = 3000
+    http_port = 3000
 
     # The public facing domain name used to access grafana from a browser
-    ;domain = localhost
+    domain = mycluster.com
 
     # Redirect to correct domain if host header does not match domain
     # Prevents DNS rebinding attacks
@@ -61,10 +61,10 @@ data:
 
     # The full public facing url you use in browser, used for redirects and emails
     # If you use reverse proxy and sub path specify full url (with sub path)
-    ;root_url = %(protocol)s://%(domain)s:%(http_port)s/
+    root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana
 
     # Serve Grafana from subpath specified in `root_url` setting. By default it is set to `false` for compatibility reasons.
-    ;serve_from_sub_path = false
+    serve_from_sub_path = false
 
     # Log web requests
     ;router_logging = false
@@ -725,9 +725,6 @@ data:
     ;enable =
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2020-02-15T19:53:32Z"
   name: grafana-config
   namespace: grafana
-  resourceVersion: "6697421"
-  selfLink: /api/v1/namespaces/default/configmaps/grafana-config
-  uid: e4787b05-6e1c-4ca6-897d-8498ac629895
+
