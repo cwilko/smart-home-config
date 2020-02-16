@@ -29,34 +29,32 @@ kind: Ingress
 metadata:
   name: grafana-ingress
   namespace: grafana
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - host: mycluster.com
+  - host: grafana.192.168.1.203.nip.io
     http:
       paths:
-      - path: /grafana(/|$)(.*)
+      - path: /
         backend:
           serviceName: grafana-service
           servicePort: 80
 
----
+#---
 
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: actions-ingress
-  namespace: actions
-spec:
-  rules:
-  - host: mycluster.com
-    http:
-      paths:
-      - path: /actions
-        backend:
-          serviceName: actions-service
-          servicePort: 80
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: actions-ingress
+#  namespace: actions
+#spec:
+#  rules:
+#  - host: mycluster.com
+#    http:
+#      paths:
+#      - path: /actions
+#        backend:
+#          serviceName: actions-service
+#          servicePort: 80
 
 
 
