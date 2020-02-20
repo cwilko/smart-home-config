@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       - name: smart-home-actions
-        image: cwilko/smart-home-actions:latest
+        image: cwilko/smart-home-actions:arm32v7
         ports:
         - containerPort: 1880
         volumeMounts:

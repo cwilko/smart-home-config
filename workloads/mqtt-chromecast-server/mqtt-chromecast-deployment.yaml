@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-chromecast
+  namespace: actions
+spec:
+  selector:
+    matchLabels:
+      app: mqtt-chromecast
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: mqtt-chromecast
+    spec:
+      hostNetwork: true
+      containers:
+        - image: cwilko/mqtt-chromecast-server
+          name: mqtt-chromecast
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: server.ini
+              name: server-config
+              subPath: server.ini
+              readOnly: true        
+      volumes:
+        - name: server-config
+          configMap:
+            name: mqtt-chromecast-config
+
+            

@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1540301195723,
+  "id": 1,
+  "iteration": 1582068122376,
   "links": [],
   "panels": [
     {
@@ -40,7 +40,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 4,
+        "w": 8,
         "x": 0,
         "y": 0
       },
@@ -61,6 +61,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -96,6 +97,7 @@
               "type": "fill"
             }
           ],
+          "orderByTime": "ASC",
           "policy": "default",
           "query": "select last(uptime_format) from system where  host =~ /^$host$/",
           "rawQuery": true,
@@ -129,7 +131,7 @@
           "value": "null"
         }
       ],
-      "valueName": "avg"
+      "valueName": "current"
     },
     {
       "cacheTimeout": null,
@@ -152,7 +154,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 4,
+        "x": 8,
         "y": 0
       },
       "id": 12,
@@ -172,6 +174,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -263,7 +266,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 6,
+        "x": 10,
         "y": 0
       },
       "id": 19,
@@ -283,6 +286,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -374,7 +378,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 8,
+        "x": 12,
         "y": 0
       },
       "id": 13,
@@ -394,6 +398,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -485,7 +490,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 10,
+        "x": 14,
         "y": 0
       },
       "id": 17,
@@ -505,6 +510,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -597,7 +603,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 12,
+        "x": 16,
         "y": 0
       },
       "id": 16,
@@ -617,6 +623,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -708,7 +715,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 14,
+        "x": 18,
         "y": 0
       },
       "id": 8,
@@ -728,6 +735,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -820,7 +828,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 16,
+        "x": 20,
         "y": 0
       },
       "id": 14,
@@ -840,6 +848,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -932,7 +941,7 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 18,
+        "x": 22,
         "y": 0
       },
       "id": 15,
@@ -952,6 +961,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1044,8 +1054,122 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 20,
-        "y": 0
+        "x": 0,
+        "y": 5
+      },
+      "id": 25,
+      "interval": "",
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "alias": "",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT max(used_percent) FROM \"disk\" WHERE \"host\" =~ /^$host$/ and \"device\" != 'rootfs'  and $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "thresholds": "50,80",
+      "title": "Disk_used_percent(max point)",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(244, 126, 30, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "datasource": "Analysis Server",
+      "format": "percent",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 5
       },
       "id": 18,
       "interval": "",
@@ -1064,6 +1188,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1145,7 +1270,7 @@
         "rgba(245, 54, 54, 0.9)"
       ],
       "datasource": "Analysis Server",
-      "format": "percent",
+      "format": "celsius",
       "gauge": {
         "maxValue": 100,
         "minValue": 0,
@@ -1156,10 +1281,10 @@
       "gridPos": {
         "h": 5,
         "w": 4,
-        "x": 0,
+        "x": 8,
         "y": 5
       },
-      "id": 25,
+      "id": 26,
       "interval": "",
       "links": [],
       "mappingType": 1,
@@ -1176,6 +1301,7 @@
       "maxDataPoints": 100,
       "nullPointMode": "connected",
       "nullText": null,
+      "options": {},
       "postfix": "",
       "postfixFontSize": "50%",
       "prefix": "",
@@ -1196,7 +1322,6 @@
       "tableColumn": "",
       "targets": [
         {
-          "alias": "",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -1214,7 +1339,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(used_percent) FROM \"disk\" WHERE \"host\" =~ /^$host$/ and \"device\" != 'rootfs'  and $timeFilter",
+          "query": "SELECT last(value) / 1000 FROM \"cpu_temp\" WHERE \"host\" =~ /^$host$/",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1236,9 +1361,9 @@
         }
       ],
       "thresholds": "50,80",
-      "title": "Disk_used_percent(max point)",
+      "title": "Memory used_percent",
       "type": "singlestat",
-      "valueFontSize": "100%",
+      "valueFontSize": "80%",
       "valueMaps": [
         {
           "op": "=",
@@ -1258,12 +1383,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
         "y": 5
       },
+      "hiddenSeries": false,
       "id": 24,
       "interval": "$interval",
       "legend": {
@@ -1281,6 +1408,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -1434,6 +1564,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "load",
       "tooltip": {
@@ -1481,12 +1612,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 5,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 10
       },
+      "hiddenSeries": false,
       "id": 1,
       "interval": "$interval",
       "legend": {
@@ -1506,6 +1639,9 @@
       "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -1599,6 +1735,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "mem",
       "tooltip": {
@@ -1644,12 +1781,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
         "y": 13
       },
+      "hiddenSeries": false,
       "id": 2,
       "interval": "$interval",
       "legend": {
@@ -1667,6 +1806,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -1853,6 +1995,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "cpu",
       "tooltip": {
@@ -1898,12 +2041,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 18
       },
+      "hiddenSeries": false,
       "id": 11,
       "interval": "$interval",
       "legend": {
@@ -1924,6 +2069,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -2106,6 +2254,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Network Usage",
       "tooltip": {
@@ -2153,12 +2302,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
         "y": 21
       },
+      "hiddenSeries": false,
       "id": 4,
       "interval": "$interval",
       "legend": {
@@ -2176,6 +2327,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -2526,6 +2680,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Disk used_percent",
       "tooltip": {
@@ -2571,12 +2726,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 26
       },
+      "hiddenSeries": false,
       "id": 3,
       "interval": "$interval",
       "legend": {
@@ -2594,6 +2751,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -2644,6 +2804,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Processes",
       "tooltip": {
@@ -2691,12 +2852,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
         "y": 29
       },
+      "hiddenSeries": false,
       "id": 20,
       "interval": "$interval",
       "legend": {
@@ -2715,6 +2878,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -2884,6 +3050,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "Netstat",
       "tooltip": {
@@ -2929,12 +3096,14 @@
       "dashes": false,
       "datasource": "Analysis Server",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
         "y": 34
       },
+      "hiddenSeries": false,
       "id": 5,
       "interval": "$interval",
       "legend": {
@@ -2952,6 +3121,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -3209,6 +3381,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "diskio",
       "tooltip": {
@@ -3249,7 +3422,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 16,
+  "schemaVersion": 22,
   "style": "dark",
   "tags": [
     "telegraf",
@@ -3261,10 +3434,11 @@
       {
         "allValue": null,
         "current": {
-          "text": "3686995e9f2b",
-          "value": "3686995e9f2b"
+          "text": "k8s-master",
+          "value": "k8s-master"
         },
         "datasource": "Analysis Server",
+        "definition": "",
         "hide": 0,
         "includeAll": false,
         "label": "host",
@@ -3287,6 +3461,7 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
+          "selected": false,
           "text": "1m",
           "value": "1m"
         },
@@ -3403,7 +3578,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Analysis server",
-  "uid": "orZBNaxmz",
+  "title": "Node summary",
+  "uid": "orZBNaxma",
   "version": 1
 }
