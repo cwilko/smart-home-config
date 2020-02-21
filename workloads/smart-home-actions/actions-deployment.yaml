@@ -46,9 +46,6 @@ spec:
           - mountPath: /data/flows.json
             name: actions-config
             subPath: flows.json
-          - mountPath: /data/flows_cred.json
-            name: actions-secrets
-            subPath: flows_cred.json
       volumes:
       - name: actions-config
         configMap:
