@@ -1,0 +1,165 @@
+[
+    {
+        "id": "523660f.200d1a",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "edeb291e.447a98",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "342a5e81.ea2d92",
+        "type": "tab",
+        "label": "GoogleHomeCommands",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "87b9b09.9bbcf5",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "192.168.1.202",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "d87e6ae.3ec6898",
+        "type": "http in",
+        "z": "523660f.200d1a",
+        "name": "",
+        "url": "/test1",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 340,
+        "wires": [
+            [
+                "5600cf1.e0ae73"
+            ]
+        ]
+    },
+    {
+        "id": "5600cf1.e0ae73",
+        "type": "template",
+        "z": "523660f.200d1a",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Hello World - Endpoint 1",
+        "output": "str",
+        "x": 520,
+        "y": 340,
+        "wires": [
+            [
+                "e89840d.ce4abc"
+            ]
+        ]
+    },
+    {
+        "id": "e89840d.ce4abc",
+        "type": "http response",
+        "z": "523660f.200d1a",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 800,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "8605ca9c.d82a28",
+        "type": "http in",
+        "z": "edeb291e.447a98",
+        "name": "",
+        "url": "/test2",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 270,
+        "y": 400,
+        "wires": [
+            [
+                "e7b2603.0f742a"
+            ]
+        ]
+    },
+    {
+        "id": "f9cb8912.e67e18",
+        "type": "http response",
+        "z": "edeb291e.447a98",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 840,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "e7b2603.0f742a",
+        "type": "template",
+        "z": "edeb291e.447a98",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Hello World - Endpoint 2",
+        "output": "str",
+        "x": 540,
+        "y": 380,
+        "wires": [
+            [
+                "f9cb8912.e67e18"
+            ]
+        ]
+    },
+    {
+        "id": "22da66b9.c135ca",
+        "type": "webhookrelay",
+        "z": "342a5e81.ea2d92",
+        "buckets": "GoogleHomeCommands",
+        "x": 260,
+        "y": 300,
+        "wires": [
+            [
+                "1aeaf8ef.353e57"
+            ]
+        ]
+    },
+    {
+        "id": "1aeaf8ef.353e57",
+        "type": "mqtt out",
+        "z": "342a5e81.ea2d92",
+        "name": "",
+        "topic": "cmd/googlehome",
+        "qos": "",
+        "retain": "",
+        "broker": "87b9b09.9bbcf5",
+        "x": 750,
+        "y": 300,
+        "wires": []
+    }
+]

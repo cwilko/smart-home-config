@@ -40,10 +40,19 @@ spec:
         - containerPort: 1880
         volumeMounts:
           - mountPath: /data/settings.js
-            name: actions-config
+            name: actions-secrets
             readOnly: true
             subPath: settings.js
+          - mountPath: /data/flows.json
+            name: actions-config
+            subPath: flows.json
+          - mountPath: /data/flows_cred.json
+            name: actions-secrets
+            subPath: flows_cred.json
       volumes:
       - name: actions-config
         configMap:
           name: actions-config 
+      - name: actions-secrets
+        secret:
+          secretName: node-red-secret
