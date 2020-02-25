@@ -41,3 +41,12 @@ metadata:
     app: storage
   name: storage
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+

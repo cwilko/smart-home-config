@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
+  namespace: grafana
 spec:
   selector:
     matchLabels:
@@ -19,23 +20,28 @@ spec:
               name: grafana-secrets
           name: grafana
           volumeMounts:
-          - mountPath: /etc/grafana/provisioning/datasources/influxdb-datasource.yml
+          - mountPath: /etc/grafana/provisioning/datasources/influxdb-datasource.yaml
             name: influxdb-ds-secret
             readOnly: true
-            subPath: influxdb-datasource.yml
+            subPath: influxdb-datasource.yaml
           - mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
             name: grafana-config
             readOnly: true
             subPath: dashboards.yaml
-          - mountPath: /var/lib/grafana/dashboards/analysis-server.json
+          - mountPath: /etc/grafana/grafana.ini
             name: grafana-config
             readOnly: true
-            subPath: analysis-server.json
+            subPath: grafana.ini
+          - mountPath: /var/lib/grafana/dashboards
+            name: grafana-data
       restartPolicy: Always
       volumes:
       - name: grafana-config
         configMap:
-          name: grafana-config        
+          name: grafana-config 
+      - name: grafana-data
+        persistentVolumeClaim:
+          claimName: grafana-data           
       - name: influxdb-ds-secret
         secret:
           secretName: influxdb-ds-secret
