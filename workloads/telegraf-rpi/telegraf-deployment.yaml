@@ -30,6 +30,8 @@ spec:
             - mountPath: /host/proc
               name: host-proc
               readOnly: true
+            - mountPath: /var/run/docker.sock
+              name: docker
           env:
             - name: HOST_PROC
               value: "/host/proc"
@@ -37,6 +39,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: NODE_IP_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           envFrom:
             - secretRef:
                 name: telegraf-secrets
@@ -47,3 +53,8 @@ spec:
         - name: host-proc
           hostPath:
             path: /proc
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+
+            

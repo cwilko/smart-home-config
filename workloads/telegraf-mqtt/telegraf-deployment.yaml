@@ -16,8 +16,6 @@ spec:
       containers:
         - image: cwilko/telegraf:1.13.2-alpine-arm32v7
           name: telegraf
-          securityContext:
-            privileged: true
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
               name: mqtt-listener-config
