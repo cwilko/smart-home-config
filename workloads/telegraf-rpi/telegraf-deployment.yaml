@@ -28,7 +28,7 @@ spec:
               subPath: telegraf.conf
               readOnly: true
             - mountPath: /host
-              name: host_rootfs
+              name: host-rootfs
               readOnly: true
             - mountPath: /var/run/docker.sock
               name: docker
@@ -52,7 +52,7 @@ spec:
         - name: telegraf-config
           configMap:
             name: telegraf-config
-        - name: host_rootfs
+        - name: host-rootfs
           hostPath:
             path: /
         - name: docker
