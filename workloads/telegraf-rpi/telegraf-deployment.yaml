@@ -35,6 +35,12 @@ spec:
           env:
             - name: HOST_PROC
               value: "/host/proc"
+            - name: HOST_SYS
+              value: "/host/sys"
+            - name: HOST_ETC
+              value: "/host/etc"
+            - name: HOST_VAR
+              value: "/host/var"              
             - name: HOST_MOUNT_PREFIX
               value: "/host"
             - name: NODE_NAME
