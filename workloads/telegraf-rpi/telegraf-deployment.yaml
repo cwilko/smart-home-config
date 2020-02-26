@@ -22,7 +22,7 @@ spec:
           name: telegraf
           securityContext:
             privileged: true
-            allowedProcMountTypes: true
+            procMount: UnmaskedProcMount
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
               name: telegraf-config
