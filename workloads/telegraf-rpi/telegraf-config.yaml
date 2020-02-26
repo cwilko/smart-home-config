@@ -172,7 +172,7 @@ data:
       # mount_points = ["/"]
 
       ## Ignore mount points by filesystem type.
-      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "overlay", "aufs", "squashfs"]
+      ignore_fs = ["tmpfs", "devtmpfs", "devfs", "overlay", "aufs", "squashfs", "nfs"]
 
 
     # Read metrics about disk IO by device
