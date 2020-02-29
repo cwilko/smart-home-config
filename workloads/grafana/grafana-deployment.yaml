@@ -7,14 +7,14 @@ spec:
   selector:
     matchLabels:
       app: grafana
-  minReadySeconds: 5
+  minReadySeconds: 10
   template:
     metadata:
       labels:
         app: grafana
     spec:
       containers:
-        - image: grafana/grafana:6.6.0
+        - image: cwilko/grafana-arm-curl
           envFrom:
           - secretRef:
               name: grafana-secrets
@@ -38,6 +38,10 @@ spec:
             subPath: grafana.ini
           - mountPath: /var/lib/grafana/dashboards
             name: grafana-data
+          lifecycle:
+            postStart:
+              exec:
+                command: ["curl", "-X", "PUT", "-H", "\"Content-Type: application/json\"", "-d", "@/etc/grafana/provisioning/playlists/playlists.json"]
       restartPolicy: Always
       volumes:
       - name: grafana-config
