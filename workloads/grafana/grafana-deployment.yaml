@@ -28,6 +28,10 @@ spec:
             name: grafana-config
             readOnly: true
             subPath: dashboards.yaml
+          - mountPath: /etc/grafana/provisioning/playlists/playlists.json
+            name: grafana-config
+            readOnly: true
+            subPath: playlists.json
           - mountPath: /etc/grafana/grafana.ini
             name: grafana-config
             readOnly: true

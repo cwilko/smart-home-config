@@ -53,7 +53,7 @@ data:
     ;http_port = 3000
 
     # The public facing domain name used to access grafana from a browser
-    ;domain = mycluster.com
+    ;domain = localhost
 
     # Redirect to correct domain if host header does not match domain
     # Prevents DNS rebinding attacks
@@ -61,7 +61,7 @@ data:
 
     # The full public facing url you use in browser, used for redirects and emails
     # If you use reverse proxy and sub path specify full url (with sub path)
-    ;root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana
+    ;root_url = %(protocol)s://%(domain)s:%(http_port)s/
 
     # Serve Grafana from subpath specified in `root_url` setting. By default it is set to `false` for compatibility reasons.
     ;serve_from_sub_path = false
@@ -269,7 +269,7 @@ data:
     ;password_hint = password
 
     # Default UI theme ("dark" or "light")
-    default_theme = light
+    ;default_theme = light
 
     # External user management, these options affect the organization users view
     ;external_manage_link_url =
@@ -723,8 +723,45 @@ data:
     [feature_toggles]
     # enable features, separated by spaces
     ;enable =
+  playlists.json: |-
+    {
+       "name":"Home Dashboard",
+       "interval":"30s",
+       "items":[
+          {
+             "type":"dashboard_by_id",
+             "title":"Cluster Summary stats",
+             "value":"5",
+             "order":1
+          },
+          {
+             "title":"Cluster historical statistics",
+             "type":"dashboard_by_id",
+             "value":"4",
+             "order":2
+          },
+          {
+             "title":"Node summary",
+             "type":"dashboard_by_id",
+             "value":"3",
+             "order":3
+          },
+          {
+             "title":"Docker summary stats",
+             "type":"dashboard_by_id",
+             "value":"1",
+             "order":4
+          },
+          {
+             "title":"Kubernetes summary stats",
+             "type":"dashboard_by_id",
+             "value":"2",
+             "order":5
+          }
+       ]
+    }
 kind: ConfigMap
 metadata:
+  creationTimestamp: null
   name: grafana-config
   namespace: grafana
-
