@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: grafana
-  minReadySeconds: 30
+  minReadySeconds: 5
   template:
     metadata:
       labels:
