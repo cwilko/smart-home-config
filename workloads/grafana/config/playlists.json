@@ -5,37 +5,37 @@
       {
          "type":"dashboard_by_id",
          "title":"Cluster Summary stats",
-         "value":"5",
+         "value":"1",
          "order":1
       },
       {
          "title":"Linkstation NAS stats",
          "type":"dashboard_by_id",
-         "value":"6",
+         "value":"4",
          "order":2
       },
       {
          "title":"Cluster historical statistics",
          "type":"dashboard_by_id",
-         "value":"4",
+         "value":"6",
          "order":3
       },
       {
          "title":"Node summary",
          "type":"dashboard_by_id",
-         "value":"3",
+         "value":"5",
          "order":4
       },
       {
          "title":"Docker summary stats",
          "type":"dashboard_by_id",
-         "value":"1",
+         "value":"2",
          "order":5
       },
       {
          "title":"Kubernetes summary stats",
          "type":"dashboard_by_id",
-         "value":"2",
+         "value":"3",
          "order":6
       }
    ]
