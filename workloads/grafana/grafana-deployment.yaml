@@ -53,7 +53,8 @@ spec:
                     # Create playlist using the Grafana API
 
                     url=localhost:3000
-                    playlist=/etc/grafana/provisioning/playlists/system_playlist.json
+                    playlist_sys=/etc/grafana/provisioning/playlists/system_playlist.json
+                    playlist_home=/etc/grafana/provisioning/playlists/home_playlist.json
                     user=$GF_SECURITY_ADMIN_USER
                     password=$GF_SECURITY_ADMIN_PASSWORD
 
@@ -69,7 +70,8 @@ spec:
                             echo "Playlist created."
                         else
                             echo "Creating playlists..."
-                            curl -s -X POST -H "content-type: application/json" -u ${user}:${password} -d @${playlist} http://${url}/api/playlists
+                            curl -s -X POST -H "content-type: application/json" -u ${user}:${password} -d @${playlist_sys} http://${url}/api/playlists
+                            curl -s -X POST -H "content-type: application/json" -u ${user}:${password} -d @${playlist_home} http://${url}/api/playlists
                         fi
                         initialised=true
                     else
