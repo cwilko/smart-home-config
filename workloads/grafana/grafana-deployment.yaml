@@ -28,10 +28,14 @@ spec:
             name: grafana-config
             readOnly: true
             subPath: dashboards.yaml
-          - mountPath: /etc/grafana/provisioning/playlists/playlists.json
+          - mountPath: /etc/grafana/provisioning/playlists/system_playlist.json
             name: grafana-config
             readOnly: true
-            subPath: playlists.json
+            subPath: system_playlist.json
+          - mountPath: /etc/grafana/provisioning/playlists/home_playlist.json
+            name: grafana-config
+            readOnly: true
+            subPath: home_playlist.json
           - mountPath: /etc/grafana/grafana.ini
             name: grafana-config
             readOnly: true
@@ -49,7 +53,7 @@ spec:
                     # Create playlist using the Grafana API
 
                     url=localhost:3000
-                    playlist=/etc/grafana/provisioning/playlists/playlists.json
+                    playlist=/etc/grafana/provisioning/playlists/system_playlist.json
                     user=$GF_SECURITY_ADMIN_USER
                     password=$GF_SECURITY_ADMIN_PASSWORD
 
