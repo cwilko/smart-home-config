@@ -1,42 +1,18 @@
 {
-   "name":"Home Dashboard",
+   "name":"System Dashboard",
    "interval":"30s",
    "items":[
       {
-         "type":"dashboard_by_id",
-         "title":"Cluster Summary stats",
-         "value":"6",
+         "type":"dashboard_by_tag",
+         "title":"System",
+         "value":"system",
          "order":1
       },
       {
-         "title":"Linkstation NAS stats",
-         "type":"dashboard_by_id",
-         "value":"3",
+         "type":"dashboard_by_tag",
+         "title":"Home",
+         "value":"home",
          "order":2
-      },
-      {
-         "title":"Cluster historical statistics",
-         "type":"dashboard_by_id",
-         "value":"5",
-         "order":3
-      },
-      {
-         "title":"Node summary",
-         "type":"dashboard_by_id",
-         "value":"4",
-         "order":4
-      },
-      {
-         "title":"Docker summary stats",
-         "type":"dashboard_by_id",
-         "value":"1",
-         "order":5
-      },
-      {
-         "title":"Kubernetes summary stats",
-         "type":"dashboard_by_id",
-         "value":"2",
-         "order":6
       }
    ]
 }
