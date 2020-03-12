@@ -1304,7 +1304,8 @@
     "kubernetes",
     "influxdb",
     "Container",
-    "Telegraf"
+    "Telegraf",
+    "system"
   ],
   "templating": {
     "list": [

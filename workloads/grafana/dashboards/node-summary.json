@@ -2366,7 +2366,8 @@
   "tags": [
     "telegraf",
     "influxdb",
-    "host"
+    "host",
+    "system"
   ],
   "templating": {
     "list": [
