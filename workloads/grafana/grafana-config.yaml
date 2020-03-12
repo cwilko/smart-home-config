@@ -723,7 +723,7 @@ data:
     [feature_toggles]
     # enable features, separated by spaces
     ;enable =
-  playlists.json: |-
+  system_playlist.json: |-
     {
        "name":"System Dashboard",
        "interval":"30s",
@@ -739,6 +739,19 @@ data:
              "title":"Home",
              "value":"home",
              "order":2
+          }
+       ]
+    }
+  home_playlist.json: |-
+    {
+       "name":"Home Dashboard",
+       "interval":"30s",
+       "items":[
+          {
+             "type":"dashboard_by_tag",
+             "title":"Home",
+             "value":"home",
+             "order":1
           }
        ]
     }

@@ -1,0 +1,12 @@
+{
+   "name":"Home Dashboard",
+   "interval":"30s",
+   "items":[
+      {
+         "type":"dashboard_by_tag",
+         "title":"Home",
+         "value":"home",
+         "order":1
+      }
+   ]
+}
