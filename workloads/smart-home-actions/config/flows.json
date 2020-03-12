@@ -9,7 +9,7 @@
     {
         "id": "edeb291e.447a98",
         "type": "tab",
-        "label": "Flow 2",
+        "label": "influx xform",
         "disabled": false,
         "info": ""
     },
@@ -90,53 +90,6 @@
         "wires": []
     },
     {
-        "id": "8605ca9c.d82a28",
-        "type": "http in",
-        "z": "edeb291e.447a98",
-        "name": "",
-        "url": "/test2",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 270,
-        "y": 400,
-        "wires": [
-            [
-                "e7b2603.0f742a"
-            ]
-        ]
-    },
-    {
-        "id": "f9cb8912.e67e18",
-        "type": "http response",
-        "z": "edeb291e.447a98",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 840,
-        "y": 380,
-        "wires": []
-    },
-    {
-        "id": "e7b2603.0f742a",
-        "type": "template",
-        "z": "edeb291e.447a98",
-        "name": "",
-        "field": "payload",
-        "fieldType": "msg",
-        "format": "handlebars",
-        "syntax": "mustache",
-        "template": "Hello World - Endpoint 2",
-        "output": "str",
-        "x": 540,
-        "y": 380,
-        "wires": [
-            [
-                "f9cb8912.e67e18"
-            ]
-        ]
-    },
-    {
         "id": "22da66b9.c135ca",
         "type": "webhookrelay",
         "z": "342a5e81.ea2d92",
@@ -145,7 +98,7 @@
         "y": 300,
         "wires": [
             [
-                "1aeaf8ef.353e57"
+                "86ba2941.aa25a8"
             ]
         ]
     },
@@ -154,12 +107,164 @@
         "type": "mqtt out",
         "z": "342a5e81.ea2d92",
         "name": "",
-        "topic": "cmd/googlehome",
+        "topic": "home/chromecast/start",
         "qos": "",
         "retain": "",
         "broker": "87b9b09.9bbcf5",
-        "x": 750,
-        "y": 300,
+        "x": 1140,
+        "y": 500,
         "wires": []
+    },
+    {
+        "id": "86ba2941.aa25a8",
+        "type": "json",
+        "z": "342a5e81.ea2d92",
+        "name": "",
+        "property": "payload.body",
+        "action": "",
+        "pretty": false,
+        "x": 500,
+        "y": 520,
+        "wires": [
+            [
+                "2fc48438.4b0f4c"
+            ]
+        ]
+    },
+    {
+        "id": "2fc48438.4b0f4c",
+        "type": "switch",
+        "z": "342a5e81.ea2d92",
+        "name": "chooseCommand",
+        "property": "payload.body.command",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "loadDash",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "loadSysDash",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 760,
+        "y": 520,
+        "wires": [
+            [
+                "f2c34e92.95b39"
+            ],
+            [
+                "fc41ad33.ff1dd"
+            ]
+        ]
+    },
+    {
+        "id": "fc41ad33.ff1dd",
+        "type": "template",
+        "z": "342a5e81.ea2d92",
+        "name": "sysDash",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://grafana.192.168.1.203.nip.io/playlists/play/1?kiosk=tv&autofitpanels",
+        "output": "str",
+        "x": 940,
+        "y": 620,
+        "wires": [
+            [
+                "1aeaf8ef.353e57"
+            ]
+        ]
+    },
+    {
+        "id": "f1448e51.b5356",
+        "type": "mqtt in",
+        "z": "edeb291e.447a98",
+        "name": "oil sensor",
+        "topic": "sensors/rtl-sdr/oil",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "87b9b09.9bbcf5",
+        "x": 290,
+        "y": 280,
+        "wires": [
+            [
+                "ea68a283.44229"
+            ]
+        ]
+    },
+    {
+        "id": "75767643.4cbf28",
+        "type": "template",
+        "z": "edeb291e.447a98",
+        "name": "Influx convert",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "oil,id={{payload.id}},model={{payload.model}} temp={{payload.temperature_C}},depth={{payload.depth_cm}} {{payload.time}}000000",
+        "output": "str",
+        "x": 630,
+        "y": 400,
+        "wires": [
+            [
+                "216bc960.c3e5d6"
+            ]
+        ]
+    },
+    {
+        "id": "ea68a283.44229",
+        "type": "function",
+        "z": "edeb291e.447a98",
+        "name": "Convert time",
+        "func": "\nmsg.payload.time = new Date(msg.payload.time).getTime()\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 420,
+        "y": 400,
+        "wires": [
+            [
+                "75767643.4cbf28"
+            ]
+        ]
+    },
+    {
+        "id": "216bc960.c3e5d6",
+        "type": "mqtt out",
+        "z": "edeb291e.447a98",
+        "name": "influx out",
+        "topic": "telegraf/sensors/oil",
+        "qos": "",
+        "retain": "",
+        "broker": "87b9b09.9bbcf5",
+        "x": 800,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "f2c34e92.95b39",
+        "type": "template",
+        "z": "342a5e81.ea2d92",
+        "name": "homeDash",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://grafana.192.168.1.203.nip.io/playlists/play/2?kiosk=tv&autofitpanels",
+        "output": "str",
+        "x": 930,
+        "y": 440,
+        "wires": [
+            [
+                "1aeaf8ef.353e57"
+            ]
+        ]
     }
 ]
