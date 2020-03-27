@@ -281,5 +281,6 @@ data:
 
     [[inputs.exec]]
       commands = ["sh /speedtest.sh"]
+      timeout = "1m"
       data_format = "influx"
       #interval="5m"

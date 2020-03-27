@@ -16,6 +16,8 @@ spec:
       containers:
         - image: cwilko/smart-home-collector
           name: telegraf
+          securityContext:
+            privileged: true
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
               name: mqtt-listener-config
