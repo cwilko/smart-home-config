@@ -280,6 +280,6 @@ data:
       insecure_skip_verify = true
 
     [[inputs.exec]]
-      commands = ['''echo "speedtest $(speedtest-cli --simple | awk '/Ping/ {print "ping=" $2} /Download/ {print "download=" $2 * 1000 * 1000} /Upload/ {print "upload=" $2 * 1000 * 1000}' | tr '\n' ',' | head -c -1) $(date +%s%N)"''']
+      commands = ["sh /speedtest.sh"]
       data_format = "influx"
       #interval="5m"
