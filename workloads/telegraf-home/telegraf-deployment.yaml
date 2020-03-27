@@ -14,7 +14,7 @@ spec:
         app: mqtt-listener
     spec:
       containers:
-        - image: cwilko/telegraf:1.13.2-alpine-arm32v7
+        - image: cwilko/smart-home-collector
           name: telegraf
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
