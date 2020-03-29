@@ -2,7 +2,7 @@ apiVersion: v1
 
 kind: ConfigMap
 metadata:
-  name: mqtt-listener-config
+  name: smart-home-collector-config
   namespace: triggers
 data:
   telegraf.conf: |+

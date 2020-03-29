@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mqtt-listener
+  name: smart-home-collector
   namespace: triggers
 spec:
   selector:
     matchLabels:
-      app: mqtt-listener
+      app: smart-home-collector
   minReadySeconds: 5
   template:
     metadata:
       labels:
-        app: mqtt-listener
+        app: smart-home-collector
     spec:
       serviceAccountName: telegraf
       containers:
@@ -21,13 +21,13 @@ spec:
             privileged: true
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
-              name: mqtt-listener-config
+              name: smart-home-collector-config
               subPath: telegraf.conf
               readOnly: true
           envFrom:
             - secretRef:
                 name: telegraf-secrets
       volumes:
-        - name: mqtt-listener-config
+        - name: smart-home-collector-config
           configMap:
-            name: mqtt-listener-config
+            name: smart-home-collector-config
