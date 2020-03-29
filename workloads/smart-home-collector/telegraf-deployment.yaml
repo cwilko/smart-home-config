@@ -13,6 +13,7 @@ spec:
       labels:
         app: mqtt-listener
     spec:
+      serviceAccountName: telegraf
       containers:
         - image: cwilko/smart-home-collector
           name: telegraf
