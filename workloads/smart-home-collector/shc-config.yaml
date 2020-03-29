@@ -28,7 +28,7 @@ data:
     # Configuration for telegraf agent
     [agent]
       ## Default data collection interval for all inputs
-      interval = "1m"
+      interval = "5m"
       ## Rounds collection interval to 'interval'
       ## ie, if interval="10s" then always collect on :00, :10, :20, etc.
       round_interval = true
@@ -245,6 +245,8 @@ data:
       ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
       data_format = "influx"
 
+      interval="1m"
+
     [[inputs.kube_inventory]]
       ## URL for the Kubernetes API
       url = "https://kubernetes.default.svc"
@@ -285,21 +287,17 @@ data:
       commands = ["sh /speedtest.sh"]
       timeout = "1m"
       data_format = "influx"
-      interval="5m"
 
     [[inputs.ping]]
       urls = ["www.google.com","192.168.1.1"] 
-      interval="5m"
 
     [[inputs.dns_query]]
       servers = ["8.8.8.8"]
       domains = ["www.google.com"]
       record_type = "A"
-      interval="5m"
 
     [[inputs.net_response]]
       protocol = "tcp"
       address = "www.google.com:80"
       timeout = "1s"
       read_timeout = "1s"
-      interval="5m"
