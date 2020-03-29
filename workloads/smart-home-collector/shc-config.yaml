@@ -28,7 +28,7 @@ data:
     # Configuration for telegraf agent
     [agent]
       ## Default data collection interval for all inputs
-      interval = "5m"
+      interval = "1m"
       ## Rounds collection interval to 'interval'
       ## ie, if interval="10s" then always collect on :00, :10, :20, etc.
       round_interval = true
@@ -149,7 +149,7 @@ data:
       ## existing data has been written.
       # influx_uint_support = false
 
-    [[outputs.file]]
+      #[[outputs.file]]
       ## Files to write to, "stdout" is a specially handled file.
       files = ["stdout", "/tmp/metrics.out"]
 
@@ -164,17 +164,17 @@ data:
 
       ## The logfile will be rotated when it becomes larger than the specified
       ## size.  When set to 0 no size based rotation is performed.
-      rotation_max_size = "10MB"
+      #rotation_max_size = "10MB"
 
       ## Maximum number of rotated archives to keep, any older logs are deleted.
       ## If set to -1, no archives are removed.
-      rotation_max_archives = 5
+      #rotation_max_archives = 5
 
       ## Data format to output.
       ## Each data format has its own unique set of configuration options, read
       ## more about them here:
       ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md
-      data_format = "influx"
+      #data_format = "influx"
 
     ###############################################################################
     #                            INPUT PLUGINS                                    #
@@ -245,8 +245,6 @@ data:
       ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
       data_format = "influx"
 
-      interval="1m"
-
     [[inputs.kube_inventory]]
       ## URL for the Kubernetes API
       url = "https://kubernetes.default.svc"
@@ -280,6 +278,7 @@ data:
       # tls_key = "/path/to/keyfile"
       ## Use TLS but skip chain & host verification
       insecure_skip_verify = true
+      interval = "5m"
 
     ## Network ##
 
@@ -288,8 +287,10 @@ data:
       timeout = "1m"
       data_format = "influx"
 
+
     [[inputs.ping]]
       urls = ["www.google.com","192.168.1.1", "192.168.1.4", "192.168.1.30"] 
+      interval = "1m"
 
     [[inputs.dns_query]]
       servers = ["8.8.8.8"]
