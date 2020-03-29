@@ -2518,7 +2518,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Node summary",
+  "title": "Kubernetes Worker Node",
   "uid": "orZBNaxma",
   "version": 1
 }
