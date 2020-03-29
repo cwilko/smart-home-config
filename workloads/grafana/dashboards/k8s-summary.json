@@ -1393,7 +1393,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Kubernetes summary stats",
+  "title": "Kubernetes cluster",
   "uid": "SqmE2QBia",
   "version": 1
 }
