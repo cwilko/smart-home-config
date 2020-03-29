@@ -149,7 +149,7 @@ data:
       ## existing data has been written.
       # influx_uint_support = false
 
-      #[[outputs.file]]
+    [[outputs.file]]
       ## Files to write to, "stdout" is a specially handled file.
       files = ["stdout", "/tmp/metrics.out"]
 
@@ -174,7 +174,7 @@ data:
       ## Each data format has its own unique set of configuration options, read
       ## more about them here:
       ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_OUTPUT.md
-      #data_format = "influx"
+      data_format = "influx"
 
     ###############################################################################
     #                            INPUT PLUGINS                                    #
