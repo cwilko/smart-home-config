@@ -289,7 +289,37 @@ data:
       interval = "5m"
 
     [[inputs.ping]]
-      urls = ["www.google.com","192.168.1.1", "192.168.1.4", "192.168.1.30"] 
+
+      # WAN endpoints:
+    
+      urls = ["www.google.com"] 
+
+    [[inputs.ping]]
+
+      # LAN Devices:
+      #
+      # Router              - 192.168.1.1
+      # Master Node         - 192.168.1.30
+      # DCHP Server         - 192.168.1.254 
+      urls = ["192.168.1.1", "192.168.1.30", "192.168.1.254"] 
+
+    [[inputs.ping]]
+
+      # WIFI Devices:
+      #
+      # LG TV               - 192.168.1.4
+      # Google Nest Hub     - 192.168.1.9
+      # Bosch Tumble Dryer  - 192.168.1.10
+      # Bosch Oven          - 192.168.1.11
+      # Chris Phone         - 192.168.1.21
+      # Laptop              - 192.168.1.22
+      # Carolyn iPhone      - 192.168.1.23
+      # Carolyn iPad        - 192.168.1.24
+      # Harmony Hub         - 192.168.1.5
+      # Chloe light         - 192.168.1.40
+      # Harry light         - 192.168.1.41      
+
+      urls = ["192.168.1.4","192.168.1.9", "192.168.1.10", "192.168.1.11", "192.168.1.21", "192.168.1.22", "192.168.1.23", "192.168.1.24", "192.168.1.5", "192.168.1.40", "192.168.1.41"] 
 
     [[inputs.dns_query]]
       servers = ["8.8.8.8"]
