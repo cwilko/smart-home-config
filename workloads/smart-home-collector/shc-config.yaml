@@ -188,8 +188,7 @@ data:
     
       ## Topics that will be subscribed to.
       topics = [
-        "telegraf/Linkstation-NAS/#",
-        "telegraf/sensors/#",
+        "telegraf/#"
       ]
     
       ## The message topic will be stored in a tag specified by this value.  If set
