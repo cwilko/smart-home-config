@@ -16,8 +16,8 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1585437798821,
+  "id": 7,
+  "iteration": 1585595114722,
   "links": [],
   "panels": [
     {
@@ -89,7 +89,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT 2000-mean(\"depth\")*10 FROM \"oil\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "query": "SELECT 100 * ((132 - mean(\"depth\")) / 132) FROM \"oil\" WHERE $timeFilter GROUP BY time(12h) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -116,7 +116,7 @@
           "fill": true,
           "line": true,
           "op": "lt",
-          "value": 200,
+          "value": 20,
           "yaxis": "left"
         }
       ],
@@ -140,7 +140,7 @@
       "yaxes": [
         {
           "decimals": null,
-          "format": "lengthmm",
+          "format": "percent",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -153,7 +153,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -404,7 +404,7 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-18d",
     "to": "now-30s"
   },
   "timepicker": {
