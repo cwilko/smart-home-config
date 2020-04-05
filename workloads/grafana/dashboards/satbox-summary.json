@@ -17,7 +17,7 @@
   "gnetId": 3330,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1583182066874,
+  "iteration": 1586031392115,
   "links": [],
   "panels": [
     {
@@ -100,7 +100,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(used_percent) FROM \"disk\" WHERE \"host\" = 'Linkstation-NAS' and \"device\" != 'rootfs'  and $timeFilter",
+          "query": "SELECT last(used_percent) FROM \"disk\" WHERE \"host\" = 'Satelite-TV' and \"device\" != 'rootfs'  and $timeFilter",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -213,7 +213,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(used_percent) FROM \"mem\" WHERE \"host\" = 'Linkstation-NAS'",
+          "query": "SELECT last(used_percent) FROM \"mem\" WHERE \"host\" = 'Satelite-TV'",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -327,7 +327,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(\"load15\") FROM \"system\" WHERE \"host\" = 'Linkstation-NAS'",
+          "query": "SELECT last(\"load15\") FROM \"system\" WHERE \"host\" = 'Satelite-TV'",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -440,7 +440,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT last(value) / 1000 FROM \"cpu_temp\" WHERE \"host\" = 'Linkstation-NAS'",
+          "query": "SELECT last(value) / 1000 FROM \"cpu_temp\" WHERE \"host\" = 'Satelite-TV'",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -515,7 +515,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Linkstation NAS",
-  "uid": "qrZBNaxmz",
+  "title": "Satellite TV",
+  "uid": "qrZBeyxmz",
   "version": 1
 }

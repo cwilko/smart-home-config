@@ -15,6 +15,9 @@ spec:
     spec:
       containers:
         - image: cwilko/grafana-arm-url:latest
+          env:
+          - name: GF_INSTALL_PLUGINS
+            value: "flant-statusmap-panel"
           envFrom:
           - secretRef:
               name: grafana-secrets
