@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "id": 5,
-  "iteration": 1586126132169,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -129,7 +128,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Current Devices",
+      "title": "Active Devices",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -603,7 +602,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "WiFi - Response Time",
+      "title": "WiFi",
       "tooltip": {
         "show": true
       },
@@ -1122,7 +1121,108 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "LAN - Response Time",
+      "title": "LAN ",
+      "tooltip": {
+        "show": true
+      },
+      "type": "flant-statusmap-panel",
+      "useMax": true,
+      "xAxis": {
+        "labelFormat": "%a %m/%d",
+        "minBucketWidthToShowWeekends": 4,
+        "show": true,
+        "showCrosshair": true,
+        "showWeekends": true
+      },
+      "yAxis": {
+        "show": true,
+        "showCrosshair": false
+      },
+      "yAxisSort": "metrics"
+    },
+    {
+      "cards": {
+        "cardHSpacing": 2,
+        "cardMinWidth": 5,
+        "cardRound": null,
+        "cardVSpacing": 2
+      },
+      "color": {
+        "cardColor": "#b4ff00",
+        "colorScale": "sqrt",
+        "colorScheme": "interpolateRdYlGn",
+        "defaultColor": "#757575",
+        "exponent": 0.5,
+        "max": 500,
+        "mode": "spectrum",
+        "thresholds": []
+      },
+      "data": {
+        "decimals": null,
+        "unitFormat": "short"
+      },
+      "datasource": "Analysis Server",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "highlightCards": true,
+      "id": 30,
+      "legend": {
+        "show": false
+      },
+      "links": [],
+      "nullPointMode": "as empty",
+      "options": {},
+      "pluginVersion": "6.6.0",
+      "targets": [
+        {
+          "alias": "www.google.com",
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "mem",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = 'www.google.com' GROUP BY time($interval) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "available_percent"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Internet",
       "tooltip": {
         "show": true
       },
@@ -1150,6 +1250,9 @@
     "influxdb",
     "home"
   ],
+  "templating": {
+    "list": []
+  },
   "time": {
     "from": "now-12h",
     "to": "now-30s"
@@ -1181,7 +1284,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Home Network",
+  "title": "Home Network : Response Times",
   "uid": "BaqzSfaak",
   "version": 1
 }
