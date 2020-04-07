@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: kapacitor-service
+  namespace: storage
+spec:
+  type: ExternalName
+  externalName: kapacitor-service.alerting.svc.cluster.local
+  ports:
+  - port: 9092

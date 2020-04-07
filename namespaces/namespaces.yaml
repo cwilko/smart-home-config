@@ -50,3 +50,13 @@ metadata:
     app: grafana
   name: grafana
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: alerting
+  name: alerting
+
+
