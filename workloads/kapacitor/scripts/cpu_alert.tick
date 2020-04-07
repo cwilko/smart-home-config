@@ -1,0 +1,11 @@
+dbrp "telegraf"."autogen"
+
+stream
+    // Select the CPU measurement from the `telegraf` database.
+    |from()
+        .measurement('cpu')
+    // Triggers a critical alert when the CPU idle usage drops below 70%
+    |alert()
+        .crit(lambda: int("usage_idle") <  70)
+        // Write each alert to a file.
+        .log('/tmp/alerts.log')

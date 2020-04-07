@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kapacitor
+  namespace: alerting
+spec:
+  selector:
+    matchLabels:
+      app: kapacitor
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: kapacitor
+    spec:
+      containers:
+        - image: kapacitor:1.5.4
+          imagePullPolicy: IfNotPresent
+          name: kapacitor
+          env:
+          - name: KAPACITOR_HOSTNAME
+            value: "kapacitor-service.alerting.svc.cluster.local"
+          - name: KAPACITOR_HTTP_LOG_ENABLED
+            value: "false"
+          - name: KAPACITOR_STATS_ENABLED
+            value: "false"
+          - name: KAPACITOR_LOGGING_LEVEL
+            value: "INFO"
+          - name: KAPACITOR_LOAD_ENABLED
+            value: "true"
+          - name: KAPACITOR_LOAD_DIR
+            value: "/root"
+          envFrom:
+          - secretRef:
+              name: kapacitor-secrets
+          ports:
+          - containerPort: 9092
+          volumeMounts:
+          - mountPath: /root/tasks
+            name: kapacitor-scripts
+      restartPolicy: Always
+      volumes:
+      - name: kapacitor-scripts
+        persistentVolumeClaim:
+          claimName: kapacitor-scripts  
