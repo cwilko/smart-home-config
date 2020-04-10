@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rtl-sdr
+  namespace: triggers
+spec:
+  selector:
+    matchLabels:
+      app: rtl-sdr
+  template:
+    metadata:
+      labels:
+        app: rtl-sdr
+    spec:
+      containers:
+        - image: cwilko/rtl_433tomqtt:latest
+          name: rtl-sdr
+          volumeMounts:
+          - mountPath: /dev/bus/usb/001/003
+            name: rtl-sdr-mount                 
+          securityContext:
+            privileged: true
+          env:
+            - name: RTL_ARGS
+              value: "-p 1.025"
+            - name: MOSQUITTO_ARGS
+              value: "-h 192.168.1.202 -d -p 1883 -t sensors/rtl-sdr/oil"
+      nodeSelector:
+        # Execute the following against the relevant node:
+        # kubectl describe node <node-name>
+        rtl-sdr: "true"
+      volumes:
+      - name: rtl-sdr-mount
+        hostPath:
+          path: /dev/bus/usb/001/003
