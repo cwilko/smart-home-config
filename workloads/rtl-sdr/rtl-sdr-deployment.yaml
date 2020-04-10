@@ -24,7 +24,7 @@ spec:
             - name: RTL_ARGS
               value: ""
             - name: MOSQUITTO_ARGS
-              value: "-h 192.168.1.202 -p 1883 -t sensors/rtl-sdr/oil"
+              value: "-h 192.168.1.202 -d -p 1883 -t sensors/rtl-sdr/oil"
       nodeSelector:
         # Execute the following against the relevant node:
         # kubectl describe node <node-name>
