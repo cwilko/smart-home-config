@@ -1,0 +1,13 @@
+dbrp "telegraf"."autogen"
+
+var data = stream
+    // Select the oil measurement from the `telegraf` database.
+    |from()
+        .measurement('oil')
+    
+data
+    // Triggers a critical alert when the oil stats are not received for more than 1h
+    |deadman(0.0, 5m)
+        .stateChangesOnly()
+        .message('No oil tank measurments received in the past hour')
+        .log('/tmp/alerts.log')
