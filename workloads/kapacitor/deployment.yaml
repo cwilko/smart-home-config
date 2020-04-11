@@ -30,6 +30,8 @@ spec:
             value: "true"
           - name: KAPACITOR_LOAD_DIR
             value: "/root"
+          - name: KAPACITOR_PUSHOVER_ENABLED
+            value: "true"
           envFrom:
           - secretRef:
               name: kapacitor-secrets
