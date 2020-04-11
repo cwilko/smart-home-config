@@ -38,7 +38,7 @@ spec:
           ports:
           - containerPort: 9092
           volumeMounts:
-          - mountPath: /root/tasks
+          - mountPath: /root
             name: kapacitor-scripts
       restartPolicy: Always
       volumes:

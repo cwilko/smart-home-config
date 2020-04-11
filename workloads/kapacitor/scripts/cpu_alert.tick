@@ -8,4 +8,4 @@ stream
     |alert()
         .crit(lambda: int("usage_idle") <  70)
         // Write each alert to a file.
-        .log('/tmp/alerts.log')
+        //.log('/tmp/alerts.log')
