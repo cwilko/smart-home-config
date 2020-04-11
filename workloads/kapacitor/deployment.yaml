@@ -30,8 +30,6 @@ spec:
             value: "true"
           - name: KAPACITOR_LOAD_DIR
             value: "/root"
-          - name: OIL_ALERT_DURATION
-            value: "1h"
           envFrom:
           - secretRef:
               name: kapacitor-secrets

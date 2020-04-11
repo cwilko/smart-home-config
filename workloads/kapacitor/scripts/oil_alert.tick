@@ -7,7 +7,7 @@ var data = stream
     
 data
     // Triggers a critical alert when the oil stats are not received for more than 1h
-    |deadman(0.0, $OIL_ALERT_DURATION)
-        .stateChangesOnly()
+    |deadman(0.0, 5m)
+        //.stateChangesOnly()
         .message('No oil tank measurments received in the past hour')
         .log('/tmp/alerts.log')
