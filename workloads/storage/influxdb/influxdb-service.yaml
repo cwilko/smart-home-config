@@ -7,9 +7,10 @@ spec:
   selector:  
     app: influxdb  
   ports:  
-    - protocol: TCP  
+    - name: http
+      protocol: TCP
       port: 8086  
       targetPort: 8086
-    - protocol: TCP  
+    - name: rpc
       port: 8088 
       targetPort: 8088
