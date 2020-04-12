@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: influxdb-service
+  namespace: alerting
+spec:
+  type: ExternalName
+  externalName: influxdb-service.storage.svc.cluster.local
+  ports:
+  - port: 8086
