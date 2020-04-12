@@ -18,7 +18,7 @@ spec:
           name: influxdb-backup
           env:
             - name: INFLUXDB_BIND_ADDRESS
-              value: "influxdb-service:8086"
+              value: "127.0.0.1:8088"
             - name: INFLUXDB_HTTP_ENABLED
               value: "false"
           envFrom:
