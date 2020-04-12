@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: influxdb-backup
+  namespace: storage
+spec:
+  template:
+    spec:
+      containers:
+      - image: arm32v7/influxdb:1.7.9
+        name: influxdb-backup
+        command: ["influxd", "backup", "-portable", "-database", "telegraf", "-host", "influxdb-service:8088", "/tmp/snapshot"]
+        env:
+          - name: INFLUXDB_HTTP_ENABLED
+            value: "false"
+        envFrom:
+          - secretRef:
+              name: influxdb-secrets
+        volumeMounts:
+          - mountPath: /tmp/snapshot
+            name: influxdb-backup-data
+      volumes:
+        - name: influxdb-backup-data
+          persistentVolumeClaim:
+            claimName: influxdb-backup-data
+      restartPolicy: Never
+  backoffLimit: 4
+
