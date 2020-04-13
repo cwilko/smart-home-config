@@ -81,6 +81,8 @@ data:
       omit_hostname = true
 
 
+
+
     ###############################################################################
     #                            OUTPUT PLUGINS                                   #
     ###############################################################################
@@ -304,7 +306,6 @@ data:
       # k8s-worker3         - 192.168.1.33
       # DCHP Server         - 192.168.1.254 
       # NAS                 - 192.168.1.2
-      # Shield TV           - 192.168.1.7
       # Satellite TV Box    - 192.168.1.6
       # Arlo BaseStation    - 192.168.1.50
       # HiveHub             - 192.168.1.51
@@ -317,6 +318,7 @@ data:
       # WIFI Devices:
       #
       # LG TV               - 192.168.1.4
+      # Shield TV           - 192.168.1.7 
       # Google Nest Hub     - 192.168.1.9
       # Bosch Tumble Dryer  - 192.168.1.10
       # Bosch Oven          - 192.168.1.11
@@ -326,9 +328,55 @@ data:
       # Carolyn iPad        - 192.168.1.24
       # Harmony Hub         - 192.168.1.5
       # Chloe light         - 192.168.1.40
-      # Harry light         - 192.168.1.41      
+      # Harry light         - 192.168.1.41
 
-      urls = ["192.168.1.4","192.168.1.9", "192.168.1.10", "192.168.1.11", "192.168.1.21", "192.168.1.22", "192.168.1.23", "192.168.1.24", "192.168.1.5", "192.168.1.40", "192.168.1.41"] 
+
+      urls = ["192.168.1.4","192.168.1.9", "192.168.1.10", "192.168.1.11", "192.168.1.21", "192.168.1.23", "192.168.1.24", "192.168.1.22", "192.168.1.5", "192.168.1.40", "192.168.1.41"] 
+
+      [[processors.enum]]
+
+        [[processors.enum.mapping]]
+          ## Name of the field to map
+          #field = "status"
+
+          ## Name of the tag to map
+          tag = "url"
+
+          ## Destination tag or field to be used for the mapped value.  By default the
+          ## source tag or field is used, overwriting the original value.
+          dest = "host_map"
+
+          ## Default value to be used for all values not contained in the mapping
+          ## table.  When unset and no match is found, the original field will remain 
+          ## unmodified and the destination tag or field will not be created.
+          default = "unknown"
+
+          ## Table of mappings
+          [processors.enum.mapping.value_mappings]
+            "192.168.1.4" = "LG TV"
+            "192.168.1.7" = "Shield TV"
+            "192.168.1.9" = "Google Nest Hub Max"
+            "192.168.1.10" = "Bosch Tumble Dryer"
+            "192.168.1.11" = "Bosch Oven"
+            "192.168.1.21" = "Chris' Phone"
+            "192.168.1.22" = "Chris' Laptop"
+            "192.168.1.23" = "Carolyn's iPhone"
+            "192.168.1.24" = "Carolyn's iPad"
+            "192.168.1.5" = "Harmony Hub"
+            "192.168.1.40" = "Chloe's Light"
+            "192.168.1.41" = "Harry's Light"
+            "192.168.1.1" = "Vodafone Router"
+            "192.168.1.254" = "Archer C9 Router"
+            "192.168.1.30" = "Master node"
+            "192.168.1.31" = "Worker Node, k8s-worker1"
+            "192.168.1.32" = "Worker Node, k8s-worker2"
+            "192.168.1.33" = "Worker Node, k8s-worker3"
+            "192.168.1.2" = "Linkstation NAS"
+            "192.168.1.6" = "zGemma Sat Box"
+            "192.168.1.50" = "Arlo Basestation"
+            "192.168.1.51" = "Hive Hub"
+            "192.168.1.52" = "LightwaveRF Hub"
+            "www.google.com" = "google.com"
 
     [[inputs.dns_query]]
       servers = ["8.8.8.8"]

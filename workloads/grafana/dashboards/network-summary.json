@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 8,
   "links": [],
   "panels": [
     {
@@ -104,7 +104,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT COUNT(*) FROM (SELECT count(\"average_response_ms\") FROM \"ping\" WHERE time > now() - 1m GROUP BY \"url\")",
+          "query": "SELECT COUNT(*) FROM (SELECT count(\"average_response_ms\") FROM \"ping\" WHERE time > now() - 2m GROUP BY \"url\")",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -208,6 +208,82 @@
               {
                 "params": [
                   "available_percent"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Shield TV",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.7' GROUP BY time($interval) fill(null)",
+          "rawQuery": true,
+          "refId": "L",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Harmony Hub",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.5' GROUP BY time($interval) fill(null)",
+          "rawQuery": true,
+          "refId": "G",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
                 ],
                 "type": "field"
               },
@@ -392,44 +468,6 @@
           "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.24' GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "F",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Harmony Hub",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.5' GROUP BY time($interval) fill(null)",
-          "rawQuery": true,
-          "refId": "G",
           "resultFormat": "time_series",
           "select": [
             [
@@ -891,44 +929,6 @@
           "tags": []
         },
         {
-          "alias": "Shield TV",
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT mean(\"average_response_ms\") FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.7' GROUP BY time($interval) fill(null)",
-          "rawQuery": true,
-          "refId": "G",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
           "alias": "Satellite TV Box",
           "groupBy": [
             {
@@ -1284,7 +1284,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Home Network : Response Times",
+  "title": "Home Network: Response Times",
   "uid": "BaqzSfaak",
   "version": 1
 }
