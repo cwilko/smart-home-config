@@ -1,5 +1,5 @@
-id: pushover-system-alert
-topic: system
+id: pushover-home-alert
+topic: home
 kind: pushover
 options:
   title: Squirrel Cottage

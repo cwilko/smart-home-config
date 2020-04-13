@@ -1,0 +1,12 @@
+dbrp "telegraf"."autogen"
+
+stream
+    |from()
+        .measurement('oil')
+    |alert()
+        .stateChangesOnly()
+        .warn(lambda: int("depth") >  105)
+        .crit(lambda: int("depth") >  118)
+        .message('{{ .Level }}: Oil tank is running low')
+        .topic('home')
+        .log('/tmp/alerts.log')

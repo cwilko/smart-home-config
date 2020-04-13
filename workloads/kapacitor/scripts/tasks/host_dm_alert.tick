@@ -1,0 +1,15 @@
+dbrp "telegraf"."autogen"
+
+var excluded_ips = /^192\.168\.1\.(\b21|\b23|\b24)$/
+
+stream
+    |from()
+        .measurement('ping')
+        .where(lambda: "url" !~ excluded_ips )
+        .groupBy('url')
+    |alert()
+        .stateChangesOnly()
+        .warn(lambda: int("result_code") >  0)
+        .message('{{ index .Tags "host_map" }} {{ if eq .Level "OK" }}is active{{ else }}is inactive{{ end }}')
+        .topic('home')
+        .log('/tmp/alerts.log')
