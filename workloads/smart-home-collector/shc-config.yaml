@@ -279,7 +279,7 @@ data:
       # tls_key = "/path/to/keyfile"
       ## Use TLS but skip chain & host verification
       insecure_skip_verify = true
-      interval = "5m"
+      interval = "1m"
 
     ## Network ##
 
