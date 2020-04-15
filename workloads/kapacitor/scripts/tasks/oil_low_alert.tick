@@ -1,5 +1,7 @@
 dbrp "telegraf"."autogen"
 
+var topic = 'home'
+
 stream
     |from()
         .measurement('oil')
@@ -8,5 +10,5 @@ stream
         .warn(lambda: int("depth") >  105)
         .crit(lambda: int("depth") >  118)
         .message('{{ .Level }}: Oil tank is running low')
-        .topic('home')
-        .log('/tmp/alerts.log')
+        .topic(topic)
+        .mqtt('events/{{topic}}/oil')

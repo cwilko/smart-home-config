@@ -24,6 +24,8 @@ spec:
             value: "false"
           - name: KAPACITOR_STATS_ENABLED
             value: "false"
+          - name: KAPACITOR_REPORTING_ENABLED
+            value: "false"
           - name: KAPACITOR_LOGGING_LEVEL
             value: "INFO"
           - name: KAPACITOR_LOAD_ENABLED
@@ -34,6 +36,12 @@ spec:
             value: "/root"
           - name: KAPACITOR_PUSHOVER_ENABLED
             value: "true"
+          - name: KAPACITOR_MQTT_ENABLED
+            value: "true"
+          - name: KAPACITOR_MQTT_DEFAULT
+            value: "true"
+          - name: KAPACITOR_MQTT_URL
+            value: "tcp://192.168.1.202:1883"
           envFrom:
           - secretRef:
               name: kapacitor-secrets
