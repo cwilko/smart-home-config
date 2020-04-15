@@ -1,0 +1,11 @@
+dbrp "telegraf"."autogen"
+
+stream
+    |from()
+        .measurement('kubernetes_pod_container')
+        .groupBy('container_name')
+    |alert()
+        .stateChangesOnly()
+        .crit(lambda: isPresent("state_code") AND int("state_code") >  0)
+        .message('Pod \'{{ index .Tags "container_name" }}\' {{ if eq .Level "OK" }}is now running{{ else }}has stopped running{{ end }}')
+        .topic('system')
