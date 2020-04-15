@@ -1,0 +1,12 @@
+dbrp "telegraf"."autogen"
+
+stream
+    |from()
+        .measurement('speedtest')
+    |alert()
+        .stateChangesOnly()
+        .warn(lambda: float("download") / 1000.0 / 1000.0 <  20.0)
+        .crit(lambda: float("download") / 1000.0 / 1000.0 <  10.0)
+        .message('{{ .Level }}: Network bandwidth is low')
+        .topic('home')
+        .log('/tmp/alerts.log')
