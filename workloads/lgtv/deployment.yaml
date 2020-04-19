@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lgtv
+  namespace: devices
+spec:
+  selector:
+    matchLabels:
+      app: lgtv
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: lgtv
+    spec:
+      containers:
+        - image: cwilko/lgtv2mqtt:arm32v7
+          env:
+          - name: LGTV2MQTT_ARGS
+            value: "-t 192.168.1.4 -u mqtt://192.168.1.202"
+          name: lgtv
+          volumeMounts:
+          - mountPath: /root/.lgtv2
+            name: lgtv-secret
+            readOnly: true         
+      restartPolicy: Always
+      volumes:         
+      - name: lgtv-secret
+        secret:
+          secretName: lgtv-secret
+          items:
+          - key: keyfile-192.168.1.4
+            path: keyfile-192.168.1.4
