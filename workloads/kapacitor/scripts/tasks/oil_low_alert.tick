@@ -11,4 +11,4 @@ stream
         .crit(lambda: int("depth") >  118)
         .message('{{ .Level }}: Oil tank is running low')
         .topic(topic)
-        .mqtt('events/{{topic}}/oil')
+        .mqtt('events/' + topic + '/oil')

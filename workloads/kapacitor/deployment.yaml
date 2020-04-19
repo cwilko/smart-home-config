@@ -36,11 +36,11 @@ spec:
             value: "/root"
           - name: KAPACITOR_PUSHOVER_ENABLED
             value: "true"
-          - name: KAPACITOR_MQTT_ENABLED
+          - name: KAPACITOR_MQTT_0_ENABLED
             value: "true"
-          - name: KAPACITOR_MQTT_DEFAULT
+          - name: KAPACITOR_MQTT_0_DEFAULT
             value: "true"
-          - name: KAPACITOR_MQTT_URL
+          - name: KAPACITOR_MQTT_0_URL
             value: "tcp://192.168.1.202:1883"
           envFrom:
           - secretRef:
