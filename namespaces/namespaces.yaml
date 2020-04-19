@@ -59,4 +59,13 @@ metadata:
     app: alerting
   name: alerting
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: devices
+  name: devices
+
 
