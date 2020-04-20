@@ -16,7 +16,7 @@
     {
         "id": "342a5e81.ea2d92",
         "type": "tab",
-        "label": "GoogleHomeCommands",
+        "label": "AssistantCommands",
         "disabled": false,
         "info": ""
     },
@@ -111,8 +111,8 @@
         "qos": "",
         "retain": "",
         "broker": "87b9b09.9bbcf5",
-        "x": 1140,
-        "y": 500,
+        "x": 1340,
+        "y": 380,
         "wires": []
     },
     {
@@ -148,12 +148,22 @@
                 "t": "eq",
                 "v": "loadSysDash",
                 "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "loadDashTV",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "loadSysDashTV",
+                "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 2,
-        "x": 760,
+        "outputs": 4,
+        "x": 710,
         "y": 520,
         "wires": [
             [
@@ -161,6 +171,12 @@
             ],
             [
                 "fc41ad33.ff1dd"
+            ],
+            [
+                "597387d1.7175d8"
+            ],
+            [
+                "7968fe11.57313"
             ]
         ]
     },
@@ -168,15 +184,15 @@
         "id": "fc41ad33.ff1dd",
         "type": "template",
         "z": "342a5e81.ea2d92",
-        "name": "sysDash",
+        "name": "Google Nest - System Dash",
         "field": "payload",
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
         "template": "http://grafana.192.168.1.203.nip.io/playlists/play/1?kiosk=tv&autofitpanels",
         "output": "str",
-        "x": 940,
-        "y": 620,
+        "x": 1040,
+        "y": 440,
         "wires": [
             [
                 "1aeaf8ef.353e57"
@@ -252,19 +268,70 @@
         "id": "f2c34e92.95b39",
         "type": "template",
         "z": "342a5e81.ea2d92",
-        "name": "homeDash",
+        "name": "Google Nest - Home Dash",
         "field": "payload",
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
         "template": "http://grafana.192.168.1.203.nip.io/playlists/play/2?kiosk=tv&autofitpanels",
         "output": "str",
-        "x": 930,
-        "y": 440,
+        "x": 1040,
+        "y": 340,
         "wires": [
             [
                 "1aeaf8ef.353e57"
             ]
         ]
+    },
+    {
+        "id": "597387d1.7175d8",
+        "type": "template",
+        "z": "342a5e81.ea2d92",
+        "name": "TV - Home Dash",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://grafana.192.168.1.203.nip.io/playlists/play/2?kiosk=tv&autofitpanels",
+        "output": "str",
+        "x": 1010,
+        "y": 540,
+        "wires": [
+            [
+                "c2ed2a0b.a43308"
+            ]
+        ]
+    },
+    {
+        "id": "7968fe11.57313",
+        "type": "template",
+        "z": "342a5e81.ea2d92",
+        "name": "TV - System Dash",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "http://grafana.192.168.1.203.nip.io/playlists/play/1?kiosk=tv&autofitpanels",
+        "output": "str",
+        "x": 1010,
+        "y": 620,
+        "wires": [
+            [
+                "c2ed2a0b.a43308"
+            ]
+        ]
+    },
+    {
+        "id": "c2ed2a0b.a43308",
+        "type": "mqtt out",
+        "z": "342a5e81.ea2d92",
+        "name": "",
+        "topic": "lgtv/set/open_max",
+        "qos": "",
+        "retain": "",
+        "broker": "87b9b09.9bbcf5",
+        "x": 1290,
+        "y": 580,
+        "wires": []
     }
 ]
