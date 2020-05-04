@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logdna-agent
+  namespace: alerting
+  labels:
+    app: logdna-agent
+spec:
+  selector:
+    matchLabels:
+      app: logdna-agent
+  template:
+    metadata:
+      labels:
+        app: logdna-agent
+    spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      containers:
+      - name: logdna-agent
+        image: cwilko/arm-logdna-agent:latest
+        imagePullPolicy: Always
+        env:
+        - name: LOGDNA_AGENT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: logdna-secret
+              key: key
+        - name: LOGDNA_PLATFORM
+          value: k8s
+        # - name: LOGDNA_TAGS
+        #   value: production,cluster1,othertags
+        resources:
+          requests:
+            cpu: 20m
+          limits:
+            memory: 500Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: vardata
+          mountPath: /var/data
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: mnt
+          mountPath: /mnt
+          readOnly: true
+        - name: docker
+          mountPath: /var/run/docker.sock
+        - name: osrelease
+          mountPath: /etc/os-release
+        - name: logdnahostname
+          mountPath: /etc/logdna-hostname
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: vardata
+        hostPath:
+          path: /var/data
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: mnt
+        hostPath:
+          path: /mnt
+      - name: docker
+        hostPath:
+          path: /var/run/docker.sock
+      - name: osrelease
+        hostPath:
+          path: /etc/os-release
+      - name: logdnahostname
+        hostPath:
+          path: /etc/hostname
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
