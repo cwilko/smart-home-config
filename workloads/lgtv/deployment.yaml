@@ -15,10 +15,11 @@ spec:
     spec:
       containers:
         - image: cwilko/lgtv2mqtt:arm32v7
+          name: lgtv
+          imagePullPolicy: Always
           env:
           - name: LGTV2MQTT_ARGS
             value: "-t 192.168.1.4 -u mqtt://192.168.1.202"
-          name: lgtv
           volumeMounts:
           - mountPath: /root/.lgtv2
             name: lgtv-secret
