@@ -11,4 +11,4 @@ stream
         .crit(lambda: isPresent("state_code") AND int("state_code") >  0)
         .message('Pod \'{{ index .Tags "container_name" }}\' {{ if eq .Level "OK" }}is now running{{ else }}has stopped running{{ end }}')
         .topic(topic)
-        .mqtt('events/' + topic + '/health/host/{{index .Tags "container_name"}}')
+        .mqtt('events/' + topic + '/pod/{{index .Tags "container_name"}}/health/priority/{{ .Level }}')

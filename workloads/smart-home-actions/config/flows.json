@@ -2,14 +2,14 @@
     {
         "id": "523660f.200d1a",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "Event Handler",
         "disabled": false,
         "info": ""
     },
     {
         "id": "edeb291e.447a98",
         "type": "tab",
-        "label": "influx xform",
+        "label": "Oil Sensor",
         "disabled": false,
         "info": ""
     },
@@ -43,51 +43,10 @@
         "willPayload": ""
     },
     {
-        "id": "d87e6ae.3ec6898",
-        "type": "http in",
-        "z": "523660f.200d1a",
-        "name": "",
-        "url": "/test1",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 270,
-        "y": 340,
-        "wires": [
-            [
-                "5600cf1.e0ae73"
-            ]
-        ]
-    },
-    {
-        "id": "5600cf1.e0ae73",
-        "type": "template",
-        "z": "523660f.200d1a",
-        "name": "",
-        "field": "payload",
-        "fieldType": "msg",
-        "format": "handlebars",
-        "syntax": "mustache",
-        "template": "Hello World - Endpoint 1",
-        "output": "str",
-        "x": 520,
-        "y": 340,
-        "wires": [
-            [
-                "e89840d.ce4abc"
-            ]
-        ]
-    },
-    {
-        "id": "e89840d.ce4abc",
-        "type": "http response",
-        "z": "523660f.200d1a",
-        "name": "",
-        "statusCode": "",
-        "headers": {},
-        "x": 800,
-        "y": 340,
-        "wires": []
+        "id": "19435539.55424b",
+        "type": "pushover-keys",
+        "z": "",
+        "name": ""
     },
     {
         "id": "22da66b9.c135ca",
@@ -332,6 +291,115 @@
         "broker": "87b9b09.9bbcf5",
         "x": 1290,
         "y": 580,
+        "wires": []
+    },
+    {
+        "id": "d025850.b5baf78",
+        "type": "mqtt in",
+        "z": "523660f.200d1a",
+        "name": "",
+        "topic": "events/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "87b9b09.9bbcf5",
+        "x": 240,
+        "y": 280,
+        "wires": [
+            [
+                "b089e37c.6fdab"
+            ]
+        ]
+    },
+    {
+        "id": "b089e37c.6fdab",
+        "type": "change",
+        "z": "523660f.200d1a",
+        "name": "Set properties",
+        "rules": [
+            {
+                "t": "set",
+                "p": "priority",
+                "pt": "msg",
+                "to": "$lookup({\"WARNING\": 0, \"OK\": 0, \"CRITICAL\": 1}, $split(msg.topic,\"/\")[-1])",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "class",
+                "pt": "msg",
+                "to": "$split(msg.topic,\"/\")[1]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 280,
+        "wires": [
+            [
+                "a05fb76.4ed4448"
+            ]
+        ]
+    },
+    {
+        "id": "ea425031.e907",
+        "type": "pushover api",
+        "z": "523660f.200d1a",
+        "keys": "19435539.55424b",
+        "title": "Squirrel Cottage",
+        "name": "Pushover Notify",
+        "x": 1040,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "a05fb76.4ed4448",
+        "type": "switch",
+        "z": "523660f.200d1a",
+        "name": "Classify",
+        "property": "class",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "home",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "system",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 740,
+        "y": 280,
+        "wires": [
+            [
+                "ea425031.e907",
+                "5196eeb.895001"
+            ],
+            [
+                "ea425031.e907"
+            ]
+        ]
+    },
+    {
+        "id": "5196eeb.895001",
+        "type": "mqtt out",
+        "z": "523660f.200d1a",
+        "name": "LGTV Notify",
+        "topic": "lgtv/set/toast",
+        "qos": "",
+        "retain": "",
+        "broker": "87b9b09.9bbcf5",
+        "x": 1030,
+        "y": 280,
         "wires": []
     }
 ]

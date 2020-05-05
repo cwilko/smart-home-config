@@ -14,4 +14,4 @@ stream
         .warn(lambda: int("result_code") >  0)
         .message('{{ index .Tags "host_map" }} {{ if eq .Level "OK" }}is active{{ else }}is inactive{{ end }}')
         .topic(topic)
-        .mqtt('events/' + topic + '/health/host/{{index .Tags "host_map"}}')
+        .mqtt('events/' + topic + '/device/{{index .Tags "host_map"}}/health/priority/{{ .Level }}')

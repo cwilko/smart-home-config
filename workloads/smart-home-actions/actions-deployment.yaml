@@ -41,6 +41,7 @@ spec:
         volumeMounts:
           - mountPath: /data
             name: actions-data
+        imagePullPolicy: Always
       volumes:
       - name: actions-data
         persistentVolumeClaim:

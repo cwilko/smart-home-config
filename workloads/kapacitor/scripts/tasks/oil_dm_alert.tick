@@ -13,4 +13,4 @@ data
         .stateChangesOnly()
         .message('No oil tank measurments received in the past hour')
         .topic(topic)
-        .mqtt('events/' + topic + '/oil')
+        .mqtt('events/' + topic + '/sensor/oil/priority/{{ .Level }}')
