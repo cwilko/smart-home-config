@@ -1,0 +1,50 @@
+dbrp "telegraf"."autogen"
+
+// mem_alert_stream
+
+// metric: used_percent
+// available_fields: "active","available","available_percent","buffered","cached","free","inactive","total","used"
+
+// TELEGRAF CONFIGURATION
+// [[inputs.mem]]
+
+// DEFINE: kapacitor define mem_alert_stream -type stream -tick mem/mem_alert_stream.tick -dbrp telegraf.autogen
+// ENABLE: kapacitor enable mem_alert_stream
+
+// Parameters
+var info = 70
+var warn = 85
+var crit = 92
+var infoSig = 2.5
+var warnSig = 3.5
+var critSig = 4
+var period = 5m
+var every = 5m
+
+var topic = 'system'
+
+// Dataframe
+var data = stream
+  |from()
+    .database('telegraf')
+    .retentionPolicy('autogen')
+    .measurement('mem')
+    .groupBy('host')
+  |window()
+    .period(period)
+    .every(every)
+  |mean('used_percent')
+    .as('stat')
+    
+// Thresholds
+var alert = data
+  |eval(lambda: sigma("stat"))
+    .as('sigma')
+    .keep()
+  |alert()
+    .stateChangesOnly()
+    .message('{{ .Level }}: {{ index .Tags "host"}} memory usage is at {{ index .Fields "stat" | printf "%0.1f" }}%')
+    .warn(lambda: "stat" > warn OR "sigma" > warnSig)
+    .crit(lambda: "stat" > crit OR "sigma" > critSig)
+    .topic(topic)
+    .mqtt('events/' + topic + '/device/{{index .Tags "host"}}/mem/priority/{{ .Level }}')

@@ -11,4 +11,4 @@ stream
         .crit(lambda: float("download") / 1000.0 / 1000.0 <  10.0)
         .message('{{ .Level }}: Network bandwidth is low')
         .topic(topic)
-        .mqtt('events/' + topic + '/bandwidth')
+        .mqtt('events/' + topic + '/net/bandwidth/priority/{{ .Level }}')
