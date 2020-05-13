@@ -24,5 +24,5 @@ spec:
               name: hive-secrets
           env:
           - name: INTERVAL
-            value: "300"   
+            value: "5"  
       restartPolicy: Always

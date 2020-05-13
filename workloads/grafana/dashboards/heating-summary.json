@@ -649,10 +649,7 @@
   "schemaVersion": 22,
   "style": "dark",
   "tags": [
-    "telegraf",
-    "influxdb",
-    "host",
-    "system"
+    "home"
   ],
   "templating": {
     "list": [
