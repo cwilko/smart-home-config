@@ -13,8 +13,8 @@ dbrp "telegraf"."autogen"
 
 // Parameters
 var info = 70
-var warn = 85
-var crit = 92
+var warn = 80
+var crit = 90
 var infoSig = 2.5
 var warnSig = 3.5
 var critSig = 4
@@ -44,7 +44,7 @@ var alert = data
   |alert()
     .stateChangesOnly()
     .message('{{ .Level }}: {{ index .Tags "host"}} memory usage is at {{ index .Fields "stat" | printf "%0.1f" }}%')
-    .warn(lambda: "stat" > warn OR "sigma" > warnSig)
-    .crit(lambda: "stat" > crit OR "sigma" > critSig)
+    .warn(lambda: "stat" > warn)
+    .crit(lambda: "stat" > crit)
     .topic(topic)
     .mqtt('events/' + topic + '/device/{{index .Tags "host"}}/mem/priority/{{ .Level }}')

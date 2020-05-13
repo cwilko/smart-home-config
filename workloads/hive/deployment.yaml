@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hive
+  namespace: devices
+spec:
+  selector:
+    matchLabels:
+      app: hive
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: hive
+    spec:
+      containers:
+        - image: cwilko/hive2mqtt
+          name: hive
+          imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: mqtt-secrets    
+          - secretRef:
+              name: hive-secrets
+          env:
+          - name: INTERVAL
+            value: "300"   
+      restartPolicy: Always

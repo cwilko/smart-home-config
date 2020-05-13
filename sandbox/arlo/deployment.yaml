@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arlo
+  namespace: devices
+spec:
+  selector:
+    matchLabels:
+      app: arlo
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: arlo
+    spec:
+      containers:
+        - image: cwilko/arlo2mqtt
+          name: arlo
+          imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: mqtt-secrets    
+          - secretRef:
+              name: arlo-secrets
+          env:
+          - name: INTERVAL
+            value: "300"
+      restartPolicy: Always
