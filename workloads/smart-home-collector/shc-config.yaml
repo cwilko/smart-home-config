@@ -190,7 +190,8 @@ data:
     
       ## Topics that will be subscribed to.
       topics = [
-        "telegraf/#"
+        "telegraf/#",
+        "sensor/#"
       ]
     
       ## The message topic will be stored in a tag specified by this value.  If set
