@@ -29,8 +29,6 @@ spec:
               key: key
         - name: LOGDNA_PLATFORM
           value: k8s
-        # - name: LOGDNA_TAGS
-        #   value: production,cluster1,othertags
         resources:
           requests:
             cpu: 20m
