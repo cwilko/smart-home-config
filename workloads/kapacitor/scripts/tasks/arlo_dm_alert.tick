@@ -1,0 +1,14 @@
+dbrp "telegraf"."autogen"
+
+var topic = 'home'
+
+stream
+    |from()
+        .measurement('arlo')
+        .groupBy('device')
+    |alert()
+        .stateChangesOnly()
+        .warn(lambda: int("connectionState") <  1)
+        .message('{{ index .Tags "device" }} {{ if eq .Level "OK" }}is active{{ else }}is inactive{{ end }}')
+        .topic(topic)
+        .mqtt('events/' + topic + '/device/{{index .Tags "device"}}/health/priority/{{ .Level }}')
