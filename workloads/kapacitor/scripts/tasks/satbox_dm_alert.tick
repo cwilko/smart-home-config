@@ -1,0 +1,16 @@
+dbrp "telegraf"."autogen"
+
+var topic = 'system'
+
+var data = stream
+    // Select the satbox standby measurement from the `telegraf` database.
+    |from()
+        .measurement('standby')
+    
+data
+    // Triggers a critical alert when the oil stats are not received for more than 1h
+    |deadman(0.0, 1h)
+        .stateChangesOnly()
+        .message('No metrics recieved from Satellite Box in the past hour')
+        .topic(topic)
+        .mqtt('events/' + topic + '/sensor/satbox/priority/{{ .Level }}')

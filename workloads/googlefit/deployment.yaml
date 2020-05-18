@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: googlefit
+  namespace: devices
+spec:
+  selector:
+    matchLabels:
+      app: googlefit
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: googlefit
+    spec:
+      containers:
+        - image: cwilko/googlefit2mqtt
+          name: googlefit
+          imagePullPolicy: Always
+          envFrom:
+          - secretRef:
+              name: mqtt-secrets    
+          - secretRef:
+              name: googlefit-secrets
+          env:
+          - name: INTERVAL_HEART_RATE
+            value: "300"
+          - name: INTERVAL_STEP_COUNT
+            value: "86400"
+          volumeMounts:
+          - mountPath: /usr/app/data
+            name: googlefit-data
+      restartPolicy: Always
+      volumes:
+      - name: googlefit-data
+        persistentVolumeClaim:
+          claimName: googlefit-data  
