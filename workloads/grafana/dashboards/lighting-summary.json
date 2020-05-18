@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "iteration": 1589317093012,
+  "iteration": 1589404508451,
   "links": [],
   "panels": [
     {
@@ -75,7 +75,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"state\") * max(\"presence\") * max(\"brightness\") FROM \"hive\" WHERE \"type\"='light' and $timeFilter GROUP BY \"device\",time($interval) fill(null)",
+          "query": "SELECT last(\"state\") * last(\"presence\") * last(\"brightness\") FROM \"hive\" WHERE \"type\"='light' and $timeFilter GROUP BY \"device\"",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -113,7 +113,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT  100 * ((-1 * (max(\"result_code\") -1)) - 0.0028) FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.40' GROUP BY time($interval) fill(null)",
+          "query": "SELECT  100 * ((-1 * (last(\"result_code\") -1)) ) FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.40' ",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -152,7 +152,7 @@
           "hide": false,
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT  100 * ((-1 * (max(\"result_code\") -1)) - 0.0035 ) FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.41' GROUP BY time($interval) fill(null)",
+          "query": "SELECT  100 * ((-1 * (last(\"result_code\") -1))  ) FROM \"ping\" WHERE $timeFilter and \"url\" = '192.168.1.41' ",
           "rawQuery": true,
           "refId": "C",
           "resultFormat": "time_series",
@@ -236,7 +236,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"presence\") * max(\"state\") * max(\"brightness\") FROM \"hive\" WHERE \"type\"='light' and $timeFilter GROUP BY \"device\",time($interval) fill(null)",
+          "query": "SELECT last(\"presence\") * last(\"state\") * last(\"brightness\") FROM \"hive\" WHERE \"type\"='light' and $timeFilter GROUP BY \"device\",time($interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -492,6 +492,6 @@
   },
   "timezone": "browser",
   "title": "Lighting",
-  "uid": "orZBNaxms",
-  "version": 1
+  "uid": "orZzsaxms",
+  "version": 447
 }
