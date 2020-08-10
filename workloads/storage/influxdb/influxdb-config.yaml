@@ -15,7 +15,7 @@ data:
       wal-dir = "/var/lib/influxdb/wal"
       wal-fsync-delay = "0s"
       validate-keys = false
-      query-log-enabled = false
+      query-log-enabled = true
       cache-max-memory-size = 1073741824
       cache-snapshot-memory-size = 26214400
       cache-snapshot-write-cold-duration = "10m0s"
@@ -62,8 +62,8 @@ data:
       write-buffer-size = 1000
 
     [http]
-      enabled = true
-      bind-address = ":8086"
+      enabled = false
+      bind-address = ":8090"
       auth-enabled = false
       log-enabled = false
       suppress-write-log = false
@@ -92,7 +92,7 @@ data:
 
     [logging]
       format = "auto"
-      level = "info"
+      level = "debug"
       suppress-logo = false
 
     [[graphite]]
