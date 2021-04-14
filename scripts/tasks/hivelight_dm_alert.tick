@@ -1,0 +1,15 @@
+dbrp "telegraf"."autogen"
+
+var topic = 'home'
+
+stream
+    |from()
+        .measurement('hive')
+        .groupBy('device')
+        .where(lambda: "type" == 'light' )
+    |alert()
+        .stateChangesOnly()
+        .info(lambda: (int("presence") * int("state")) <  1)
+        .message('{{ index .Tags "device" }} {{ if eq .Level "OK" }}is active{{ else }}is inactive{{ end }}')
+        .topic(topic)
+        .mqtt('events/' + topic + '/device/{{index .Tags "device"}}/health/priority/{{ .Level }}')
