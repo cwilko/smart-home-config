@@ -1,0 +1,7 @@
+id: lgtv-home-handler
+topic: home
+kind: mqtt
+options:
+  topic: 'lgtv/set/toast'
+  qos: 1
+  retained: false

@@ -62,7 +62,7 @@ metadata:
   name: flux
   namespace: flux
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
@@ -75,7 +75,7 @@ rules:
   - nonResourceURLs: ['*']
     verbs: ['*']
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
@@ -237,7 +237,7 @@ spec:
         - --git-label=flux
         - --git-user=cwilko
         - --git-email=cwilko@users.noreply.github.com
-
+        - --git-timeout=300s
         # Include these two to enable git commit signing
         # - --git-gpg-key-import=/root/gpg-import
         # - --git-signing-key=<key id>
