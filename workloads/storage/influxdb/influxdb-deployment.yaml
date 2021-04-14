@@ -14,7 +14,7 @@ spec:
         app: influxdb
     spec:
       containers:
-        - image: arm32v7/influxdb:1.7.9
+        - image: arm64v8/influxdb:1.7.10
           name: influxdb
           ports:
             - containerPort: 8086
@@ -29,6 +29,10 @@ spec:
           envFrom:
             - secretRef:
                 name: influxdb-secrets
+      nodeSelector:
+        # Execute the following against the relevant node:
+        # kubectl describe node <node-name>
+        arm64: "true"
       volumes:
         - name: influxdb-data
           persistentVolumeClaim:
