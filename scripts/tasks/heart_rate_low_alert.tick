@@ -1,0 +1,13 @@
+dbrp "telegraf"."autogen"
+
+var topic = 'home'
+
+stream
+    |from()
+        .measurement('health')
+    |alert()
+        .stateChangesOnly()
+        .crit(lambda: int("bpm") < 50)
+        .message('{{ .Level }}: Heart Rate is Too Low!')
+        .topic(topic)
+        .mqtt('events/' + topic + '/sensor/health/priority/{{ .Level }}')

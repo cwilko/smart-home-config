@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tuya
+  namespace: devices
+spec:
+  selector:
+    matchLabels:
+      app: tuya
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: tuya
+    spec:
+      containers:
+        - image: cwilko/tuya2mqtt:latest
+          name: tuya
+          imagePullPolicy: Always
+          env:
+          - name: TUYA2MQTT_ARGS
+            value: "-v debug -f /tuya-devices.yaml -u mqtt://192.168.1.202"
+          volumeMounts:
+          - mountPath: /tuya-devices.yaml
+            name: tuya-devices-secret
+            readOnly: true
+            subPath: tuya-devices.yaml       
+      restartPolicy: Always
+      volumes:         
+      - name: tuya-devices-secret
+        secret:
+          secretName: tuya-devices-secret
