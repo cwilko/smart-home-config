@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: mosquitto
-        image: eclipse-mosquitto
+        image: eclipse-mosquitto:1.6
         ports:
         - containerPort: 1883
  #       volumeMounts:
