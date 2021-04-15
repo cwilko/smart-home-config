@@ -24,7 +24,7 @@ spec:
       serviceAccountName: nfs-client-provisioner
       containers:
         - name: nfs-client-provisioner
-          image: quay.io/external_storage/nfs-client-provisioner-arm:latest
+          image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.0
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
@@ -35,6 +35,10 @@ spec:
               value: 192.168.1.2
             - name: NFS_PATH
               value: /home/kubernetes
+      nodeSelector:
+        # Execute the following against the relevant node:
+        # kubectl describe node <node-name>
+        arm64: "true"
       volumes:
         - name: nfs-client-root
           nfs:
