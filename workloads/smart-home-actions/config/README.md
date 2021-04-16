@@ -14,6 +14,7 @@ Make any updates at this point..
 
 This file must first be retrieved from a running Node-red instance
 
+# THE FOLLOWING IS OUT OF DATE. SECRETS NOW MOUNTED IN THE PV.
 To create the sealed-secret file
 
     kubectl create secret generic node-red-secret -n actions --dry-run --from-file=flows_cred.json=flows_cred.json -o yaml > /tmp/node-red-secret.yaml
