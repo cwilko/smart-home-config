@@ -233,9 +233,6 @@ spec:
         beta.kubernetes.io/os: linux
       serviceAccountName: speaker
       terminationGracePeriodSeconds: 0
-      tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
 ---
 apiVersion: apps/v1
 kind: Deployment
