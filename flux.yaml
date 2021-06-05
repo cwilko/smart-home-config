@@ -156,7 +156,7 @@ spec:
         # release or image version at https://hub.docker.com/r/fluxcd/flux/tags
         # and replace the tag here.
         image: zlangbert/flux:latest-multiarch
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 50m
