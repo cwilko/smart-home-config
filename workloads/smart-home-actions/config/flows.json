@@ -71,7 +71,8 @@
         "y": 300,
         "wires": [
             [
-                "86ba2941.aa25a8"
+                "86ba2941.aa25a8",
+                "2d13fb58.615f84"
             ]
         ]
     },
@@ -430,7 +431,7 @@
         "tls": "63c22f12.3715a",
         "persist": false,
         "proxy": "",
-        "authType": "basic",
+        "authType": "bearer",
         "x": 1200,
         "y": 160,
         "wires": [
@@ -549,7 +550,7 @@
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
-        "template": "arlo,device={{payload.device}},id={{payload.id}} batteryLevel={{payload.batteryLevel}},signalStrength={{payload.signalStrength}}",
+        "template": "arlo,device={{payload.device}},id={{payload.id}} batteryLevel={{payload.batteryLevel}},signalStrength={{payload.signalStrength}},connectionState={{payload.connectionState}}",
         "output": "str",
         "x": 630,
         "y": 520,
@@ -639,5 +640,20 @@
                 "43b60d44.bfa324"
             ]
         ]
+    },
+    {
+        "id": "2d13fb58.615f84",
+        "type": "debug",
+        "z": "342a5e81.ea2d92",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 560,
+        "y": 300,
+        "wires": []
     }
 ]
