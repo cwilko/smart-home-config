@@ -38,14 +38,7 @@ spec:
         image: cwilko/smart-home-actions:arm32v7
         ports:
         - containerPort: 1880
-        volumeMounts:
-          - mountPath: /data
-            name: actions-data
         imagePullPolicy: Always
         envFrom:
           - secretRef:
-              name: actions-secrets
-      volumes:
-      - name: actions-data
-        persistentVolumeClaim:
-          claimName: actions-data  
+              name: actions-secrets  
