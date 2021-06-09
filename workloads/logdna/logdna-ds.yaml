@@ -21,12 +21,10 @@ spec:
       - name: logdna-agent
         image: cwilko/arm-logdna-agent:latest
         imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: logdna-secrets
         env:
-        - name: LOGDNA_AGENT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: logdna-secret
-              key: key
         - name: LOGDNA_PLATFORM
           value: k8s
         resources:
