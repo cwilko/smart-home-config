@@ -17,6 +17,7 @@ spec:
       containers:
         - image: cwilko/smart-home-collector
           name: telegraf
+          imagePullPolicy: Always
           securityContext:
             privileged: true
           volumeMounts:
