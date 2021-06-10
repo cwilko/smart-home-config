@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "iteration": 1589839012853,
+  "iteration": 1623359655399,
   "links": [],
   "panels": [
     {
@@ -88,7 +88,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"temperature\") FROM \"hive\" WHERE \"device\" = 'Thermostat 2' and $timeFilter GROUP BY time($interval) fill(null)",
+          "query": "SELECT mean(\"temperature\") FROM \"hive\" WHERE \"device\" = 'Heating' and $timeFilter GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -129,7 +129,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"targetHeatTemperature\") FROM \"hive\" WHERE \"device\" = 'Thermostat 2' and $timeFilter GROUP BY time($interval) fill(null)",
+          "query": "SELECT mean(\"targetHeatTemperature\") FROM \"hive\" WHERE \"device\" = 'Heating' and $timeFilter GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -208,10 +208,6 @@
         "mode": "spectrum",
         "thresholds": []
       },
-      "data": {
-        "decimals": null,
-        "unitFormat": "short"
-      },
       "datasource": "Analysis Server",
       "gridPos": {
         "h": 4,
@@ -227,6 +223,11 @@
       "links": [],
       "nullPointMode": "as empty",
       "options": {},
+      "pageSize": 15,
+      "seriesFilterIndex": -1,
+      "statusmap": {
+        "ConfigVersion": "v1"
+      },
       "targets": [
         {
           "alias": "Hot Water",
@@ -249,7 +250,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"stateHotWaterRelay\") FROM \"hive\" WHERE \"device\" = 'Thermostat 1' and $timeFilter GROUP BY time($interval) fill(null)",
+          "query": "SELECT max(\"stateHotWaterRelay\") FROM \"hive\" WHERE \"device\" = 'Hot_Water' and $timeFilter GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -290,7 +291,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"stateHeatingRelay\") FROM \"hive\" WHERE \"device\" = 'Thermostat 2' and $timeFilter GROUP BY time($interval) fill(null)",
+          "query": "SELECT max(\"stateHeatingRelay\") FROM \"hive\" WHERE \"device\" = 'Heating' and $timeFilter GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series",
@@ -315,22 +316,30 @@
       "timeShift": null,
       "title": "Heating",
       "tooltip": {
-        "show": true
+        "extraInfo": "",
+        "freezeOnClick": true,
+        "items": [],
+        "show": true,
+        "showExtraInfo": false,
+        "showItems": false
       },
       "type": "flant-statusmap-panel",
       "useMax": true,
+      "usingPagination": false,
       "xAxis": {
-        "labelFormat": "%a %m/%d",
-        "minBucketWidthToShowWeekends": 4,
-        "show": true,
-        "showCrosshair": true,
-        "showWeekends": true
+        "show": true
       },
       "yAxis": {
-        "show": true,
-        "showCrosshair": false
+        "maxWidth": -1,
+        "minWidth": -1,
+        "show": true
       },
-      "yAxisSort": "metrics"
+      "yAxisSort": "metrics",
+      "yLabel": {
+        "delimiter": "",
+        "labelTemplate": "",
+        "usingSplitLabel": false
+      }
     },
     {
       "cards": {
@@ -348,10 +357,6 @@
         "mode": "spectrum",
         "thresholds": []
       },
-      "data": {
-        "decimals": null,
-        "unitFormat": "short"
-      },
       "datasource": "Analysis Server",
       "gridPos": {
         "h": 4,
@@ -367,6 +372,11 @@
       "links": [],
       "nullPointMode": "as empty",
       "options": {},
+      "pageSize": 15,
+      "seriesFilterIndex": -1,
+      "statusmap": {
+        "ConfigVersion": "v1"
+      },
       "targets": [
         {
           "alias": "Hive Hub",
@@ -430,50 +440,9 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT min(\"presence\") FROM \"hive\" WHERE \"device\"='Thermostat 3' and $timeFilter GROUP BY time($interval) fill(null)",
+          "query": "SELECT min(\"presence\") FROM \"hive\" WHERE \"device\"='Thermostat' and $timeFilter GROUP BY time($interval) fill(null)",
           "rawQuery": true,
           "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "available_percent"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Receiver",
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "mem",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT min(\"presence\") FROM \"hive\" WHERE \"device\"='Receiver 1' and $timeFilter GROUP BY time($interval) fill(null)",
-          "rawQuery": true,
-          "refId": "C",
           "resultFormat": "time_series",
           "select": [
             [
@@ -537,22 +506,30 @@
       "timeShift": null,
       "title": "Device Connection",
       "tooltip": {
-        "show": true
+        "extraInfo": "",
+        "freezeOnClick": true,
+        "items": [],
+        "show": true,
+        "showExtraInfo": false,
+        "showItems": false
       },
       "type": "flant-statusmap-panel",
       "useMax": true,
+      "usingPagination": false,
       "xAxis": {
-        "labelFormat": "%a %m/%d",
-        "minBucketWidthToShowWeekends": 4,
-        "show": true,
-        "showCrosshair": true,
-        "showWeekends": true
+        "show": true
       },
       "yAxis": {
-        "show": true,
-        "showCrosshair": false
+        "maxWidth": -1,
+        "minWidth": -1,
+        "show": true
       },
-      "yAxisSort": "metrics"
+      "yAxisSort": "metrics",
+      "yLabel": {
+        "delimiter": "",
+        "labelTemplate": "",
+        "usingSplitLabel": false
+      }
     },
     {
       "datasource": "Analysis Server",
