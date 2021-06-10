@@ -14,7 +14,7 @@ spec:
         app: googlefit
     spec:
       containers:
-        - image: cwilko/googlefit2mqtt
+        - image: cwilko/googlefit2mqtt:latest
           name: googlefit
           imagePullPolicy: Always
           envFrom:
