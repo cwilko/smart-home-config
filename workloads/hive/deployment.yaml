@@ -14,7 +14,7 @@ spec:
         app: hive
     spec:
       containers:
-        - image: cwilko/hive2mqtt
+        - image: cwilko/hive2mqtt:latest
           name: hive
           imagePullPolicy: Always
           envFrom:
