@@ -15,7 +15,7 @@ spec:
     spec:
       serviceAccountName: telegraf
       containers:
-        - image: cwilko/smart-home-collector
+        - image: cwilko/smart-home-collector:latest
           name: telegraf
           imagePullPolicy: Always
           securityContext:
