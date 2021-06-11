@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "iteration": 1623359655399,
+  "iteration": 1623403537395,
   "links": [],
   "panels": [
     {
@@ -595,7 +595,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"batteryLevel\") FROM \"hive\" WHERE \"device\"='Thermostat 3' and $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT mean(\"batteryLevel\") FROM \"hive\" WHERE \"device\"='Thermostat' and $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -722,7 +722,7 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "now-24h",
     "to": "now-30s"
   },
   "timepicker": {
