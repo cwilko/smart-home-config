@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": 3330,
   "graphTooltip": 0,
-  "iteration": 1623403537395,
+  "iteration": 1623581219501,
   "links": [],
   "panels": [
     {
@@ -349,12 +349,14 @@
         "cardVSpacing": 2
       },
       "color": {
-        "cardColor": "#b4ff00",
+        "cardColor": "#56A64B",
         "colorScale": "sqrt",
         "colorScheme": "interpolateGreens",
         "defaultColor": "#757575",
         "exponent": 0.5,
-        "mode": "spectrum",
+        "max": null,
+        "min": null,
+        "mode": "opacity",
         "thresholds": []
       },
       "datasource": "Analysis Server",
