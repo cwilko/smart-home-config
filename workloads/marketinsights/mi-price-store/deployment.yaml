@@ -15,6 +15,7 @@ spec:
       containers:
         - image: cwilko/mi-price-store
           name: price-store
+          tty: true
           imagePullPolicy: Always
           volumeMounts:
           - mountPath: /usr/app/datasources
