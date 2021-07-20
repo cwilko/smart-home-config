@@ -68,4 +68,13 @@ metadata:
     app: devices
   name: devices
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: marketinsights
+  name: marketinsights
+
 
