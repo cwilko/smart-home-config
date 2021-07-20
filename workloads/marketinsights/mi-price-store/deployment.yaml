@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-store
+  namespace: marketinsights
+spec:
+  selector:
+    matchLabels:
+      app: marketinsights
+  template:
+    metadata:
+      labels:
+        app: marketinsights
+    spec:
+      containers:
+        - image: cwilko/mi-price-store
+          name: price-store
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /usr/app/datasources
+            name: price-store-data
+      volumes:
+      - name: price-store-data
+        persistentVolumeClaim:
+          claimName: price-store-data
