@@ -10,6 +10,14 @@ metadata:
 
 kind: ConfigMap
 apiVersion: v1
+data:
+    proxy-body-size: 16m
+    proxy-connect-timeout: "300"
+    proxy-read-timeout: "300"
+    proxy-send-timeout: "300"
+    proxy-next-upstream: "off"
+    proxy-next-upstream-timeout: "0"
+    proxy_next_upstream_tries: "1"
 metadata:
   name: nginx-configuration
   namespace: ingress-nginx
@@ -48,7 +56,7 @@ metadata:
     app.kubernetes.io/part-of: ingress-nginx
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: nginx-ingress-clusterrole
@@ -106,7 +114,7 @@ rules:
       - update
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: nginx-ingress-role
@@ -151,7 +159,7 @@ rules:
       - get
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: nginx-ingress-role-nisa-binding
@@ -169,7 +177,7 @@ subjects:
     namespace: ingress-nginx
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: nginx-ingress-clusterrole-nisa-binding
