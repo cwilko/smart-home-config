@@ -6,7 +6,7 @@ stream
     |from()
         .measurement('hive')
         .groupBy('device')
-        .where(lambda: "type" == 'heat' )
+        .where(lambda: "type" == 'device' )
     |alert()
         .stateChangesOnly()
         .crit(lambda: int("presence") <  1)
