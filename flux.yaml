@@ -262,7 +262,8 @@ spec:
         # Serve /metrics endpoint at different port;
         # make sure to set prometheus' annotation to scrape the port value.
         - --listen-metrics=:3031
-        - --registry-exclude-image=index.docker.io/metallb/*
+        - --registry-exclude-image=docker.io/*,index.docker.io/*,quay.io/*,k8s.gcr.io/*
+        
 
       # Optional DNS settings, configuring the ndots option may resolve
       # nslookup issues on some Kubernetes setups.
