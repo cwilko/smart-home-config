@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio-mgr
+  namespace: marketinsights
+spec:
+  selector:
+    matchLabels:
+      app: portfolio-mgr
+  template:
+    metadata:
+      labels:
+        app: portfolio-mgr
+    spec:
+      containers:
+        - image: cwilko/mi-portfolio-mgr
+          name: portfolio-mgr
+          tty: true
+          imagePullPolicy: Always
