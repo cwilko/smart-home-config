@@ -77,4 +77,13 @@ metadata:
     app: marketinsights
   name: marketinsights
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: murmur
+  name: murmur
+
 
