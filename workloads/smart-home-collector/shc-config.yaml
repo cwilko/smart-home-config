@@ -322,8 +322,8 @@ data:
       #
       # Laptops/Phones/Tablets
       # =========
-      # Laptop P50 (LAN)    - 192.168.1.21
-      # Laptop P50 (WiFi)   - 192.168.1.22
+      # Laptop P50          - 192.168.1.21
+      # Laptop P50 (VPN)    - 192.168.1.22
       # Carolyn iPhone      - 192.168.1.23
       # Carolyn iPad        - 192.168.1.24
       # Samsung S21         - 192.168.1.25
@@ -341,7 +341,7 @@ data:
       # Lenovo G50-30       - 192.168.1.27 -> 60
       # Lenovo B50-30       - 192.168.1.61
       # Lenovo P50 (II)     - 192.168.1.62 (TBD)
-      # RHEL VPN            - 192.168.1.26 -> 70
+      # RHEL VPN            - 192.168.1.70
       #
       # Smart Devices
       # =============
@@ -440,8 +440,8 @@ data:
             "192.168.1.14" = "Harry's TV (WiFi)"
             "192.168.1.16" = "Nintendo Switch (Harry)"
             "192.168.1.17" = "Nintendo Switch (Chloe)"
-            "192.168.1.21" = "Chris's Laptop (LAN)"
-            "192.168.1.22" = "Chris's Laptop (WiFi)"
+            "192.168.1.21" = "Chris's Laptop"
+            "192.168.1.22" = "Chris's Laptop (VPN)"
             "192.168.1.23" = "Carolyn's iPhone"
             "192.168.1.24" = "Carolyn's iPad"
             "192.168.1.25" = "Chris's phone"
@@ -449,11 +449,7 @@ data:
             "192.168.1.30" = "Master node"
             "192.168.1.31" = "Worker Node, k8s-worker1"
             "192.168.1.32" = "Worker Node, k8s-worker2"
-            "192.168.1.33" = "Worker Node, k8s-worker3" 
-            "192.168.1.60" = "Lenovo G50-30"
-            "192.168.1.61" = "Lenovo B50-30"
-            "192.168.1.62" = "Lenovo P50 (II)"
-            "192.168.1.70" = "RHEL VPN"            
+            "192.168.1.33" = "Worker Node, k8s-worker3"             
             "192.168.1.40" = "Chloe's Light"
             "192.168.1.41" = "Harry's Light"                                         
             "192.168.1.42" = "RPi PSU"
@@ -469,6 +465,10 @@ data:
             "192.168.1.52" = "LightwaveRF Hub" 
             "192.168.1.53" = "Harmony Hub"
             "192.168.1.54" = "Google Nest Hub Max"
+            "192.168.1.60" = "Lenovo G50-30"
+            "192.168.1.61" = "Lenovo B50-30"
+            "192.168.1.62" = "Lenovo P50 (II)"
+            "192.168.1.70" = "RHEL VPN"
             "www.google.com" = "www.google.com"
 
     [[inputs.dns_query]]
