@@ -316,8 +316,8 @@ data:
       # Harry's TV (LAN)    - 192.168.1.13
       # Harry's TV (WiFi)   - 192.168.1.14
       # Chloe's TV (WiFi)   - 
-      # Harry's Nintendo    - 192.168.1.16
-      # Chloe's Nintendo    - 192.168.1.17
+      # Harry's Nintendo    - 
+      # Chloe's Nintendo    - 
       # PS5                 -
       #
       # Laptops/Phones/Tablets
@@ -360,6 +360,7 @@ data:
       # LightwaveRF Hub     - 192.168.1.52
       # Harmony Hub         - 192.168.1.53
       # Google Nest Hub     - 192.168.1.54
+      # Zigbee Bridge       - 192.168.1.55
 
 
       urls = [
@@ -373,8 +374,6 @@ data:
         "192.168.1.13", 
         "192.168.1.14", 
         "192.168.1.15", 
-        "192.168.1.16", 
-        "192.168.1.17", 
         "192.168.1.21", 
         "192.168.1.22", 
         "192.168.1.23", 
@@ -402,6 +401,7 @@ data:
         "192.168.1.52", 
         "192.168.1.53", 
         "192.168.1.54", 
+        "192.168.1.55",
         "192.168.1.60", 
         "192.168.1.61", 
         "192.168.1.62", 
@@ -465,6 +465,7 @@ data:
             "192.168.1.52" = "LightwaveRF Hub" 
             "192.168.1.53" = "Harmony Hub"
             "192.168.1.54" = "Google Nest Hub Max"
+            "192.168.1.55" = "Zigbee Bridge"
             "192.168.1.60" = "Lenovo G50-30"
             "192.168.1.61" = "Lenovo B50-30"
             "192.168.1.62" = "Lenovo P50 (II)"
