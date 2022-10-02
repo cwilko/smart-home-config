@@ -29,5 +29,5 @@ spec:
               name: backup-clean-config
               defaultMode: 0777
           restartPolicy: Never
-      backoffLimit: 4
+      backoffLimit: 0
 

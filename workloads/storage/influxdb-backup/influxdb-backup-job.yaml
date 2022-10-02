@@ -29,5 +29,5 @@ spec:
               persistentVolumeClaim:
                 claimName: influxdb-backup-data
           restartPolicy: Never
-      backoffLimit: 4
+      backoffLimit: 0
 
