@@ -13,7 +13,7 @@ spec:
         app: marketinsights
     spec:
       containers:
-        - image: cwilko/mi-price-store
+        - image: cwilko/marketinsights-price-store
           name: price-store
           tty: true
           imagePullPolicy: Always
