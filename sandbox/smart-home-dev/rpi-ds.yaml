@@ -21,7 +21,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: rpi-stats
-        image: cwilko/rpi-stats:arm32v7
+        image: cwilko/rpi-stats:latest
         imagePullPolicy: Always
         securityContext:
           privileged: true
