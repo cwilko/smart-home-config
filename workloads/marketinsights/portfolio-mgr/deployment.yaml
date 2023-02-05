@@ -13,7 +13,7 @@ spec:
         app: portfolio-mgr
     spec:
       containers:
-        - image: cwilko/mi-portfolio-mgr
+        - image: cwilko/marketinsights-portfolio-mgr
           name: portfolio-mgr
           tty: true
           imagePullPolicy: Always
