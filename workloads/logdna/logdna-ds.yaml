@@ -19,7 +19,7 @@ spec:
           effect: NoSchedule
       containers:
       - name: logdna-agent
-        image: cwilko/arm-logdna-agent:latest
+        image: cwilko/logdna-agent:latest
         imagePullPolicy: Always
         envFrom:
         - secretRef:
