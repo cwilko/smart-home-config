@@ -13,7 +13,7 @@ spec:
         app: rtl-sdr
     spec:
       containers:
-        - image: cwilko/rtl_433tomqtt_ext:arm32v7
+        - image: cwilko/rtl_433tomqtt_ext:latest
           name: rtl-sdr
           volumeMounts:
           - mountPath: /dev/bus/usb/001/003

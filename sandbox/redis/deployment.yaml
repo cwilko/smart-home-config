@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        name: redis
+    spec:
+      containers:
+      - name: redis
+        image: arm32v7/redis:7-alpine
+        ports:
+          - name: redis
+            containerPort: 6379
+        env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
