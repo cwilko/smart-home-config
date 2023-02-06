@@ -29,7 +29,12 @@ spec:
           volumeMounts:
           - mountPath: /usr/app/creds
             name: gmail-secret
-            readOnly: true         
+            readOnly: true  
+          lifecycle:
+            postStart:
+              exec:
+                command: 
+                  - "cat /usr/app/cred/gmail.credentials.b64 | base64 --decode > /usr/app/gmail.credentials"       
       volumes:         
       - name: gmail-secret
         secret:
