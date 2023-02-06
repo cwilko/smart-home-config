@@ -27,19 +27,26 @@ spec:
           - name: INTERVAL
             value: "300"
           volumeMounts:
-          - mountPath: /usr/app/creds
+          - mountPath: /usr/app/b64
             name: gmail-secret
             readOnly: true  
           lifecycle:
             postStart:
               exec:
                 command: 
-                  - "cat /usr/app/cred/gmail.credentials.b64 | base64 --decode > /usr/app/gmail.credentials"       
+                  - "sh"
+                  - "-c"
+                  - >
+                    #!/bin/ash
+                    # Decode b64 gmail creds to binary file
+
+                    mkdir -p /usr/app/creds;
+                    cat /usr/app/b64/gmail.credentials.b64 | base64 -d > /usr/app/creds/gmail.credentials    
       volumes:         
       - name: gmail-secret
         secret:
           secretName: gmail-secret
           items:
-          - key: gmail.credentials
-            path: gmail.credentials
+          - key: gmail.credentials.b64
+            path: gmail.credentials.b64
       
