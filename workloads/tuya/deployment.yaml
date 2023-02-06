@@ -19,14 +19,17 @@ spec:
           imagePullPolicy: Always
           env:
           - name: TUYA2MQTT_ARGS
-            value: "-v debug -f /tuya-devices.yaml -u mqtt://192.168.1.202"
+            value: "-v debug -f /usr/app/config/tuya-devices.yaml -u mqtt://192.168.1.202"
           volumeMounts:
-          - mountPath: /tuya-devices.yaml
+          - mountPath: /usr/app/config
             name: tuya-devices-secret
-            readOnly: true
-            subPath: tuya-devices.yaml       
+            readOnly: true      
       restartPolicy: Always
       volumes:         
       - name: tuya-devices-secret
         secret:
           secretName: tuya-devices-secret
+          items:
+          - key: tuya-devices.yaml
+            path: tuya-devices.yaml
+          
