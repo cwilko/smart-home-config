@@ -18,7 +18,7 @@ spec:
           effect: NoSchedule
       serviceAccountName: telegraf
       containers:
-        - image: cwilko/telegraf:latest
+        - image: cwilko/telegraf:1.13.2-alpine-arm32v7
           name: telegraf
           securityContext:
             privileged: true
