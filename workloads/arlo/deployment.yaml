@@ -13,6 +13,7 @@ spec:
       labels:
         app: arlo
     spec:
+      restartPolicy: Always
       containers:
         - image: cwilko/arlo2mqtt
           name: arlo
@@ -25,4 +26,15 @@ spec:
           env:
           - name: INTERVAL
             value: "300"
-      restartPolicy: Always
+          volumeMounts:
+          - mountPath: /usr/app/creds
+            name: gmail-secret
+            readOnly: true         
+      volumes:         
+      - name: gmail-secret
+        secret:
+          secretName: gmail-secret
+          items:
+          - key: gmail.credentials
+            path: gmail.credentials
+      
