@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-server
+  namespace: marketinsights
+spec:
+  selector:
+    matchLabels:
+      app: model-server
+  template:
+    metadata:
+      labels:
+        app: model-server
+    spec:
+      containers:
+        - image: emacski/tensorflow-serving 
+          name: model-server
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /models
+            name: model-server-data
+          args: ["--model_config_file=/models/models.config"]
+      volumes:
+      - name: model-server-data
+        persistentVolumeClaim:
+          claimName: model-server-data
