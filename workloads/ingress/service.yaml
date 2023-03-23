@@ -118,7 +118,27 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: model-server-service
+            name: model-server-http-service
+            port: 
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: model-server-grpc-ingress
+  namespace: marketinsights
+spec:
+  rules:
+  - host: model-server-grpc.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: model-server-grpc-service
             port: 
               number: 80
 
