@@ -20,6 +20,10 @@ spec:
           - mountPath: /models
             name: model-server-data
           args: ["--model_config_file=/models/models.config"]
+          ports:
+          - containerPort: 8500
+            protocol: TCP
+          
       volumes:
       - name: model-server-data
         persistentVolumeClaim:
