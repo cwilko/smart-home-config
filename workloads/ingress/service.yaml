@@ -140,7 +140,7 @@ spec:
           service:
             name: model-server-grpc-service
             port: 
-              number: 80
+              number: 8500
 
 
 
