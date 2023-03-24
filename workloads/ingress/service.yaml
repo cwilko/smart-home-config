@@ -135,7 +135,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "false"
-    nginx.ingress.kubernetes.io/auth-tls-secret: ingress-nginx/tls-secret
+    nginx.ingress.kubernetes.io/auth-tls-secret: marketinsights/tls-secret
     nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
     nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
     #nginx.ingress.kubernetes.io/proxy-body-size: 64ms
