@@ -142,7 +142,6 @@ metadata:
 spec:
   tls:
     - secretName: tls-secret
-      secretNamespace: ingress-nginx
       hosts:
         - model-server-grpc.192.168.1.203.nip.io
   rules:
