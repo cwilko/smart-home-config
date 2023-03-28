@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketinsights-api
+  namespace: marketinsights
+spec:
+  selector:
+    matchLabels:
+      app: marketinsights-api
+  template:
+    metadata:
+      labels:
+        app: marketinsights-api
+    spec:
+      containers:
+        - image: cwilko/marketinsights-api
+          name: marketinsights-api
+          tty: true
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /app/server/datasources.json
+            name: marketinsights-api-secret
+            readOnly: true
+            subPath: datasources.json
+      volumes:          
+      - name: marketinsights-api-secret
+        secret:
+          secretName: marketinsights-api-secret
