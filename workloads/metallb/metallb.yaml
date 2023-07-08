@@ -205,7 +205,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
-        image: metallb/speaker:v0.9.6
+        image: quay.io/metallb/speaker:v0.9.6
         imagePullPolicy: IfNotPresent
         name: speaker
         ports:
