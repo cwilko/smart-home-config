@@ -4,6 +4,21 @@ metadata:
   name: airflow-worker 
   namespace: actions 
 spec: 
+  initContainers:
+    - name: git-sync
+      image: registry.k8s.io/git-sync/git-sync:v3.6.8
+      env:
+      - name: GIT_SYNC_BRANCH
+        value: "master"
+      - name: GIT_SYNC_REPO
+        value: "https://github.com/cwilko/smart-home-config"
+      - name:  GIT_SYNC_DEST
+        value: "mount"
+      - name:  GIT_SYNC_ONE_TIME
+        value: "true"
+      volumeMounts:
+        - name: airflow-resources
+          mountPath: /git
   containers: 
     - name: base 
       imagePullPolicy: IfNotPresent 
