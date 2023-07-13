@@ -38,9 +38,8 @@ spec:
         - secretRef:
             name: airflow-secret
       volumeMounts: 
-        - name: airflow-logs
-          mountPath: "/opt/airflow/logs"              
-          readOnly: false 
+        - name: airflow-logs-pv 
+          mountPath: /opt/airflow/logs 
         - name: airflow-resources
           mountPath: "/opt/airflow/sync"
           readOnly: true  
@@ -51,5 +50,6 @@ spec:
   volumes: 
     - name: airflow-resources
       emptyDir: {}
-    - name: airflow-logs
-      emptyDir: {}
+    - name: airflow-logs-pv 
+        persistentVolumeClaim: 
+          claimName: airflow-logs-pvc
