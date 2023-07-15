@@ -8,21 +8,21 @@ from airflow.decorators import dag, task
     catchup=False,
     tags=["marketinsights"],
 )
-def options_data_etl():
+def options_data_etl2():
     """
     ### TaskFlow API Tutorial Documentation
     This ETL pipeline extracts options data from barchart.com and loads to a price store
     """
 
     @task.virtualenv(
-        task_id="extract_and_load",
+        task_id="extract_and_load2",
         requirements=[
             "marketinsights-price-aggregator@git+https://github.com/cwilko/marketinsights-price-aggregator.git",
             #           "marketinsights-remote@git+https://github.com/cwilko/marketinsights-remote.git",
         ],
         system_site_packages=False,
     )
-    def extract_and_load():
+    def extract_and_load2():
         """
         #### Extract task
         A simple Extract task to get data ready for the rest of the data
@@ -52,7 +52,7 @@ def options_data_etl():
 
         print("Updates complete at " + str(datetime.utcnow()))
 
-    extract_and_load()
+    extract_and_load2()
 
 
-options_dag = options_data_etl()
+options_dag2 = options_data_etl2()
