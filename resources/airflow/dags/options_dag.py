@@ -18,7 +18,7 @@ def options_data_etl():
         task_id="extract_and_load",
         requirements=[
             "marketinsights-price-aggregator@git+https://github.com/cwilko/marketinsights-price-aggregator.git",
-            "marketinsights-remote@git+https://github.com/cwilko/marketinsights-remote.git",
+            #           "marketinsights-remote@git+https://github.com/cwilko/marketinsights-remote.git",
         ],
         system_site_packages=False,
     )
