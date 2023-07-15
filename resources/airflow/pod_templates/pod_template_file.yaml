@@ -24,7 +24,7 @@ spec:
   containers: 
     - name: base 
       imagePullPolicy: IfNotPresent 
-      image: 'apache/airflow:2.3.3'
+      image: 'cwilkin/airflow:latest'
       env: 
       - name: AIRFLOW__KUBERNETES__NAMESPACE 
         value: "actions" 
