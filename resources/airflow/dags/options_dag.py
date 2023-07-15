@@ -3,7 +3,7 @@ from airflow.decorators import dag, task
 
 
 @dag(
-    schedule="0 22 * * *",
+    schedule_interval="0 22 * * *",
     start_date=pendulum.datetime(2023, 1, 1, tz="UTC"),
     catchup=False,
     tags=["marketinsights"],
