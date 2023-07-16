@@ -3,7 +3,7 @@ from airflow.models import DAG
 from airflow.operators.bash import BashOperator
 
 dag = DAG(
-    dag_id="influxdb_backup_clean",
+    "influxdb_backup_clean",
     schedule_interval="0 2 * * *",
     catchup=False,
     is_paused_upon_creation=False,
