@@ -26,7 +26,7 @@ spec:
       imagePullPolicy: IfNotPresent 
       image: 'cwilko/airflow:latest'
       env: 
-      - name: AIRFLOW__KUBERNETES__NAMESPACE 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
         value: "actions" 
       - name: AIRFLOW__CORE__DAGS_FOLDER 
         value: "/opt/airflow/sync/smart-home-config/resources/airflow/dags" 
