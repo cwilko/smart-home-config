@@ -1,0 +1,25 @@
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: influxdb-backup
+  namespace: storage 
+spec: 
+  containers: 
+    - name: base
+      image: arm32v7/influxdb:1.7.9
+      command: ["influxd", "backup", "-portable", "-database", "telegraf", "-host", "influxdb-service:8088", "/tmp/snapshot"]
+      env:
+        - name: INFLUXDB_HTTP_ENABLED
+          value: "false"
+      envFrom:
+        - secretRef:
+            name: influxdb-secrets
+      volumeMounts:
+        - mountPath: /tmp/snapshot
+          name: influxdb-backup-data
+    volumes:
+      - name: influxdb-backup-data
+        persistentVolumeClaim:
+          claimName: influxdb-backup-data
+    restartPolicy: Never 
+    serviceAccountName: airflow-scheduler
