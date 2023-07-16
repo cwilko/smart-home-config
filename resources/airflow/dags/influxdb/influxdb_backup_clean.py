@@ -1,31 +1,16 @@
 import pendulum
-from airflow.decorators import dag, task
+from airflow.models import DAG
+from airflow.operators.bash import BashOperator
 
-
-@dag(
+dag = DAG(
     schedule_interval="0 2 * * *",
-    start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     is_paused_upon_creation=False,
     tags=["storage"],
 )
-def influxdb_backup_clean():
-    """
-    ### Clean out old backups of influxDB
-    This ETL pipeline extracts options data from barchart.com and loads to a price store
-    """
 
-    @task()
-    def delete_backups():
-        """
-        #### Delete Backups
-        """
+cmd_command = "echo '{{ ds }}' '{{ conn.airflow_db.host }}' '{{ conn.nas.host }}'"
 
-        print("Date is " + "{{ ds }}")
-        print("Airflow db: " + "{{ conn.airflow_db.host }}")
-        print("Connection details: " + "{{ conn.nas.host }}")
-
-    delete_backups()
-
-
-dag = influxdb_backup_clean()
+delete_backups = BashOperator(
+    task_id="delete_backups", bash_command=cmd_command, dag=dag
+)
