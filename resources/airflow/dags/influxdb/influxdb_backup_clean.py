@@ -15,10 +15,7 @@ def influxdb_backup_clean():
     This ETL pipeline extracts options data from barchart.com and loads to a price store
     """
 
-    @task.virtualenv(
-        task_id="delete_backups",
-        system_site_packages=False,
-    )
+    @task()
     def delete_backups():
         """
         #### Delete Backups
