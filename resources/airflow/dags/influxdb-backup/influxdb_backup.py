@@ -8,7 +8,7 @@ from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperato
 
 dag = DAG(
     "influxdb_backup",
-    schedule_interval="0 1 * * *",
+    schedule_interval="0 1 * * 0",
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     is_paused_upon_creation=False,

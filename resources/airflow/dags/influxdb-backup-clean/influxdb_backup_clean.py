@@ -4,7 +4,7 @@ from airflow.operators.bash import BashOperator
 
 dag = DAG(
     "influxdb_backup_clean",
-    schedule_interval="0 2 * * *",
+    schedule_interval="0 3 * * 0",
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     is_paused_upon_creation=False,
