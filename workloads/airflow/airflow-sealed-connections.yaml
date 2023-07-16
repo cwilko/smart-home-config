@@ -1,0 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: airflow-connections
+  namespace: actions
+spec:
+  encryptedData:
+    AIRFLOW_CONN_NAS: AgBhhAmGxTgqBGoDacBoot1TBGgi7YL7eGjridUSvMyEIrvtS/F8ZZmV9qPDdnLEq6fUPKEQy1TeitDMLbKtAh2fFhBzN+6HKREMvilhgKMMgYNDEgsCYw5MqPB+Jpcvlya5kItha5yPUu7yJiBTKtCqDLhBaPYNfHnMyEpp2fjw7lFd1wmMdceQLzp4rutT3bXPuRh2im3oXHYq0KZVLhCUTF4PCATEmk9951irZS68gjuVWVRqG1WqnpacLvVbm+Q9vdSpPLFLVpvmKYvAdLpOVsNOOfCI+GIWs8ddx8pj44eXJa49OoDyY6QLnjtx9DGnzZq2PNW4GsvW1XZ0lDnC3PWCEfDsWcHzYlwdwGLvnkQBkd+Ew8GI/e2cMC8rGHfKQfU9qryvtvWqsaQhc15eVqG6T9z70mS/q0amrUm+CXI1cyfS2u4Dy0pWLDcZaC2yh48nAtFCWcySbeBGZ/wG1hNw3Dq5PN+IMwyOwL1gd/8aJqx/1PXdm6+/2itBI3mWRDBYGBK2HJOg34Fd81wW4GffPlYI8/VHeboKjYOFS0xKdHcagwKslZL15N1ExzEJuzet4kh85IFyd9ZZ2E3JF5790dPO6Chg/GXissbghEApPz1g2XQxXwQnYUApZJzvYsINVHoj1mvetkssHfLTsRi82s3pItfGMAWk2t9poZcY3xT1Y9BMX5ozC4ojoogPqAOtL0WmyEGdmBNuYrq0OJcnM3Smm8sOEysAxA==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: airflow-connections
+      namespace: actions
+    type: Opaque
+
