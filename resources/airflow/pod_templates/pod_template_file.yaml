@@ -37,6 +37,8 @@ spec:
       envFrom:
         - secretRef:
             name: airflow-secret
+        - secretRef:
+            name: airflow-connections
       volumeMounts: 
         - name: airflow-logs-pv 
           mountPath: /opt/airflow/logs 
