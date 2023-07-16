@@ -30,9 +30,9 @@ spec:
         value: "actions" 
       - name: AIRFLOW__CORE__DAGS_FOLDER 
         value: "/opt/airflow/sync/smart-home-config/resources/airflow/dags" 
-      - name: AIRFLOW__KUBERNETES__DELETE_WORKER_PODS 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS 
         value: "True" 
-      - name: AIRFLOW__KUBERNETES__DELETE_WORKER_PODS_ON_FAILURE 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS_ON_FAILURE 
         value: "True" 
       envFrom:
         - secretRef:
