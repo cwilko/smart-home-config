@@ -7,7 +7,7 @@ from airflow.decorators import dag, task
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     is_paused_upon_creation=False,
-    tags=["marketinsights"],
+    tags=["storage"],
 )
 def influxdb_backup_clean():
     """
@@ -24,7 +24,7 @@ def influxdb_backup_clean():
         #### Delete Backups
         """
 
-        print("Connection details " + {{conn.NAS.host}})
+        print("Connection details: {{conn.NAS.host}}")
 
     delete_backups()
 
