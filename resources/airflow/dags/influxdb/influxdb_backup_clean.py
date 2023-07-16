@@ -26,7 +26,7 @@ def influxdb_backup_clean():
 
         print("Date is " + "{{ ds }}")
         print("Airflow db: " + "{{ conn.airflow_db.host }}")
-        print("Connection details: " + "{{ conn.NAS.host }}")
+        print("Connection details: " + "{{ conn.nas.host }}")
 
     delete_backups()
 
