@@ -11,8 +11,15 @@ dag = DAG(
     tags=["storage"],
 )
 
-cmd_command = "echo '{{ ds }}' '{{ conn.airflow_db.host }}' '{{ conn.nas.host }}'"
+command = "/opt/airflow/sync/smart-home-config/resources/dags/influxdb/backup-clean.sh"
 
 delete_backups = BashOperator(
-    task_id="delete_backups", bash_command=cmd_command, dag=dag
+    task_id="delete_backups",
+    bash_command=command,
+    env={
+        "NAS_USER": "{{ conn.nas.login }}",
+        "NAS_PASSWORD": "{{ conn.nas.password }}",
+        "NAS_HOST": "{{ conn.nas.host }}",
+    },
+    dag=dag,
 )
