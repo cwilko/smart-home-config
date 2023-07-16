@@ -2,15 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: grafana-config
-  namespace: grafana
+  name: postgres-config
+  namespace: storage
 data:
   init_airflow.sh: |-
     #!/bin/bash
     set -e
 
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-      CREATE USER airflow_user WITH PASSWORD 'airflow_pass';
+      CREATE USER $AIRFLOW_USER WITH PASSWORD '$AIRFLOW_PASS';
       CREATE DATABASE airflow_db;
-      GRANT ALL PRIVILEGES ON DATABASE airflow_db TO airflow_user;
+      GRANT ALL PRIVILEGES ON DATABASE airflow_db TO $AIRFLOW_USER;
     EOSQL

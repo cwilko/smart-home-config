@@ -24,12 +24,19 @@ spec:
             - containerPort: 5432 
           envFrom:
             - secretRef:
-                name: postgres-config         
+                name: postgres-secret        
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
               readOnly: false
+            - mountPath: /docker-entrypoint-initdb.d/init_airflow.sh
+              name: postgres-config
+              readOnly: true
+              subPath: init_airflow.sh
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
             claimName: postgres-data
+        - name: postgres-config
+          configMap:
+            name: postgres-config 
