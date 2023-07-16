@@ -11,7 +11,7 @@ dag = DAG(
     tags=["storage"],
 )
 
-command = "/opt/airflow/sync/smart-home-config/resources/dags/influxdb/backup-clean.sh"
+command = "/opt/airflow/sync/smart-home-config/resources/airflow/dags/influxdb/backup-clean.sh"
 
 delete_backups = BashOperator(
     task_id="delete_backups",
