@@ -46,11 +46,11 @@ spec:
             - name: AIRFLOW__LOGGING__LOGGING_LEVEL
               value: "INFO"
             - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-              value: "/opt/airflow/sync/smart-home-config/resources/airflow/pod_templates/pod_template_file.yaml"
+              value: "/opt/airflow/sync/smart-home-config/workloads/airflow/pod_templates/pod_template_file.yaml"
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
               value: "actions"
             - name: AIRFLOW__CORE__DAGS_FOLDER 
-              value: "/opt/airflow/sync/smart-home-config/resources/airflow/dags"
+              value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags"
             - name: AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL 
               value: "60"
             - name: AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT
@@ -78,7 +78,7 @@ spec:
             - name: AIRFLOW__CORE__EXECUTOR
               value: "KubernetesExecutor"
             - name: AIRFLOW__CORE__DAGS_FOLDER 
-              value: "/opt/airflow/sync/smart-home-config/resources/airflow/dags" 
+              value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags" 
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
               value: "actions"
             - name: AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE

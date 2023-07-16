@@ -17,7 +17,7 @@ dag = DAG(
 
 influxdb_backup = KubernetesPodOperator(
     dag=dag,
-    pod_template_file="/opt/airflow/sync/smart-home-config/resources/airflow/pod_templates/influxdb_pod_template.yaml",
+    pod_template_file="/opt/airflow/sync/smart-home-config/workloads/airflow/pod_templates/influxdb_pod_template.yaml",
     task_id="influxdb_backup",
     namespace="storage",
     name="influxdb-backup",
