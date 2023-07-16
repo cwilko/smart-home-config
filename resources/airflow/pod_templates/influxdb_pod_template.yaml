@@ -17,8 +17,7 @@ spec:
       volumeMounts:
         - mountPath: /tmp/snapshot
           name: influxdb-backup-data
-  restartPolicy: Never 
-  serviceAccountName: airflow-scheduler
+  restartPolicy: Never
   volumes:
     - name: influxdb-backup-data
       persistentVolumeClaim:
