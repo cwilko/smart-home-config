@@ -35,7 +35,7 @@ def options_data_etl():
         from marketinsights.remote.datastore import MIDataStoreRemote
         import marketinsights.utils.store as priceStore
 
-        ds_location = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/datasources/datasources.json"
+        ds_location = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/options/datasources/datasources.json"
         with open(ds_location) as json_file:
             ds_config = json.load(json_file)
 
