@@ -25,6 +25,7 @@ def housemarket_etl():
         task_id="extract_and_load",
         requirements=[
             "housemarket-scraper@git+https://github.com/cwilko/housemarket-scraper.git",
+            "marketinsights-dbschema@git+https://github.com/cwilko/marketinsights-dbschema.git",
         ],
         system_site_packages=False,
     )
