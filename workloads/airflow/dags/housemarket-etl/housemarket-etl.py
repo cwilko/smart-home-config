@@ -33,7 +33,8 @@ def housemarket_etl():
         #### Extract task
         """
         from housemarket.extract import HouseScraper
-        from housemarket.load import HouseDatabase
+        from marketinsights.database import MIDatabase
+        from marketinsights.dbschema import House
         from housemarket.transform import PropertyIndex
 
         regionCode = "5E91999"  # NewForest
@@ -43,7 +44,8 @@ def housemarket_etl():
             regionCode, maxPrice=200000, maxDaysSinceAdded=None
         )
 
-        db = HouseDatabase(
+        db = MIDatabase(
+            dbClass=House,
             host=conn["host"],
             dbName="squirrel",
             port=conn["port"],
@@ -51,10 +53,9 @@ def housemarket_etl():
             pw=conn["password"],
         )
 
-        for x in PropertyIndex(data, regionName).index:
-            db.addEntry(x)
+        result = db.upsert(PropertyIndex(data, regionName).getDict(), update=True)
 
-        print("Updates complete")
+        print(f"Complete: Inserted - {result['inserted']}, Updated {result['updated']}")
 
     extract_and_load(connectionData)
 
