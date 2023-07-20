@@ -34,9 +34,8 @@ def housemarket_etl():
         """
         from housemarket.extract import HouseScraper
         from housemarket.load import HouseDatabase
-        from housemarket.transform import PropertyDetails, PropertyIndex
+        from housemarket.transform import PropertyIndex
 
-        tableName = "houses"
         regionCode = "5E91999"  # NewForest
         regionName = "NewForest"
 
@@ -52,10 +51,8 @@ def housemarket_etl():
             pw=conn["password"],
         )
 
-        db.createTable(tableName)
-
         for x in PropertyIndex(data, regionName).index:
-            db.addEntry(tableName, x)
+            db.addEntry(x)
 
         print("Updates complete")
 
