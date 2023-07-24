@@ -8,9 +8,12 @@ connectionData = {
     "port": "{{ conn.postgres.port }}",
 }
 
+default_args = {"email": "wilkobets@googlemail.com", "email_on_failure": True}
+
 
 @dag(
     schedule_interval="0 21 * * *",
+    default_args=default_args,
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     is_paused_upon_creation=False,
