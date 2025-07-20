@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stremio-proxy-service
+  namespace: public
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8081
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: stremio-proxy-service
+  namespace: public
+subsets:
+- addresses:
+  - ip: 192.168.1.79
+  ports:
+  - name: http
+    port: 8081
+    protocol: TCP

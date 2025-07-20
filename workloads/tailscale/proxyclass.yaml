@@ -1,0 +1,16 @@
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyClass
+metadata:
+  name: no-metrics-proxy
+  namespace: tailscale
+spec:
+  metrics:
+    enable: false
+    serviceMonitor:
+      enable: false
+  statefulSet:
+    pod:
+      tailscaleContainer:
+        env:
+        - name: TS_ENABLE_METRICS
+          value: "false"

@@ -59,6 +59,10 @@ spec:
               value: "Europe/London"
             - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
               value: "Europe/London"
+            - name: AIRFLOW__SMTP__SMTP_HOST
+              value: "smtp.gmail.com"
+            - name: AIRFLOW__SMTP__SMTP_PORT
+              value: "587"
           envFrom:
             - secretRef:
                 name: airflow-secret
