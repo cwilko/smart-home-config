@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: squirrel-stream-sa
+  namespace: public
+automountServiceAccountToken: false
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: squirrel-stream
+  namespace: public
+  labels:
+    app: squirrel-stream
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: squirrel-stream
+  template:
+    metadata:
+      labels:
+        app: squirrel-stream
+    spec:
+      serviceAccountName: squirrel-stream-sa
+      
+      containers:
+      # Squirrel Stream application container
+      - name: squirrel-stream
+        image: wilkobets/squirrel-stream:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        - name: PORT
+          value: "3001"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        livenessProbe:
+          httpGet:
+            path: /manifest.json
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /manifest.json
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+
+      # Security and scheduling
+      securityContext:
+        fsGroup: 1001
+      
+      restartPolicy: Always

@@ -1,0 +1,76 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: squirrel-stream-isolation
+  namespace: public
+  labels:
+    app: squirrel-stream
+spec:
+  podSelector:
+    matchLabels:
+      app: squirrel-stream
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  # Allow ingress from Tailscale operator proxy pods
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: tailscale
+    ports:
+    - protocol: TCP
+      port: 3001
+  
+  # Limited egress for essential services only
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # Allow HTTPS for external APIs (Real-Debrid, Torrentio, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  
+  # Allow HTTP for external APIs (if needed)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  # Allow Tailscale coordination server
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 41641
+    - protocol: TCP
+      port: 443
+
+---
+
+# Additional network policy to deny all inter-namespace communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-namespaces
+  namespace: public
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress: []
+  egress:
+  # Only allow egress to the same namespace and external internet
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: public
+  - to: []  # External internet for DNS, HTTPS, etc.
