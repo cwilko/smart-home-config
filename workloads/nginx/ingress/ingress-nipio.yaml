@@ -1,35 +1,10 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: ingress-nginx
-  namespace: ingress-nginx
-  labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-spec:
-  type: LoadBalancer
-  loadBalancerIP: 192.168.1.203
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-      protocol: TCP
-    - name: https
-      port: 443
-      targetPort: 443
-      protocol: TCP
-  selector:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-
----
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: grafana-ingress
   namespace: grafana
 spec:
+  ingressClassName: nginx
   rules:
   - host: grafana.192.168.1.203.nip.io
     http:
@@ -50,6 +25,7 @@ metadata:
   name: actions-ingress
   namespace: actions
 spec:
+  ingressClassName: nginx
   rules:
   - host: actions.192.168.1.203.nip.io
     http:
@@ -70,6 +46,7 @@ metadata:
   name: marketinsights-api-ingress
   namespace: marketinsights
 spec:
+  ingressClassName: nginx
   rules:
   - host: marketinsights-api.192.168.1.203.nip.io
     http:
@@ -90,6 +67,7 @@ metadata:
   name: mi-price-store-ingress
   namespace: marketinsights
 spec:
+  ingressClassName: nginx
   rules:
   - host: pricestore.192.168.1.203.nip.io
     http:
@@ -110,6 +88,7 @@ metadata:
   name: portfolio-mgr-ingress
   namespace: marketinsights
 spec:
+  ingressClassName: nginx
   rules:
   - host: portfolio-mgr.192.168.1.203.nip.io
     http:
@@ -130,6 +109,7 @@ metadata:
   name: airflow-ingress
   namespace: actions
 spec:
+  ingressClassName: nginx
   rules:
   - host: airflow.192.168.1.203.nip.io
     http:
@@ -150,6 +130,7 @@ metadata:
   name: model-server-ingress
   namespace: marketinsights
 spec:
+  ingressClassName: nginx
   rules:
   - host: model-server.192.168.1.203.nip.io
     http:
@@ -171,15 +152,14 @@ metadata:
   namespace: marketinsights
   annotations:
     allowed-values: CN=client
-    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "false"
     nginx.ingress.kubernetes.io/auth-tls-secret: marketinsights/tls-secret
     nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
     nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
-    #nginx.ingress.kubernetes.io/proxy-body-size: 64ms
 spec:
+  ingressClassName: nginx
   tls:
     - secretName: tls-secret
       hosts:
@@ -196,6 +176,66 @@ spec:
             port: 
               number: 8500
 
+---
 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: squirrel-stream-nip-ingress
+  namespace: public
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: stremio-addon.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: squirrel-stream
+            port: 
+              number: 3001
 
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stremio-proxy-nip-ingress
+  namespace: public
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: stremio-proxy.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stremio-proxy-service
+            port: 
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: squid-api-nip-ingress
+  namespace: public
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: squid.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: squid-api-service
+            port: 
+              number: 80
 

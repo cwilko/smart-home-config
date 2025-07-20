@@ -1,0 +1,118 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stremio-proxy-ingress
+  namespace: public
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - squirrelnet.co.uk
+    - www.squirrelnet.co.uk
+    secretName: squirrelnet-tls
+  rules:
+  - host: squirrelnet.co.uk
+    http:
+      paths:
+      - path: /stremio-proxy(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: stremio-proxy-service
+            port: 
+              number: 80
+  - host: www.squirrelnet.co.uk
+    http:
+      paths:
+      - path: /stremio-proxy(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: stremio-proxy-service
+            port: 
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: squid-api-ingress
+  namespace: public
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - squirrelnet.co.uk
+    - www.squirrelnet.co.uk
+    secretName: squirrelnet-tls
+  rules:
+  - host: squirrelnet.co.uk
+    http:
+      paths:
+      - path: /squid(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: squid-api-service
+            port: 
+              number: 80
+  - host: www.squirrelnet.co.uk
+    http:
+      paths:
+      - path: /squid(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: squid-api-service
+            port: 
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: squirrel-stream-ingress
+  namespace: public
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/stremio-addon"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - squirrelnet.co.uk
+    - www.squirrelnet.co.uk
+    secretName: squirrelnet-tls
+  rules:
+  - host: squirrelnet.co.uk
+    http:
+      paths:
+      - path: /stremio-addon(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: squirrel-stream
+            port: 
+              number: 3001
+  - host: www.squirrelnet.co.uk
+    http:
+      paths:
+      - path: /stremio-addon(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: squirrel-stream
+            port: 
+              number: 3001
