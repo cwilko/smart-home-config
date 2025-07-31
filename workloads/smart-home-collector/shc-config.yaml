@@ -262,7 +262,7 @@ data:
       #bearer_token_string = ""
 
       ## Set response_timeout (default 5 seconds)
-      # response_timeout = "5s"
+      response_timeout = "20s"
 
       ## Optional Resources to exclude from gathering
       ## Leave them with blank with try to gather everything available.
