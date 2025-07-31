@@ -37,6 +37,8 @@ spec:
         env:
         - name: PORT
           value: "3001"
+        - name: DEBUG
+          value: "true"
         securityContext:
           runAsNonRoot: true
           runAsUser: 1001
@@ -45,18 +47,18 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
-        livenessProbe:
-          httpGet:
-            path: /manifest.json
-            port: 3001
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /manifest.json
-            port: 3001
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        # livenessProbe:
+        #   httpGet:
+        #     path: /manifest.json
+        #     port: 3001
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 30
+        # readinessProbe:
+        #   httpGet:
+        #     path: /manifest.json
+        #     port: 3001
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
 
 
       # Security and scheduling
