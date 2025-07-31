@@ -7,6 +7,10 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
 spec:
   ingressClassName: nginx
   tls:
@@ -19,7 +23,7 @@ spec:
     http:
       paths:
       - path: /stremio-proxy(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: stremio-proxy-service
@@ -29,7 +33,7 @@ spec:
     http:
       paths:
       - path: /stremio-proxy(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: stremio-proxy-service
@@ -59,7 +63,7 @@ spec:
     http:
       paths:
       - path: /squid(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: squid-api-service
@@ -69,7 +73,7 @@ spec:
     http:
       paths:
       - path: /squid(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: squid-api-service
@@ -100,7 +104,7 @@ spec:
     http:
       paths:
       - path: /stremio-addon(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: squirrel-stream
@@ -110,7 +114,7 @@ spec:
     http:
       paths:
       - path: /stremio-addon(/|$)(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: squirrel-stream
