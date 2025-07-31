@@ -1,7 +1,12 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-config-arm
+  namespace: triggers
 data:
   telegraf.conf: |
-    # Telegraf Configuration
+    # Telegraf Configuration for ARM nodes (Raspberry Pi)
+    # Includes sensors plugin for hardware monitoring
     #
     # Telegraf is entirely plugin driven. All metrics are gathered from the
     # declared inputs, and sent to the declared outputs.
@@ -202,25 +207,14 @@ data:
         ## By default, telegraf will gather stats for all devices including
         ## disk partitions.
         ## Setting devices will restrict the stats to the specified devices.
-        # devices = ["sda", "sdb", "vd*"]
-        ## Uncomment the following line if you need disk serial numbers.
-        # skip_serial_number = false
+        ## Monitor only main disk devices based on observed system devices
+        devices = ["mmcblk0"]
+        ## Skip serial numbers to avoid udev database dependencies in containerized environments
+        skip_serial_number = true
         #
-        ## On systems which support it, device metadata can be added in the form of
-        ## tags.
-        ## Currently only Linux is supported via udev properties. You can view
-        ## available properties for a device by running:
-        ## 'udevadm info -q property -n /dev/sda'
+        ## Disable device metadata features that require udev database access
+        ## These features don't work reliably in containerized environments
         # device_tags = ["ID_FS_TYPE", "ID_FS_USAGE"]
-        #
-        ## Using the same metadata source as device_tags, you can also customize the
-        ## name of the device via templates.
-        ## The 'name_templates' parameter is a list of templates to try and apply to
-        ## the device. The template may contain variables in the form of '$PROPERTY' or
-        ## '${PROPERTY}'. The first template which does not contain any variables not
-        ## present for the device is used as the device name tag.
-        ## The typical use case is for LVM volumes, to get the VG/LV name instead of
-        ## the near-meaningless DM-0 name.
         # name_templates = ["$ID_FS_LABEL","$DM_VG_NAME/$DM_LV_NAME"]
 
 
@@ -267,22 +261,36 @@ data:
         # ignore_protocol_stats = false
         ##
 
-    # Remove RPi specific temp sensors in favour of generic plugin
+    # Hardware sensors monitoring for ARM/Raspberry Pi nodes
     [[inputs.sensors]]
         remove_numbers = true
         timeout = "5s"
 
     [[inputs.docker]]
-    container_name_exclude = []
-    container_name_include = []
-    docker_label_exclude = []
-    docker_label_include = []
-    endpoint = "unix:///var/run/docker.sock"
-    gather_services = false
-    perdevice_include = ["cpu", "network", "blkio"]
-    timeout = "10s"
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: telegraf-config
-  namespace: triggers
+        container_name_exclude = []
+        container_name_include = []
+        docker_label_exclude = []
+        docker_label_include = []
+        endpoint = "unix:///var/run/docker.sock"
+        gather_services = false
+        perdevice_include = ["cpu", "network", "blkio"]
+        timeout = "10s"
+    
+    # Raspberry Pi metrics
+    [[inputs.exec]]
+        commands = ["vcgencmd measure_temp"]
+        name_override = "gpu_temp"
+        data_format = "grok"
+        grok_patterns = ["%{NUMBER:value:float}"]
+
+    [[inputs.exec]]
+        commands = ["vcgencmd measure_temp pmic"]
+        name_override = "pmic_temp"
+        data_format = "grok"
+        grok_patterns = ["%{NUMBER:value:float}"]
+
+    [[inputs.file]]
+        files = ["/sys/class/thermal/thermal_zone0/temp"]
+        name_override = "cpu_temp"
+        data_format = "value"
+        data_type = "integer" 

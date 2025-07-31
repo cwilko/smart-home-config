@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: metrics-collector-arm
+  namespace: triggers
+spec:
+  selector:
+    matchLabels:
+      app: telegraf-arm
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: telegraf-arm
+    spec:
+      # Target ARM architectures (Raspberry Pi nodes)
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values: ["arm64", "arm"]
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      serviceAccountName: telegraf
+      containers:
+        - image: wilkobets/telegraf:latest
+          name: telegraf
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/telegraf/telegraf.conf
+              name: telegraf-config
+              subPath: telegraf.conf
+              readOnly: true
+            - mountPath: /host
+              name: host-rootfs
+              readOnly: true
+            - mountPath: /var/run/docker.sock
+              name: docker
+          env:
+            - name: HOST_PROC
+              value: "/host/proc"
+            - name: HOST_SYS
+              value: "/host/sys"
+            - name: HOST_ETC
+              value: "/host/etc"
+            - name: HOST_VAR
+              value: "/host/var"              
+            - name: HOST_MOUNT_PREFIX
+              value: "/host"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          envFrom:
+            - secretRef:
+                name: telegraf-secrets
+      volumes:
+        - name: telegraf-config
+          configMap:
+            name: telegraf-config-arm
+        - name: host-rootfs
+          hostPath:
+            path: /
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
