@@ -15,7 +15,9 @@ spec:
       labels: 
         app: airflow 
     spec: 
-      serviceAccountName: airflow-scheduler 
+      serviceAccountName: airflow-scheduler
+      nodeSelector:
+        arm64: "true"
       initContainers:
         - name: init-db
           resources:
@@ -55,6 +57,8 @@ spec:
               value: "60"
             - name: AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT
               value: "False"
+            - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
+              value: "True"
             - name: AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE
               value: "Europe/London"
             - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
