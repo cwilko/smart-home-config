@@ -2,9 +2,46 @@ import pendulum
 from airflow.decorators import dag, task
 import json
 
+def get_db_connection():
+    """Get database connection using DATABASE_URL or individual parameters."""
+    import psycopg2
+    import os
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    
+    # Try DATABASE_URL first
+    database_url = os.getenv('DATABASE_URL')
+    
+    if database_url:
+        try:
+            return psycopg2.connect(database_url)
+        except Exception as e:
+            logger.error(f"Failed to connect via DATABASE_URL: {str(e)}")
+            raise
+    
+    # Fallback to individual parameters
+    db_host = os.getenv('POSTGRES_HOST', 'localhost')
+    db_name = os.getenv('POSTGRES_DB', 'econometrics')
+    db_user = os.getenv('POSTGRES_USER')
+    db_password = os.getenv('POSTGRES_PASSWORD')
+    db_port = os.getenv('POSTGRES_PORT', '5432')
+
+    try:
+        return psycopg2.connect(
+            host=db_host,
+            database=db_name,
+            user=db_user,
+            password=db_password,
+            port=db_port
+        )
+    except Exception as e:
+        logger.error(f"Failed to connect via individual params: {str(e)}")
+        raise
+
 
 @dag(
-    schedule_interval="0 */6 * * *",  # Every 6 hours
+    schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only
     start_date=pendulum.datetime(2024, 1, 1, tz="UTC"),
     catchup=False,
     is_paused_upon_creation=False,
@@ -38,22 +75,8 @@ def econometrics_data_pipeline():
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
-        # Get database connection from Airflow connection
-        db_host = os.getenv('POSTGRES_HOST', 'localhost')
-        db_name = os.getenv('POSTGRES_DB', 'econometrics') 
-        db_user = os.getenv('POSTGRES_USER')
-        db_password = os.getenv('POSTGRES_PASSWORD')
-        db_port = os.getenv('POSTGRES_PORT', '5432')
-
         try:
-            conn = psycopg2.connect(
-                host=db_host,
-                database=db_name,
-                user=db_user,
-                password=db_password,
-                port=db_port
-            )
-            
+            conn = get_db_connection()
             with conn.cursor() as cur:
                 # Read SQL file from git-synced location
                 sql_path = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/econometrics-pipeline/config/create_tables.sql"
@@ -385,15 +408,21 @@ def econometrics_data_pipeline():
         system_site_packages=False,
     )
     def collect_treasury_yields():
-        """Collect Treasury yield curve data from Treasury API."""
+        """Collect Treasury yield curve data from FRED API."""
         import requests
         import psycopg2
         import os
         import logging
+        import json
         from datetime import datetime
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
+
+        # Get API key
+        fred_api_key = os.getenv('FRED_API_KEY')
+        if not fred_api_key:
+            raise ValueError("FRED_API_KEY not found in environment variables")
 
         db_host = os.getenv('POSTGRES_HOST', 'localhost')
         db_name = os.getenv('POSTGRES_DB', 'econometrics')
@@ -401,30 +430,19 @@ def econometrics_data_pipeline():
         db_password = os.getenv('POSTGRES_PASSWORD')
         db_port = os.getenv('POSTGRES_PORT', '5432')
 
+        # Treasury yield series from FRED with maturity mapping
+        yield_series = {
+            "DGS1MO": "1M",   # 1-Month
+            "DGS3MO": "3M",   # 3-Month  
+            "DGS6MO": "6M",   # 6-Month
+            "DGS1": "1Y",     # 1-Year
+            "DGS2": "2Y",     # 2-Year
+            "DGS5": "5Y",     # 5-Year
+            "DGS10": "10Y",   # 10-Year
+            "DGS30": "30Y"    # 30-Year
+        }
+
         try:
-            # Fetch Treasury yield data
-            url = "https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/daily_treasury_yield_curve"
-            params = {
-                "format": "json",
-                "sort": "-record_date",
-                "page[size]": 100
-            }
-            
-            response = requests.get(url, params=params, timeout=30)
-            response.raise_for_status()
-            data = response.json()
-            
-            if "data" not in data:
-                logger.error("No data found in Treasury response")
-                return 0
-            
-            # Maturity mapping
-            maturity_mapping = {
-                "1_mo": "1M", "2_mo": "2M", "3_mo": "3M", "4_mo": "4M", "6_mo": "6M",
-                "1_yr": "1Y", "2_yr": "2Y", "3_yr": "3Y", "5_yr": "5Y", 
-                "7_yr": "7Y", "10_yr": "10Y", "20_yr": "20Y", "30_yr": "30Y"
-            }
-            
             # Connect to database
             conn = psycopg2.connect(
                 host=db_host,
@@ -435,15 +453,39 @@ def econometrics_data_pipeline():
             )
             
             success_count = 0
-            with conn.cursor() as cur:
-                for record in data["data"]:
-                    try:
-                        record_date = datetime.strptime(record["record_date"], "%Y-%m-%d").date()
-                        
-                        for api_field, maturity in maturity_mapping.items():
-                            if record.get(api_field) and record[api_field] != "":
-                                yield_rate = float(record[api_field])
+            
+            # Fetch each yield series from FRED
+            for series_id, maturity in yield_series.items():
+                try:
+                    logger.info(f"Fetching {maturity} Treasury yields ({series_id})")
+                    
+                    url = "https://api.stlouisfed.org/fred/series/observations"
+                    params = {
+                        "series_id": series_id,
+                        "api_key": fred_api_key,
+                        "file_type": "json",
+                        "limit": 100,
+                        "sort_order": "desc"
+                    }
+                    
+                    response = requests.get(url, params=params, timeout=30)
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    if "observations" not in data:
+                        logger.warning(f"No observations found for {series_id}")
+                        continue
+                    
+                    with conn.cursor() as cur:
+                        for item in data["observations"]:
+                            if item["value"] == ".":  # FRED uses "." for missing values
+                                continue
                                 
+                            try:
+                                record_date = datetime.strptime(item["date"], "%Y-%m-%d").date()
+                                yield_rate = float(item["value"])
+                                
+                                # Upsert data
                                 sql = """
                                 INSERT INTO treasury_yields (date, maturity, yield_rate, updated_at)
                                 VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
@@ -454,13 +496,19 @@ def econometrics_data_pipeline():
                                 cur.execute(sql, (record_date, maturity, yield_rate))
                                 success_count += 1
                                 
-                    except Exception as e:
-                        logger.warning(f"Error processing Treasury yield record: {str(e)}")
-                        continue
+                            except Exception as e:
+                                logger.warning(f"Error processing {series_id} item: {str(e)}")
+                                continue
+                                
+                        conn.commit()
+                        logger.info(f"Successfully processed {maturity} yields from {series_id}")
                         
-                conn.commit()
-                logger.info(f"Successfully processed {success_count} Treasury yield records")
-                return success_count
+                except Exception as e:
+                    logger.warning(f"Error fetching {series_id}: {str(e)}")
+                    continue
+                
+            logger.info(f"Successfully processed {success_count} total Treasury yield records")
+            return success_count
                 
         except Exception as e:
             logger.error(f"Error collecting Treasury yield data: {str(e)}")
