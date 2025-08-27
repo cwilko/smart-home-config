@@ -16,7 +16,6 @@ default_args = {"email": "wilkobets@googlemail.com", "email_on_failure": True}
     default_args=default_args,
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
-    is_paused_upon_creation=False,
     tags=["housemarket"],
 )
 def housemarket_etl():
