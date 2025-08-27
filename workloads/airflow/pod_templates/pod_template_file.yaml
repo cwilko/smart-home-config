@@ -3,7 +3,9 @@ kind: Pod
 metadata: 
   name: airflow-worker 
   namespace: actions 
-spec: 
+spec:
+  nodeSelector:
+    arm64: "true" 
   initContainers:
     - name: git-sync
       image: registry.k8s.io/git-sync/git-sync:v3.6.8

@@ -1,0 +1,83 @@
+{
+  "data_sources": {
+    "economic_indicators": {
+      "consumer_price_index": {
+        "source": "Bureau of Labor Statistics",
+        "api": "BLS Public Data API",
+        "endpoint": "https://api.bls.gov/publicAPI/v2/timeseries/data",
+        "series_id": "CUUR0000SA0",
+        "description": "All items in U.S. city average, seasonally adjusted",
+        "update_frequency": "Monthly",
+        "requires_api_key": false,
+        "rate_limit": "25 queries/day without key, 500 with key"
+      },
+      "federal_funds_rate": {
+        "source": "Federal Reserve Bank of St. Louis (FRED)",
+        "api": "FRED API",
+        "endpoint": "https://api.stlouisfed.org/fred/series/observations",
+        "series_id": "FEDFUNDS",
+        "description": "Effective Federal Funds Rate",
+        "update_frequency": "Monthly",
+        "requires_api_key": true,
+        "rate_limit": "120 requests/minute"
+      },
+      "unemployment_rate": {
+        "source": "Bureau of Labor Statistics",
+        "api": "BLS Public Data API", 
+        "series_id": "LNS14000000",
+        "description": "Unemployment Rate, seasonally adjusted",
+        "update_frequency": "Monthly"
+      },
+      "gdp": {
+        "source": "Bureau of Economic Analysis",
+        "api": "BEA Data API",
+        "endpoint": "https://apps.bea.gov/api/data",
+        "dataset": "NIPA",
+        "table": "T10101",
+        "description": "Gross Domestic Product",
+        "update_frequency": "Quarterly",
+        "requires_api_key": true
+      }
+    },
+    "market_data": {
+      "sp500_index": {
+        "source": "Federal Reserve Bank of St. Louis (FRED)",
+        "api": "FRED API",
+        "series_id": "SP500",
+        "description": "S&P 500 Stock Price Index",
+        "update_frequency": "Daily (market days)",
+        "requires_api_key": true
+      },
+      "vix_index": {
+        "source": "Federal Reserve Bank of St. Louis (FRED)",
+        "api": "FRED API", 
+        "series_id": "VIXCLS",
+        "description": "CBOE Volatility Index: VIX",
+        "update_frequency": "Daily (market days)",
+        "requires_api_key": true
+      },
+      "treasury_yields": {
+        "source": "U.S. Department of Treasury",
+        "api": "Treasury Data API",
+        "endpoint": "https://api.fiscaldata.treasury.gov/services/api/v1/accounting/od/daily_treasury_yield_curve",
+        "description": "Daily Treasury Par Yield Curve Rates",
+        "update_frequency": "Daily (business days)",
+        "requires_api_key": false
+      },
+      "pe_ratios": {
+        "source": "Multiple sources",
+        "description": "S&P 500 P/E ratios and Shiller P/E (CAPE)",
+        "sp500_pe_source": "Multpl.com",
+        "shiller_pe_source": "Yale University / Robert Shiller",
+        "update_frequency": "Daily for S&P P/E, Monthly for Shiller P/E"
+      }
+    }
+  },
+  "api_keys_required": [
+    "FRED_API_KEY",
+    "BEA_API_KEY"
+  ],
+  "api_keys_optional": [
+    "BLS_API_KEY"
+  ]
+}
