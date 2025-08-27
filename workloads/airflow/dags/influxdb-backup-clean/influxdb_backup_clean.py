@@ -7,7 +7,6 @@ dag = DAG(
     schedule_interval="0 3 * * 0",
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
-    is_paused_upon_creation=False,
     tags=["storage"],
 )
 
