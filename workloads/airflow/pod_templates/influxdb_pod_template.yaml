@@ -4,9 +4,11 @@ metadata:
   name: influxdb-backup
   namespace: storage 
 spec: 
+  nodeSelector:
+        arm64: "true"
   containers: 
     - name: base
-      image: arm32v7/influxdb:1.7.9
+      image: arm64v8/influxdb:1.7.10
       command: ["influxd", "backup", "-portable", "-database", "telegraf", "-host", "influxdb-service:8088", "/tmp/snapshot"]
       env:
       - name: INFLUXDB_HTTP_ENABLED
