@@ -89,6 +89,8 @@ spec:
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags" 
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
               value: "actions"
+            - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
+              value: "True"
             - name: AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE
               value: "Europe/London"
             - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
