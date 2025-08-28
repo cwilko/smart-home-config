@@ -8,9 +8,6 @@ connectionData = {
     "port": "{{ conn.postgres.port }}",
 }
 
-default_args = {"email": "wilkobets@googlemail.com", "email_on_failure": True}
-
-
 @dag(
     schedule_interval="0 21 * * *",
     default_args=default_args,

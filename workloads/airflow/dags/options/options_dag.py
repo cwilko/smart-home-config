@@ -1,13 +1,13 @@
 import pendulum
 from airflow.decorators import dag, task
 
-
 @dag(
     schedule_interval="0 18 * * 1-5",
     start_date=pendulum.datetime(2023, 1, 1, tz="US/Eastern"),
     catchup=False,
     tags=["marketinsights"],
 )
+
 def options_data_etl():
     """
     ### TaskFlow API Tutorial Documentation
