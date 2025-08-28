@@ -24,22 +24,6 @@ executor_env_overrides = {
     )
 }
 
-def get_db_connection(database_url=None):
-    """Get database connection."""
-    import psycopg2
-    import os
-    import logging
-    
-    logger = logging.getLogger(__name__)
-    
-    if database_url:
-        try:
-            return psycopg2.connect(database_url)
-        except Exception as e:
-            logger.error(f"Failed to connect via DATABASE_URL: {str(e)}")
-            raise
-    
-
 
 @dag(
     schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only
@@ -77,7 +61,13 @@ def econometrics_data_pipeline():
         logger = logging.getLogger(__name__)
 
         try:
-            conn = get_db_connection(os.getenv('DATABASE_URL'))
+            conn = None
+            try:
+                conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+            except Exception as e:
+                logger.error(f"Failed to connect via DATABASE_URL: {str(e)}")
+                raise
+                
             with conn.cursor() as cur:
                 # Read SQL file from git-synced location
                 sql_path = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/econometrics-pipeline/config/create_tables.sql"
