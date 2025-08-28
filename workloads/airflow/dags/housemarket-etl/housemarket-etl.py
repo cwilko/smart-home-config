@@ -1,23 +1,37 @@
 import pendulum
-from airflow.decorators import dag, task
+from airflow import DAG
+from airflow.decorators import task
+from kubernetes.client import models as k8s
 
-connectionData = {
-    "login": "{{ conn.postgres.login }}",
-    "password": "{{ conn.postgres.password }}",
-    "host": "{{ conn.postgres.host }}",
-    "port": "{{ conn.postgres.port }}",
+# Pod override configuration
+executor_env_overrides = {
+    "pod_override": k8s.V1Pod(
+        spec=k8s.V1PodSpec(
+            containers=[
+                k8s.V1Container(
+                    name="base",
+                    env_from=[
+                        # Add new secret
+                        k8s.V1EnvFromSource(
+                            secret_ref=k8s.V1SecretEnvSource(
+                                name="airflow-postgres-secret"
+                            )
+                        )
+                    ]
+                )
+            ]
+        )
+    )
 }
 
-@dag(
+with DAG(
+    dag_id="housemarket_etl",
     schedule_interval="0 21 * * *",
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     tags=["housemarket"],
-)
-def housemarket_etl():
-    """
-    ### Extract HouseMarket Data
-    """
+    doc_md="### Extract HouseMarket Data",
+) as dag:
 
     @task.virtualenv(
         task_id="extract_and_load",
@@ -26,16 +40,18 @@ def housemarket_etl():
             "marketinsights-dbschema@git+https://github.com/cwilko/marketinsights-dbschema.git",
         ],
         system_site_packages=False,
+        executor_config=executor_env_overrides,
     )
-    def extract_and_load(conn):
+    def extract_and_load():
         """
         #### Extract task
         """
+        import os
         from housemarket.extract import HouseScraper
         from marketinsights.database import MIDatabase
         from marketinsights.dbschema import House
         from housemarket.transform import PropertyIndex
-
+        
         regionCode = "5E91999"  # NewForest
         regionName = "NewForest"
 
@@ -45,18 +61,15 @@ def housemarket_etl():
 
         db = MIDatabase(
             dbClass=House,
-            host=conn["host"],
-            dbName="squirrel",
-            port=conn["port"],
-            user=conn["login"],
-            pw=conn["password"],
+            host=os.getenv('POSTGRES_HOST'),
+            dbName=os.getenv('POSTGRES_DB'),
+            port=os.getenv('POSTGRES_PORT'),
+            user=os.getenv('POSTGRES_USER'),
+            pw=os.getenv('POSTGRES_PASSWORD'),
         )
 
         result = db.upsert(PropertyIndex(data, regionName).getDict(), update=True)
 
         print(f"Complete: Inserted - {result['inserted']}, Updated {result['updated']}")
 
-    extract_and_load(connectionData)
-
-
-dag = housemarket_etl()
+    extract_and_load()
