@@ -67,7 +67,7 @@ def econometrics_data_pipeline():
             except Exception as e:
                 logger.error(f"Failed to connect via DATABASE_URL: {str(e)}")
                 raise
-                
+
             with conn.cursor() as cur:
                 # Read SQL file from git-synced location
                 sql_path = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/econometrics-pipeline/config/create_tables.sql"
@@ -88,7 +88,7 @@ def econometrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_fed_funds_rate",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilkin/marketinsights-collector.git",
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
         executor_config=executor_env_overrides,
@@ -114,7 +114,7 @@ def econometrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_cpi_data",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilkin/marketinsights-collector.git",
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
         executor_config=executor_env_overrides,
@@ -140,7 +140,7 @@ def econometrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_sp500_data",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilkin/marketinsights-collector.git",
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
         executor_config=executor_env_overrides,
@@ -166,7 +166,7 @@ def econometrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_treasury_yields",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilkin/marketinsights-collector.git",
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
         executor_config=executor_env_overrides,
