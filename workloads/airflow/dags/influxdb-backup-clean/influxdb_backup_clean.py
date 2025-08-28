@@ -18,17 +18,6 @@ executor_env_overrides = {
                 k8s.V1Container(
                     name="base",
                     env_from=[
-                        # Keep existing secrets from pod template
-                        k8s.V1EnvFromSource(
-                            secret_ref=k8s.V1SecretEnvSource(
-                                name="airflow-secret"
-                            )
-                        ),
-                        k8s.V1EnvFromSource(
-                            secret_ref=k8s.V1SecretEnvSource(
-                                name="airflow-connections"
-                            )
-                        ),
                         # Add new secret
                         k8s.V1EnvFromSource(
                             secret_ref=k8s.V1SecretEnvSource(

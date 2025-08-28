@@ -35,23 +35,7 @@ spec:
             - upgrade
           envFrom:
             - secretRef:
-                name: airflow-secret  
-        - name: git-sync
-          image: registry.k8s.io/git-sync/git-sync:v3.6.8
-          env:
-          - name: GIT_SYNC_BRANCH
-            value: "master"
-          - name: GIT_SYNC_REPO
-            value: "https://github.com/cwilko/smart-home-config"
-          - name:  GIT_SYNC_ROOT
-            value: "/git"
-          - name:  GIT_SYNC_DEST
-            value: "smart-home-config"
-          - name:  GIT_SYNC_ONE_TIME
-            value: "true"
-          volumeMounts:
-            - name: airflow-resources
-              mountPath: /git      
+                name: airflow-secret       
       containers:         
         - name: airflow-scheduler 
           image: cwilko/airflow:latest
@@ -125,6 +109,24 @@ spec:
             - airflow 
           args: 
             - webserver 
+        - name: git-sync
+          image: registry.k8s.io/git-sync/git-sync:v3.6.8
+          env:
+          - name: GIT_SYNC_BRANCH
+            value: "master"
+          - name: GIT_SYNC_REPO
+            value: "https://github.com/cwilko/smart-home-config"
+          - name:  GIT_SYNC_DEST
+            value: "smart-home-config"
+          - name:  GIT_SYNC_ROOT
+            value: "/git"
+          - name:  GIT_SYNC_ONE_TIME
+            value: "false"
+          - name:  GIT_SYNC_WAIT
+            value: "60"
+          volumeMounts:
+            - name: airflow-resources
+              mountPath: /git
       restartPolicy: Always 
       volumes: 
         - name: config
