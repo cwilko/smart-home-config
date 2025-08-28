@@ -10,7 +10,6 @@ connectionData = {
 
 @dag(
     schedule_interval="0 21 * * *",
-    default_args=default_args,
     start_date=pendulum.datetime(2023, 1, 1, tz="Europe/London"),
     catchup=False,
     tags=["housemarket"],
