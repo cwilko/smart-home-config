@@ -36,6 +36,9 @@ spec:
         value: "True" 
       - name: AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS_ON_FAILURE 
         value: "True" 
+      envFrom:
+        - secretRef:
+            name: airflow-secret
       volumeMounts: 
         - name: airflow-logs-pv 
           mountPath: /opt/airflow/logs 
