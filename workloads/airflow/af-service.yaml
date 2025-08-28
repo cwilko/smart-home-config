@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     app: airflow
-  type: NodePort
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 80
