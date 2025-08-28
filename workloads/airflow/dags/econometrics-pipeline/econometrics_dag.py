@@ -94,17 +94,17 @@ def econometrics_data_pipeline():
         executor_config=executor_env_overrides,
     )
     def collect_fed_funds_rate():
-        """Collect Federal Funds Rate data from FRED API."""
+        """Collect daily Federal Funds Rate data from FRED API (DFF series)."""
         import logging
         import os
-        from data_collectors.economic_indicators import collect_fed_funds_rate
+        from data_collectors.economic_indicators import collect_daily_fed_funds_rate
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
         try:
             database_url = os.getenv('DATABASE_URL')
-            result = collect_fed_funds_rate(database_url=database_url)
+            result = collect_daily_fed_funds_rate(database_url=database_url)
             logger.info(f"Successfully collected {result} Fed Funds Rate records")
             return result
         except Exception as e:
