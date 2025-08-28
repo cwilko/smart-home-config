@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS federal_funds_rate (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS daily_federal_funds_rate (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    effective_rate DECIMAL(10,4) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS unemployment_rate (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL UNIQUE,
@@ -86,6 +94,7 @@ CREATE TABLE IF NOT EXISTS pe_ratios (
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_cpi_date ON consumer_price_index(date);
 CREATE INDEX IF NOT EXISTS idx_fed_funds_date ON federal_funds_rate(date);
+CREATE INDEX IF NOT EXISTS idx_daily_fed_funds_date ON daily_federal_funds_rate(date DESC);
 CREATE INDEX IF NOT EXISTS idx_unemployment_date ON unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_gdp_quarter ON gross_domestic_product(quarter);
 CREATE INDEX IF NOT EXISTS idx_sp500_date ON sp500_index(date);
