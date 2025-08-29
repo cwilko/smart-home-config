@@ -44,13 +44,19 @@ spec:
             runAsUser: 50000
           env:
             - name: AIRFLOW__CORE__EXECUTOR
-              value: "KubernetesExecutor"
+              value: "CeleryKubernetesExecutor"
             - name: AIRFLOW__LOGGING__LOGGING_LEVEL
               value: "INFO"
+            - name: AIRFLOW__CELERY__BROKER_URL
+              value: "redis://redis.storage.svc.cluster.local:6379/0"
+            - name: AIRFLOW__CELERY__RESULT_BACKEND
+              value: "redis://redis.storage.svc.cluster.local:6379/0"
             - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/pod_templates/pod_template_file.yaml"
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
               value: "actions"
+            - name: AIRFLOW__CELERY_KUBERNETES_EXECUTOR__KUBERNETES_QUEUE
+              value: "kubernetes"
             - name: AIRFLOW__CORE__DAGS_FOLDER 
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags"
             - name: AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL 
@@ -80,11 +86,17 @@ spec:
         - name: airflow-webserver
           env:
             - name: AIRFLOW__CORE__EXECUTOR
-              value: "KubernetesExecutor"
+              value: "CeleryKubernetesExecutor"
+            - name: AIRFLOW__CELERY__BROKER_URL
+              value: "redis://redis.storage.svc.cluster.local:6379/0"
+            - name: AIRFLOW__CELERY__RESULT_BACKEND
+              value: "redis://redis.storage.svc.cluster.local:6379/0"
             - name: AIRFLOW__CORE__DAGS_FOLDER 
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags" 
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
               value: "actions"
+            - name: AIRFLOW__CELERY_KUBERNETES_EXECUTOR__KUBERNETES_QUEUE
+              value: "kubernetes"
             - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
               value: "True"
             - name: AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE
