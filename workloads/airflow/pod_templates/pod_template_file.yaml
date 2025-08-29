@@ -25,8 +25,8 @@ spec:
           mountPath: /git
   containers: 
     - name: base 
-      imagePullPolicy: IfNotPresent 
-      image: wilkobets/airflow:latest
+      imagePullPolicy: Always 
+      image: wilkobets/airflow:test
       env: 
       - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
         value: "actions" 

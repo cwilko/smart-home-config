@@ -22,8 +22,8 @@ spec:
         - name: init-db
           resources:
             {}
-          image: wilkobets/airflow:latest
-          imagePullPolicy: IfNotPresent
+          image: wilkobets/airflow:test
+          imagePullPolicy: Always
           securityContext: 
             allowPrivilegeEscalation: false
             capabilities:
@@ -38,8 +38,8 @@ spec:
                 name: airflow-secret       
       containers:         
         - name: airflow-scheduler 
-          image: wilkobets/airflow:latest
-          imagePullPolicy: IfNotPresent 
+          image: wilkobets/airflow:test
+          imagePullPolicy: Always 
           securityContext: 
             runAsUser: 50000
           env:
@@ -113,8 +113,8 @@ spec:
               readOnly: true          
             - name: airflow-logs-pv 
               mountPath: /opt/airflow/logs 
-          image: cwilko/airflow:latest
-          imagePullPolicy: IfNotPresent 
+          image: wilkobets/airflow:test
+          imagePullPolicy: Always 
           ports: 
             - containerPort: 8080 
           command: 

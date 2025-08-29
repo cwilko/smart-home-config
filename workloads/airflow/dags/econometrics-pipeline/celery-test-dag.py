@@ -26,7 +26,7 @@ def celery_test_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
+        system_site_packages=True,  # Use system environment + install requirements
         queue="celery",  # Route to Celery workers instead of Kubernetes
         # No executor_config needed - secrets come from worker environment
     )
