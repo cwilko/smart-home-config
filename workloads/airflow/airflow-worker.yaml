@@ -21,27 +21,10 @@ spec:
       serviceAccountName: airflow-scheduler
       nodeSelector:
         arm64: "true"
-      initContainers:
-        - name: git-sync
-          image: registry.k8s.io/git-sync/git-sync:v3.6.8
-          env:
-          - name: GIT_SYNC_BRANCH
-            value: "master"
-          - name: GIT_SYNC_REPO
-            value: "https://github.com/cwilko/smart-home-config"
-          - name:  GIT_SYNC_ROOT
-            value: "/git"
-          - name:  GIT_SYNC_DEST
-            value: "smart-home-config"
-          - name:  GIT_SYNC_ONE_TIME
-            value: "true"
-          volumeMounts:
-            - name: airflow-resources
-              mountPath: /git
       containers:         
         - name: airflow-worker 
           image: wilkobets/airflow:test
-          imagePullPolicy: IfNotPresent 
+          imagePullPolicy: Always 
           securityContext: 
             runAsUser: 50000
             allowPrivilegeEscalation: false
@@ -61,6 +44,8 @@ spec:
               value: "Europe/London"
             - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
               value: "Europe/London"
+            - name: AIRFLOW__CELERY__WORKER_CONCURRENCY
+              value: "4"
           envFrom:
             - secretRef:
                 name: airflow-secret
@@ -78,6 +63,25 @@ spec:
           args: 
             - celery
             - worker
+            - --queues=celery
+        - name: git-sync
+          image: registry.k8s.io/git-sync/git-sync:v3.6.8
+          env:
+          - name: GIT_SYNC_BRANCH
+            value: "master"
+          - name: GIT_SYNC_REPO
+            value: "https://github.com/cwilko/smart-home-config"
+          - name:  GIT_SYNC_DEST
+            value: "smart-home-config"
+          - name:  GIT_SYNC_ROOT
+            value: "/git"
+          - name:  GIT_SYNC_ONE_TIME
+            value: "false"
+          - name:  GIT_SYNC_WAIT
+            value: "60"
+          volumeMounts:
+            - name: airflow-resources
+              mountPath: /git
       restartPolicy: Always 
       volumes: 
         - emptyDir: {} 
