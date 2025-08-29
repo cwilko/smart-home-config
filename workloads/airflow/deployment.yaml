@@ -22,7 +22,7 @@ spec:
         - name: init-db
           resources:
             {}
-          image: cwilko/airflow:latest
+          image: wilkobets/airflow:latest
           imagePullPolicy: IfNotPresent
           securityContext: 
             allowPrivilegeEscalation: false
@@ -38,7 +38,7 @@ spec:
                 name: airflow-secret       
       containers:         
         - name: airflow-scheduler 
-          image: cwilko/airflow:latest
+          image: wilkobets/airflow:latest
           imagePullPolicy: IfNotPresent 
           securityContext: 
             runAsUser: 50000

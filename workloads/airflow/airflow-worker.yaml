@@ -40,7 +40,7 @@ spec:
               mountPath: /git
       containers:         
         - name: airflow-worker 
-          image: cwilko/airflow:latest
+          image: wilkobets/airflow:test
           imagePullPolicy: IfNotPresent 
           securityContext: 
             runAsUser: 50000
@@ -64,6 +64,8 @@ spec:
           envFrom:
             - secretRef:
                 name: airflow-secret
+            - secretRef:
+                name: airflow-econometrics-secret
           volumeMounts: 
             - name: airflow-logs-pv 
               mountPath: /opt/airflow/logs              
