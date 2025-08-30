@@ -24,6 +24,7 @@ def celery_test_pipeline():
     @task.virtualenv(
         task_id="collect_fed_funds_celery",
         requirements=[
+            "setuptools<70.0.0",  # Pin to compatible version to fix virtualenv issue
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=True,  # Use system environment + install requirements
