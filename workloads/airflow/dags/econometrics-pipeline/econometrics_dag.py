@@ -1,28 +1,6 @@
 import pendulum
 from airflow.decorators import dag, task
-from kubernetes.client import models as k8s
 import json
-
-# Pod override configuration for database environment variables
-executor_env_overrides = {
-    "pod_override": k8s.V1Pod(
-        spec=k8s.V1PodSpec(
-            containers=[
-                k8s.V1Container(
-                    name="base",
-                    env_from=[
-                        # Add database connection secrets
-                        k8s.V1EnvFromSource(
-                            secret_ref=k8s.V1SecretEnvSource(
-                                name="airflow-econometrics-secret"
-                            )
-                        )
-                    ]
-                )
-            ]
-        )
-    )
-}
 
 
 @dag(
@@ -61,8 +39,8 @@ def econometrics_data_pipeline():
         requirements=[
             "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  
     )
     def create_tables():
         """Create database tables if they don't exist."""
@@ -103,8 +81,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_fed_funds_rate():
         """Collect daily Federal Funds Rate data from FRED API (DFF series)."""
@@ -129,8 +107,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_cpi_data():
         """Collect Consumer Price Index data from BLS API."""
@@ -155,8 +133,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_sp500_data():
         """Collect S&P 500 index data from FRED API."""
@@ -181,8 +159,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_monthly_fed_funds_rate():
         """Collect monthly Federal Funds Rate data from FRED API (FEDFUNDS series)."""
@@ -207,8 +185,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_unemployment_rate():
         """Collect unemployment rate data from BLS API."""
@@ -233,8 +211,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_gdp_data():
         """Collect GDP data from BEA API."""
@@ -259,8 +237,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_vix_data():
         """Collect VIX volatility index data from FRED API."""
@@ -285,8 +263,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_pe_ratios():
         """Collect P/E ratio data from FRED API."""
@@ -311,8 +289,8 @@ def econometrics_data_pipeline():
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
-        system_site_packages=False,
-        executor_config=executor_env_overrides,
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_treasury_yields():
         """Collect Treasury yield curve data from FRED API."""
