@@ -26,7 +26,7 @@ spec:
   containers: 
     - name: base 
       imagePullPolicy: Always 
-      image: wilkobets/airflow:test
+      image: wilkobets/airflow:latest
       env: 
       - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
         value: "actions" 

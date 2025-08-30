@@ -23,7 +23,7 @@ spec:
         arm64: "true"
       containers:         
         - name: airflow-worker 
-          image: wilkobets/airflow:test
+          image: wilkobets/airflow:latest
           imagePullPolicy: Always 
           securityContext: 
             runAsUser: 50000
