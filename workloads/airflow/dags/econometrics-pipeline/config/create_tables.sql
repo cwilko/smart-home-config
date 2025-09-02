@@ -115,10 +115,28 @@ CREATE TABLE IF NOT EXISTS uk_consumer_price_index (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- UK Bank Rate tables (monthly and daily to mirror US Fed Funds structure)
+CREATE TABLE IF NOT EXISTS uk_monthly_bank_rate (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    rate DECIMAL(10,4) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS uk_daily_bank_rate (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    rate DECIMAL(10,4) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Backward compatibility table (alias for monthly)
 CREATE TABLE IF NOT EXISTS uk_bank_rate (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL UNIQUE,
-    bank_rate DECIMAL(10,4) NOT NULL,
+    rate DECIMAL(10,4) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -133,9 +151,8 @@ CREATE TABLE IF NOT EXISTS uk_unemployment_rate (
 
 CREATE TABLE IF NOT EXISTS uk_gross_domestic_product (
     id SERIAL PRIMARY KEY,
-    quarter DATE NOT NULL UNIQUE,
-    gdp_billions DECIMAL(15,2) NOT NULL,
-    gdp_growth_rate DECIMAL(10,4),
+    date DATE NOT NULL UNIQUE,  -- Changed from 'quarter' to 'date' for monthly GDP data
+    gdp_index DECIMAL(15,4) NOT NULL,  -- Changed from 'gdp_billions' to 'gdp_index' to match ONS data
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -173,9 +190,11 @@ CREATE TABLE IF NOT EXISTS gbp_usd_exchange_rate (
 
 -- UK indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_uk_cpi_date ON uk_consumer_price_index(date);
+CREATE INDEX IF NOT EXISTS idx_uk_monthly_bank_rate_date ON uk_monthly_bank_rate(date);
+CREATE INDEX IF NOT EXISTS idx_uk_daily_bank_rate_date ON uk_daily_bank_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_bank_rate_date ON uk_bank_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date);
-CREATE INDEX IF NOT EXISTS idx_uk_gdp_quarter ON uk_gross_domestic_product(quarter);
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gross_domestic_product(date);  -- Changed from quarter to date
 CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
 CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date_maturity ON uk_gilt_yields(date, maturity);
 CREATE INDEX IF NOT EXISTS idx_gbp_usd_date ON gbp_usd_exchange_rate(date);
