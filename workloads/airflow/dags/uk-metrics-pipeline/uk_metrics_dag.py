@@ -41,7 +41,7 @@ def uk_metrics_data_pipeline():
         queue="celery",  
     )
     def create_uk_tables():
-        """Create UK database tables if they don't exist."""
+        """Create database tables if they don't exist."""
         import psycopg2
         import os
         import logging
@@ -58,84 +58,17 @@ def uk_metrics_data_pipeline():
                 raise
 
             with conn.cursor() as cur:
-                # UK-specific table creation SQL
-                uk_tables_sql = """
-                -- UK Consumer Price Index (CPIH)
-                CREATE TABLE IF NOT EXISTS uk_consumer_price_index (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL UNIQUE,
-                    cpi_value DECIMAL(10, 3) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                -- UK Unemployment Rate
-                CREATE TABLE IF NOT EXISTS uk_unemployment_rate (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL UNIQUE,
-                    unemployment_rate DECIMAL(5, 2) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                -- UK GDP (Monthly)
-                CREATE TABLE IF NOT EXISTS uk_gdp_monthly (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL UNIQUE,
-                    gdp_value DECIMAL(10, 4) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                -- UK Bank Rate
-                CREATE TABLE IF NOT EXISTS uk_bank_rate (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL UNIQUE,
-                    bank_rate DECIMAL(5, 3) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                -- UK Gilt Yields
-                CREATE TABLE IF NOT EXISTS uk_gilt_yields (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL,
-                    maturity TEXT NOT NULL,
-                    yield_rate DECIMAL(6, 3) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(date, maturity)
-                );
-
-                -- FTSE 100 Index
-                CREATE TABLE IF NOT EXISTS ftse_100_index (
-                    id SERIAL PRIMARY KEY,
-                    date DATE NOT NULL UNIQUE,
-                    open_price DECIMAL(10, 2) NOT NULL,
-                    high_price DECIMAL(10, 2) NOT NULL,
-                    low_price DECIMAL(10, 2) NOT NULL,
-                    close_price DECIMAL(10, 2) NOT NULL,
-                    volume BIGINT DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-
-                -- Create indexes for better query performance
-                CREATE INDEX IF NOT EXISTS idx_uk_cpi_date ON uk_consumer_price_index(date);
-                CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date);
-                CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gdp_monthly(date);
-                CREATE INDEX IF NOT EXISTS idx_uk_bank_rate_date ON uk_bank_rate(date);
-                CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date ON uk_gilt_yields(date);
-                CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_maturity ON uk_gilt_yields(maturity);
-                CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
-                """
+                # Read SQL file from git-synced location
+                sql_path = "/opt/airflow/sync/smart-home-config/workloads/airflow/dags/econometrics-pipeline/config/create_tables.sql"
+                with open(sql_path, 'r') as f:
+                    sql = f.read()
                 
-                cur.execute(uk_tables_sql)
+                cur.execute(sql)
                 conn.commit()
-                logger.info("UK database tables created successfully")
+                logger.info("Database tables created successfully")
                 
         except Exception as e:
-            logger.error(f"Error creating UK tables: {str(e)}")
+            logger.error(f"Error creating tables: {str(e)}")
             raise
         finally:
             if conn:
@@ -153,6 +86,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_cpi",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_cpi_data():
@@ -185,6 +119,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_unemployment",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_unemployment_data():
@@ -217,6 +152,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_gdp",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gdp_data():
@@ -249,6 +185,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_bank_rate",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_bank_rate_data():
@@ -281,6 +218,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_gilt_yields",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gilt_yields_data():
@@ -313,6 +251,7 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_ftse_100",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_ftse_100_data():
