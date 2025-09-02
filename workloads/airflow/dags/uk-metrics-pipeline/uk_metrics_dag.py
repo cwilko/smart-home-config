@@ -145,8 +145,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_uk_cpi_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_cpi_data():
@@ -171,8 +176,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_uk_unemployment_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_unemployment_data():
@@ -197,8 +207,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_uk_gdp_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gdp_data():
@@ -223,8 +238,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_uk_bank_rate_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_bank_rate_data():
@@ -249,8 +269,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_uk_gilt_yields_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gilt_yields_data():
@@ -275,8 +300,13 @@ def uk_metrics_data_pipeline():
         task_id="collect_ftse_100_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,
+        system_site_packages=False,
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_ftse_100_data():
