@@ -152,6 +152,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_cpi_data():
@@ -183,6 +184,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_unemployment_data():
@@ -214,6 +216,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gdp_data():
@@ -245,6 +248,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_bank_rate_data():
@@ -276,6 +280,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gilt_yields_data():
@@ -307,6 +312,7 @@ def uk_metrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_ftse_100_data():
