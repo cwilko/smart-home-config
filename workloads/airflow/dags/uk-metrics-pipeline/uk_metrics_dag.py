@@ -63,8 +63,18 @@ def uk_metrics_data_pipeline():
                 with open(sql_path, 'r') as f:
                     sql = f.read()
                 
-                cur.execute(sql)
-                conn.commit()
+                # Execute SQL statements separately to avoid transaction issues
+                statements = [stmt.strip() for stmt in sql.split(';') if stmt.strip()]
+                for i, statement in enumerate(statements):
+                    try:
+                        cur.execute(statement)
+                        conn.commit()
+                        logger.info(f"Executed statement {i+1}/{len(statements)}")
+                    except Exception as e:
+                        logger.error(f"Failed to execute statement {i+1}: {statement[:100]}...")
+                        logger.error(f"Error: {str(e)}")
+                        raise
+                        
                 logger.info("Database tables created successfully")
                 
         except Exception as e:
