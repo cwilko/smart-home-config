@@ -22,4 +22,5 @@ influxdb_backup = KubernetesPodOperator(
     is_delete_operator_pod=True,
     hostnetwork=False,
     get_logs=True,
+    queue='kubernetes',
 )

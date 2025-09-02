@@ -37,5 +37,6 @@ delete_backups = BashOperator(
     task_id="delete_backups",
     bash_command=command,
     executor_config=executor_env_overrides,
+    queue='kubernetes',
     dag=dag,
 )
