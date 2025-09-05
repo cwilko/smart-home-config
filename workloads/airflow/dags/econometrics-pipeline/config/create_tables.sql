@@ -183,7 +183,6 @@ CREATE TABLE IF NOT EXISTS gbp_usd_exchange_rate (
 CREATE INDEX IF NOT EXISTS idx_uk_cpi_date ON uk_consumer_price_index(date);
 CREATE INDEX IF NOT EXISTS idx_uk_monthly_bank_rate_date ON uk_monthly_bank_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_daily_bank_rate_date ON uk_daily_bank_rate(date);
-CREATE INDEX IF NOT EXISTS idx_uk_bank_rate_date ON uk_bank_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gross_domestic_product(date);  -- Changed from quarter to date
 CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
