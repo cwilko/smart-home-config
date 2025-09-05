@@ -20,7 +20,7 @@ def uk_metrics_data_pipeline():
     - UK Consumer Price Index - CPIH (ONS Beta API)
     - UK Unemployment Rate (ONS Beta API) 
     - UK GDP Monthly (ONS Beta API)
-    - UK Bank Rate (Bank of England IADB)
+    - UK Bank Rate Monthly (Bank of England IADB)
     
     **UK Market data (2 metrics):**
     - UK Gilt Yields - 5Y/10Y/20Y (Bank of England IADB)
@@ -199,17 +199,17 @@ def uk_metrics_data_pipeline():
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_bank_rate_data():
-        """Collect UK Bank Rate data from Bank of England IADB."""
+        """Collect UK Bank Rate monthly data from Bank of England IADB."""
         import logging
         import os
-        from data_collectors.economic_indicators import collect_uk_bank_rate
+        from data_collectors.economic_indicators import collect_uk_monthly_bank_rate
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
         try:
             database_url = os.getenv('DATABASE_URL')
-            result = collect_uk_bank_rate(database_url=database_url)
+            result = collect_uk_monthly_bank_rate(database_url=database_url)
             logger.info(f"Successfully collected {result} UK Bank Rate records")
             return result
         except Exception as e:
