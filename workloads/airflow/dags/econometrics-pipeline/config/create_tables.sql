@@ -132,15 +132,6 @@ CREATE TABLE IF NOT EXISTS uk_daily_bank_rate (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Backward compatibility table (alias for monthly)
-CREATE TABLE IF NOT EXISTS uk_bank_rate (
-    id SERIAL PRIMARY KEY,
-    date DATE NOT NULL UNIQUE,
-    rate DECIMAL(10,4) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS uk_unemployment_rate (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL UNIQUE,
