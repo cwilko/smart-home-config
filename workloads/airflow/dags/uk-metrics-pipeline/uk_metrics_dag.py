@@ -22,12 +22,11 @@ def uk_metrics_data_pipeline():
     - UK GDP Monthly (ONS Beta API)
     - UK Bank Rate Monthly (Bank of England IADB)
     
-    **UK Market data (3 metrics):**
-    - UK Gilt Yields - 5Y/10Y/20Y (Bank of England IADB)
+    **UK Market data (2 metrics):**
     - FTSE 100 Index (MarketWatch CSV API)
     - BoE Yield Curves - 80+ maturities, 4 types (Bank of England ZIP files)
     
-    **Total: 7 UK metrics collected daily on weekdays**
+    **Total: 6 UK metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for UK economic dashboard visualization and analysis.
     Complements the main US econometrics pipeline with comprehensive UK data.
@@ -217,38 +216,6 @@ def uk_metrics_data_pipeline():
             logger.error(f"Error collecting UK Bank Rate data: {str(e)}")
             raise
 
-    @task.virtualenv(
-        task_id="collect_uk_gilt_yields_data",
-        requirements=[
-            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
-            "beautifulsoup4>=4.12.0",
-            "lxml>=4.9.0",
-            "pandas>=2.0.0",
-            "requests>=2.31.0",
-            "psycopg2-binary>=2.9.0",
-        ],
-        system_site_packages=False,
-        pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_gilt_yields",
-        queue="celery",  # Use Celery workers with pre-loaded secrets
-    )
-    def collect_uk_gilt_yields_data():
-        """Collect UK gilt yields (5Y, 10Y, 20Y) data from Bank of England IADB."""
-        import logging
-        import os
-        from data_collectors.economic_indicators import collect_uk_gilt_yields
-
-        logging.basicConfig(level=logging.INFO)
-        logger = logging.getLogger(__name__)
-
-        try:
-            database_url = os.getenv('DATABASE_URL')
-            result = collect_uk_gilt_yields(database_url=database_url)
-            logger.info(f"Successfully collected {result} UK gilt yields records")
-            return result
-        except Exception as e:
-            logger.error(f"Error collecting UK gilt yields data: {str(e)}")
-            raise
 
     @task.virtualenv(
         task_id="collect_ftse_100_data",
@@ -326,8 +293,7 @@ def uk_metrics_data_pipeline():
     uk_gdp_task = collect_uk_gdp_data()
     uk_bank_rate_task = collect_uk_bank_rate_data()
     
-    # UK Market data
-    uk_gilt_yields_task = collect_uk_gilt_yields_data()
+    # UK Market data  
     ftse_100_task = collect_ftse_100_data()
     
     # BoE comprehensive yield curve data
@@ -336,8 +302,7 @@ def uk_metrics_data_pipeline():
     # Set dependencies - all collectors depend on tables being created
     tables_task >> [
         uk_cpi_task, uk_unemployment_task, uk_gdp_task, 
-        uk_bank_rate_task, uk_gilt_yields_task, ftse_100_task,
-        boe_yield_curves_task
+        uk_bank_rate_task, ftse_100_task, boe_yield_curves_task
     ]
 
 
