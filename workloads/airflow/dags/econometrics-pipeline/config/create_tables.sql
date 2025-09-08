@@ -161,18 +161,7 @@ CREATE TABLE IF NOT EXISTS ftse_100_index (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Legacy UK gilt yields table (3 maturities from IADB API)
-CREATE TABLE IF NOT EXISTS uk_gilt_yields (
-    id SERIAL PRIMARY KEY,
-    date DATE NOT NULL,
-    maturity VARCHAR(10) NOT NULL,
-    yield_rate DECIMAL(10,4),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(date, maturity)
-);
-
--- New comprehensive BoE yield curve table (80+ maturities from ZIP files)
+-- Comprehensive BoE yield curve table (80+ maturities from ZIP files)
 CREATE TABLE IF NOT EXISTS boe_yield_curves (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL,
@@ -200,7 +189,6 @@ CREATE INDEX IF NOT EXISTS idx_uk_daily_bank_rate_date ON uk_daily_bank_rate(dat
 CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gross_domestic_product(date);  -- Changed from quarter to date
 CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
-CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date_maturity ON uk_gilt_yields(date, maturity);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_date_maturity_type ON boe_yield_curves(date, maturity_years, yield_type);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_yield_type ON boe_yield_curves(yield_type);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_maturity ON boe_yield_curves(maturity_years);
