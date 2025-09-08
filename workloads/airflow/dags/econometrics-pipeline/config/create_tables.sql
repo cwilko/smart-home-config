@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS ftse_100_index (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Legacy UK gilt yields table (3 maturities from IADB API)
 CREATE TABLE IF NOT EXISTS uk_gilt_yields (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL,
@@ -169,6 +170,19 @@ CREATE TABLE IF NOT EXISTS uk_gilt_yields (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(date, maturity)
+);
+
+-- New comprehensive BoE yield curve table (80+ maturities from ZIP files)
+CREATE TABLE IF NOT EXISTS boe_yield_curves (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    maturity_years DECIMAL(6,3) NOT NULL,  -- Supports fractional years like 0.5, 1.5, etc.
+    yield_rate DECIMAL(10,4) NOT NULL,
+    yield_type VARCHAR(20) NOT NULL,  -- 'nominal', 'real', 'inflation', 'ois'
+    data_source VARCHAR(50) DEFAULT 'BoE_ZIP_daily',  -- Track data source
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, maturity_years, yield_type)
 );
 
 CREATE TABLE IF NOT EXISTS gbp_usd_exchange_rate (
@@ -187,4 +201,7 @@ CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date
 CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gross_domestic_product(date);  -- Changed from quarter to date
 CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
 CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date_maturity ON uk_gilt_yields(date, maturity);
+CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_date_maturity_type ON boe_yield_curves(date, maturity_years, yield_type);
+CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_yield_type ON boe_yield_curves(yield_type);
+CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_maturity ON boe_yield_curves(maturity_years);
 CREATE INDEX IF NOT EXISTS idx_gbp_usd_date ON gbp_usd_exchange_rate(date);
