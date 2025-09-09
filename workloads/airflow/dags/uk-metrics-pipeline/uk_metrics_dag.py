@@ -288,15 +288,12 @@ def uk_metrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_gilt_market_prices_data",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[gilt_market]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
             "requests>=2.31.0",
             "psycopg2-binary>=2.9.0",
-            "selenium>=4.15.0",
-            "webdriver-manager>=4.0.0",
-            "scipy>=1.11.0",
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
@@ -307,7 +304,7 @@ def uk_metrics_data_pipeline():
         """Collect real-time gilt market prices from Hargreaves Lansdown broker."""
         import logging
         import os
-        from data_collectors.economic_indicators import collect_gilt_market_prices
+        from data_collectors.gilt_market_data import collect_gilt_market_prices
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
