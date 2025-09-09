@@ -193,3 +193,26 @@ CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_date_maturity_type ON boe_yield_
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_yield_type ON boe_yield_curves(yield_type);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_maturity ON boe_yield_curves(maturity_years);
 CREATE INDEX IF NOT EXISTS idx_gbp_usd_date ON gbp_usd_exchange_rate(date);
+
+-- Gilt Market Data Table (Real-time broker prices)
+CREATE TABLE IF NOT EXISTS gilt_market_prices (
+    id SERIAL PRIMARY KEY,
+    bond_name VARCHAR(255) NOT NULL,
+    clean_price DECIMAL(10,6) NOT NULL,
+    accrued_interest DECIMAL(10,6) NOT NULL,
+    dirty_price DECIMAL(10,6) NOT NULL,
+    coupon_rate DECIMAL(8,6) NOT NULL,
+    maturity_date DATE NOT NULL,
+    years_to_maturity DECIMAL(8,4) NOT NULL,
+    ytm DECIMAL(8,6),
+    after_tax_ytm DECIMAL(8,6),
+    scraped_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(bond_name, scraped_at)
+);
+
+-- Index for gilt market data
+CREATE INDEX IF NOT EXISTS idx_gilt_market_scraped_at ON gilt_market_prices(scraped_at);
+CREATE INDEX IF NOT EXISTS idx_gilt_market_maturity ON gilt_market_prices(maturity_date);
+CREATE INDEX IF NOT EXISTS idx_gilt_market_bond_name ON gilt_market_prices(bond_name);
