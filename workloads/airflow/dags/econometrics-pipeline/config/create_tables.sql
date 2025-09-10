@@ -206,13 +206,13 @@ CREATE TABLE IF NOT EXISTS gilt_market_prices (
     years_to_maturity DECIMAL(8,4) NOT NULL,
     ytm DECIMAL(8,6),
     after_tax_ytm DECIMAL(8,6),
-    scraped_at TIMESTAMP NOT NULL,
+    scraped_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(bond_name, scraped_at)
+    UNIQUE(bond_name, scraped_date)
 );
 
 -- Index for gilt market data
-CREATE INDEX IF NOT EXISTS idx_gilt_market_scraped_at ON gilt_market_prices(scraped_at);
+CREATE INDEX IF NOT EXISTS idx_gilt_market_scraped_date ON gilt_market_prices(scraped_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_maturity ON gilt_market_prices(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_bond_name ON gilt_market_prices(bond_name);
