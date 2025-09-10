@@ -30,24 +30,54 @@ spec:
           command: ["/bin/bash", "-c"]
           args: 
             - |
-              echo "Installing chromium-chromedriver for ARM64..."
+              echo "Installing Chromium and ChromeDriver for ARM64..."
               apt-get update
-              apt-get install -y chromium-chromedriver
-              echo "ChromeDriver installed, copying to shared volume..."
+              
+              # Check what chromium packages are available
+              echo "Available Chromium packages:"
+              apt-cache search chromium | head -10
+              
+              # Try different package names
+              apt-get install -y chromium chromium-driver || \
+              apt-get install -y chromium-browser chromium-chromedriver || \
+              apt-get install -y chromium-browser || \
+              echo "No standard chromium packages found, trying alternative approach..."
+              
+              # If standard packages don't work, try to install from snap or download directly
+              if ! command -v chromium &> /dev/null && ! command -v chromium-browser &> /dev/null; then
+                echo "Installing chromium via snap..."
+                apt-get install -y snapd
+                snap install chromium
+              fi
+              
+              echo "Checking installed files..."
+              find /usr -name "*chrome*" -type f 2>/dev/null | head -10
+              find /snap -name "*chrome*" -type f 2>/dev/null | head -5
               
               # Create directory structure in shared volume
               mkdir -p /shared/usr/lib/chromium-browser
               mkdir -p /shared/usr/bin
+              mkdir -p /shared/snap/chromium/current/usr/lib/chromium-browser
               
-              # Copy chromedriver and related binaries
-              cp /usr/lib/chromium-browser/chromedriver /shared/usr/lib/chromium-browser/ || echo "ChromeDriver not found at /usr/lib/chromium-browser/"
-              cp /usr/bin/chromium-browser /shared/usr/bin/ 2>/dev/null || echo "Chromium binary not found, continuing..."
+              # Try to copy from various locations
+              cp /usr/lib/chromium-browser/chromedriver /shared/usr/lib/chromium-browser/ 2>/dev/null || \
+              cp /usr/bin/chromedriver /shared/usr/bin/chromedriver 2>/dev/null || \
+              cp /snap/chromium/current/usr/lib/chromium-browser/chromedriver /shared/snap/chromium/current/usr/lib/chromium-browser/ 2>/dev/null || \
+              echo "ChromeDriver not found in expected locations"
               
-              # Make sure chromedriver is executable
-              chmod +x /shared/usr/lib/chromium-browser/chromedriver 2>/dev/null || echo "Could not set executable permission"
+              # Copy chromium binary
+              cp /usr/bin/chromium-browser /shared/usr/bin/ 2>/dev/null || \
+              cp /usr/bin/chromium /shared/usr/bin/chromium 2>/dev/null || \
+              cp /snap/chromium/current/usr/lib/chromium-browser/chrome /shared/usr/bin/chromium 2>/dev/null || \
+              echo "Chromium binary not found in expected locations"
               
-              echo "Files copied to shared volume:"
-              ls -la /shared/usr/lib/chromium-browser/ || echo "No files in chromium-browser directory"
+              # Make files executable
+              chmod +x /shared/usr/lib/chromium-browser/chromedriver 2>/dev/null
+              chmod +x /shared/usr/bin/* 2>/dev/null
+              chmod +x /shared/snap/chromium/current/usr/lib/chromium-browser/chromedriver 2>/dev/null
+              
+              echo "Files in shared volume:"
+              find /shared -type f 2>/dev/null | head -10
           volumeMounts:
             - name: chromedriver-shared
               mountPath: /shared
