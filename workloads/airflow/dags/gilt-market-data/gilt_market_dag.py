@@ -3,6 +3,28 @@ from airflow.decorators import dag, task
 import json
 from kubernetes import client as k8s
 
+# Executor configuration for Chrome web scraping tasks
+executor_env_overrides = {
+    "pod_override": k8s.V1Pod(
+        spec=k8s.V1PodSpec(
+            node_selector={"arm64": "true"},
+            containers=[
+                k8s.V1Container(
+                    name="base",
+                    image="wilkobets/airflow-chrome:latest",
+                    env_from=[
+                        k8s.V1EnvFromSource(
+                            secret_ref=k8s.V1SecretEnvSource(
+                                name="airflow-econometrics-secret"
+                            )
+                        )
+                    ]
+                )
+            ]
+        )
+    )
+}
+
 
 @dag(
     schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only - after UK markets close
@@ -47,30 +69,7 @@ def gilt_market_data_pipeline():
         pip_install_options=["--no-user"],
         venv_cache_path="/tmp/venv_gilt_market_prices",
         queue="kubernetes",
-        executor_config={
-            "pod_override": {
-                "apiVersion": "v1",
-                "kind": "Pod",
-                "metadata": {
-                    "name": "gilt-market-collector",
-                    "namespace": "actions"
-                },
-                "spec": {
-                    "nodeSelector": {
-                        "arm64": "true"
-                    },
-                    "containers": [{
-                        "name": "base",
-                        "image": "wilkobets/airflow-chrome:latest",
-                        "envFrom": [{
-                            "secretRef": {
-                                "name": "airflow-econometrics-secret"
-                            }
-                        }]
-                    }]
-                }
-            }
-        },
+        executor_config=executor_env_overrides,
     )
     def collect_gilt_market_prices_data():
         """Collect real-time gilt market prices from Hargreaves Lansdown broker."""
