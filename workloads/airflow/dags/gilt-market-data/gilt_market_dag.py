@@ -1,6 +1,7 @@
 import pendulum
 from airflow.decorators import dag, task
 import json
+from kubernetes import client as k8s
 
 
 @dag(
