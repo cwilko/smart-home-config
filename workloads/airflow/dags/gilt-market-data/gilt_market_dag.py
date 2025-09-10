@@ -45,7 +45,7 @@ def gilt_market_data_pipeline():
         system_site_packages=True,
         pip_install_options=["--no-user"],
         venv_cache_path="/tmp/venv_gilt_market_prices",
-        executor_env_overrides={
+        executor_config={
             "pod_override": {
                 "apiVersion": "v1",
                 "kind": "Pod",
