@@ -304,35 +304,13 @@ def uk_metrics_data_pipeline():
         """Collect real-time gilt market prices from Hargreaves Lansdown broker."""
         import logging
         import os
-        import subprocess
         from data_collectors.gilt_market_data import collect_gilt_market_prices
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
-        # Install Chromium ChromeDriver for Raspberry Pi - FAIL HARD if this fails
-        logger.info("Installing chromium-chromedriver for Raspberry Pi ARM64...")
-        try:
-            # Update package list first
-            update_result = subprocess.run(['apt-get', 'update'], 
-                                         check=True, capture_output=True, text=True)
-            logger.info("apt-get update completed successfully")
-            
-            # Install chromium-chromedriver
-            install_result = subprocess.run(['apt-get', 'install', '-y', 'chromium-chromedriver'], 
-                                          check=True, capture_output=True, text=True)
-            logger.info("chromium-chromedriver installed successfully")
-            
-        except subprocess.CalledProcessError as e:
-            logger.error(f"CRITICAL: Failed to install chromium-chromedriver")
-            logger.error(f"Command: {' '.join(e.cmd)}")
-            logger.error(f"Return code: {e.returncode}")
-            logger.error(f"STDOUT: {e.stdout}")
-            logger.error(f"STDERR: {e.stderr}")
-            raise RuntimeError(f"ARM64 ChromeDriver installation failed: {e}") from e
-        except Exception as e:
-            logger.error(f"CRITICAL: Unexpected error during chromium-chromedriver installation: {e}")
-            raise RuntimeError(f"ARM64 ChromeDriver installation failed with unexpected error: {e}") from e
+        # ChromeDriver should be installed by init container
+        logger.info("Starting gilt market data collection (ChromeDriver pre-installed by init container)")
 
         try:
             database_url = os.getenv('DATABASE_URL')
