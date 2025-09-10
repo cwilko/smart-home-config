@@ -21,13 +21,46 @@ spec:
       serviceAccountName: airflow-scheduler
       nodeSelector:
         arm64: "true"
+      initContainers:
+        - name: install-chromedriver
+          image: wilkobets/airflow:latest
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+          command: ["/bin/bash", "-c"]
+          args: 
+            - |
+              echo "Installing chromium-chromedriver for ARM64..."
+              apt-get update
+              apt-get install -y chromium-chromedriver
+              echo "ChromeDriver installed, copying to shared volume..."
+              
+              # Create directory structure in shared volume
+              mkdir -p /shared/usr/lib/chromium-browser
+              mkdir -p /shared/usr/bin
+              
+              # Copy chromedriver and related binaries
+              cp /usr/lib/chromium-browser/chromedriver /shared/usr/lib/chromium-browser/ || echo "ChromeDriver not found at /usr/lib/chromium-browser/"
+              cp /usr/bin/chromium-browser /shared/usr/bin/ 2>/dev/null || echo "Chromium binary not found, continuing..."
+              
+              # Make sure chromedriver is executable
+              chmod +x /shared/usr/lib/chromium-browser/chromedriver 2>/dev/null || echo "Could not set executable permission"
+              
+              echo "Files copied to shared volume:"
+              ls -la /shared/usr/lib/chromium-browser/ || echo "No files in chromium-browser directory"
+          volumeMounts:
+            - name: chromedriver-shared
+              mountPath: /shared
       containers:         
         - name: airflow-worker 
           image: wilkobets/airflow:latest
           imagePullPolicy: Always 
           securityContext: 
-            runAsUser: 0
-            allowPrivilegeEscalation: true
+            runAsUser: 50000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: "CeleryKubernetesExecutor"
@@ -54,6 +87,9 @@ spec:
               readOnly: false 
             - name: airflow-resources
               mountPath: "/opt/airflow/sync"
+              readOnly: true
+            - name: chromedriver-shared
+              mountPath: /shared
               readOnly: true   
           command: 
             - airflow 
@@ -85,4 +121,6 @@ spec:
           name: airflow-resources
         - name: airflow-logs-pv 
           persistentVolumeClaim: 
-            claimName: airflow-logs-pvc 
+            claimName: airflow-logs-pvc
+        - emptyDir: {}
+          name: chromedriver-shared 
