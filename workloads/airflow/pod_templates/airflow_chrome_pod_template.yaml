@@ -1,0 +1,63 @@
+apiVersion: v1 
+kind: Pod 
+metadata: 
+  name: airflow-chrome-scraper
+  namespace: actions 
+spec: 
+  nodeSelector:
+        arm64: "true"
+  initContainers:
+    - name: git-sync
+      image: registry.k8s.io/git-sync/git-sync:v3.6.8
+      env:
+      - name: GIT_SYNC_BRANCH
+        value: "master"
+      - name: GIT_SYNC_REPO
+        value: "https://github.com/cwilko/smart-home-config"
+      - name:  GIT_SYNC_ROOT
+        value: "/git"
+      - name:  GIT_SYNC_DEST
+        value: "smart-home-config"
+      - name:  GIT_SYNC_ONE_TIME
+        value: "true"
+      volumeMounts:
+        - name: airflow-resources
+          mountPath: /git
+  containers: 
+    - name: base 
+      imagePullPolicy: Always 
+      image: wilkobets/airflow-chrome:latest
+      env: 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
+        value: "actions" 
+      - name: AIRFLOW__CORE__DAGS_FOLDER 
+        value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags" 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS 
+        value: "True" 
+      - name: AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS_ON_FAILURE 
+        value: "True"
+      - name: CHROME_BIN
+        value: "/usr/bin/chromium"
+      - name: CHROMEDRIVER_PATH
+        value: "/usr/bin/chromedriver"
+      envFrom:
+        - secretRef:
+            name: airflow-secret
+        - secretRef:
+            name: airflow-econometrics-secret
+      volumeMounts: 
+        - name: airflow-logs-pv 
+          mountPath: /opt/airflow/logs 
+        - name: airflow-resources
+          mountPath: "/opt/airflow/sync"
+          readOnly: true  
+  restartPolicy: Never 
+  securityContext: 
+    runAsUser: 50000 
+  serviceAccountName: "airflow-scheduler" 
+  volumes: 
+    - name: airflow-resources
+      emptyDir: {}
+    - name: airflow-logs-pv 
+      persistentVolumeClaim: 
+        claimName: airflow-logs-pvc

@@ -40,8 +40,10 @@ spec:
               echo "Checking installed ChromeDriver..."
               find /usr -name "chromedriver" -type f 2>/dev/null
               
-              # Create directory in shared volume
+              # Create directories in shared volume
               mkdir -p /shared/usr/bin
+              mkdir -p /shared/usr/lib
+              mkdir -p /shared/lib
               
               # Copy ChromeDriver to shared volume
               if [ -f /usr/bin/chromedriver ]; then
@@ -54,7 +56,57 @@ spec:
                 exit 1
               fi
               
-              echo "Installation complete!"
+              # Copy all required shared libraries based on ldd output
+              echo "Copying required shared libraries..."
+              
+              # Get dependencies and copy them
+              LIBS_TO_COPY="
+                libatomic.so.1
+                libgtk-3.so.0
+                libgdk-3.so.0
+                libgconf-2.so.4
+                libxss1
+                libxrandr2
+                libasound2
+                libpangocairo-1.0.so.0
+                libatk-1.0.so.0
+                libcairo-gobject2
+                libgtk-3-0
+                libgdk-3-0
+                libpango-1.0.so.0
+                libharfbuzz.so.0
+                libcairo.so.2
+                libgdk_pixbuf-2.0.so.0
+                libgio-2.0.so.0
+                libgobject-2.0.so.0
+                libglib-2.0.so.0
+              "
+              
+              # Find and copy each library
+              for lib in $LIBS_TO_COPY; do
+                # Search for the library in system paths
+                LIB_PATH=$(find /lib /usr/lib -name "$lib*" -type f 2>/dev/null | head -1)
+                if [ -n "$LIB_PATH" ]; then
+                  echo "Copying $lib from $LIB_PATH"
+                  # Preserve directory structure
+                  LIB_DIR=$(dirname "$LIB_PATH" | sed 's|^/|/shared/|')
+                  mkdir -p "$LIB_DIR"
+                  cp "$LIB_PATH" "$LIB_DIR/"
+                else
+                  echo "Warning: $lib not found"
+                fi
+              done
+              
+              # Copy chromium binary as well
+              if [ -f /usr/bin/chromium ]; then
+                echo "Copying Chromium binary..."
+                cp /usr/bin/chromium /shared/usr/bin/chromium
+                chmod +x /shared/usr/bin/chromium
+              fi
+              
+              echo "Installation and library copying complete!"
+              echo "Verifying ChromeDriver dependencies..."
+              ldd /shared/usr/bin/chromedriver || true
           volumeMounts:
             - name: chromedriver-shared
               mountPath: /shared

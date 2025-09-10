@@ -295,10 +295,11 @@ def uk_metrics_data_pipeline():
             "requests>=2.31.0",
             "psycopg2-binary>=2.9.0",
         ],
-        system_site_packages=True,  # Allow access to system Chrome/Chromium
+        system_site_packages=True,  # Allow access to pre-installed Chrome/ChromeDriver
         pip_install_options=["--no-user"],
         venv_cache_path="/tmp/venv_gilt_market_prices",
-        queue="celery",  # Use Celery workers with pre-loaded secrets
+        queue="kubernetes",  # Use Kubernetes queue with custom pod template
+        pod_template_file="/opt/airflow/sync/smart-home-config/workloads/airflow/pod_templates/airflow_chrome_pod_template.yaml",
     )
     def collect_gilt_market_prices_data():
         """Collect real-time gilt market prices from Hargreaves Lansdown broker."""
@@ -309,8 +310,7 @@ def uk_metrics_data_pipeline():
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
-        # ChromeDriver should be installed by init container
-        logger.info("Starting gilt market data collection (ChromeDriver pre-installed by init container)")
+        logger.info("Starting gilt market data collection (using Chrome pod template)")
 
         try:
             database_url = os.getenv('DATABASE_URL')
@@ -319,7 +319,6 @@ def uk_metrics_data_pipeline():
             return result
         except Exception as e:
             logger.error(f"CRITICAL: Error collecting gilt market prices: {str(e)}")
-            logger.error("ChromeDriver installation succeeded but data collection failed")
             raise RuntimeError(f"Gilt market data collection failed: {e}") from e
 
     # Define task dependencies
