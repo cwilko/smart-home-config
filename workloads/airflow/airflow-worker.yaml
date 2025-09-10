@@ -21,66 +21,6 @@ spec:
       serviceAccountName: airflow-scheduler
       nodeSelector:
         arm64: "true"
-      initContainers:
-        - name: install-chromedriver
-          image: wilkobets/airflow:latest
-          securityContext:
-            runAsUser: 0
-            allowPrivilegeEscalation: true
-          command: ["/bin/bash", "-c"]
-          args: 
-            - |
-              echo "Installing Chromium and ChromeDriver for ARM64..."
-              apt-get update
-              
-              # Check what chromium packages are available
-              echo "Available Chromium packages:"
-              apt-cache search chromium | head -10
-              
-              # Try different package names
-              apt-get install -y chromium chromium-driver || \
-              apt-get install -y chromium-browser chromium-chromedriver || \
-              apt-get install -y chromium-browser || \
-              echo "No standard chromium packages found, trying alternative approach..."
-              
-              # If standard packages don't work, try to install from snap or download directly
-              if ! command -v chromium &> /dev/null && ! command -v chromium-browser &> /dev/null; then
-                echo "Installing chromium via snap..."
-                apt-get install -y snapd
-                snap install chromium
-              fi
-              
-              echo "Checking installed files..."
-              find /usr -name "*chrome*" -type f 2>/dev/null | head -10
-              find /snap -name "*chrome*" -type f 2>/dev/null | head -5
-              
-              # Create directory structure in shared volume
-              mkdir -p /shared/usr/lib/chromium-browser
-              mkdir -p /shared/usr/bin
-              mkdir -p /shared/snap/chromium/current/usr/lib/chromium-browser
-              
-              # Try to copy from various locations
-              cp /usr/lib/chromium-browser/chromedriver /shared/usr/lib/chromium-browser/ 2>/dev/null || \
-              cp /usr/bin/chromedriver /shared/usr/bin/chromedriver 2>/dev/null || \
-              cp /snap/chromium/current/usr/lib/chromium-browser/chromedriver /shared/snap/chromium/current/usr/lib/chromium-browser/ 2>/dev/null || \
-              echo "ChromeDriver not found in expected locations"
-              
-              # Copy chromium binary
-              cp /usr/bin/chromium-browser /shared/usr/bin/ 2>/dev/null || \
-              cp /usr/bin/chromium /shared/usr/bin/chromium 2>/dev/null || \
-              cp /snap/chromium/current/usr/lib/chromium-browser/chrome /shared/usr/bin/chromium 2>/dev/null || \
-              echo "Chromium binary not found in expected locations"
-              
-              # Make files executable
-              chmod +x /shared/usr/lib/chromium-browser/chromedriver 2>/dev/null
-              chmod +x /shared/usr/bin/* 2>/dev/null
-              chmod +x /shared/snap/chromium/current/usr/lib/chromium-browser/chromedriver 2>/dev/null
-              
-              echo "Files in shared volume:"
-              find /shared -type f 2>/dev/null | head -10
-          volumeMounts:
-            - name: chromedriver-shared
-              mountPath: /shared
       containers:         
         - name: airflow-worker 
           image: wilkobets/airflow:latest
@@ -117,9 +57,6 @@ spec:
               readOnly: false 
             - name: airflow-resources
               mountPath: "/opt/airflow/sync"
-              readOnly: true
-            - name: chromedriver-shared
-              mountPath: /shared
               readOnly: true   
           command: 
             - airflow 
@@ -151,6 +88,4 @@ spec:
           name: airflow-resources
         - name: airflow-logs-pv 
           persistentVolumeClaim: 
-            claimName: airflow-logs-pvc
-        - emptyDir: {}
-          name: chromedriver-shared 
+            claimName: airflow-logs-pvc 
