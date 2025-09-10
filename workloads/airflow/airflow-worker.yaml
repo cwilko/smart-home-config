@@ -26,11 +26,8 @@ spec:
           image: wilkobets/airflow:latest
           imagePullPolicy: Always 
           securityContext: 
-            runAsUser: 50000
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
+            runAsUser: 0
+            allowPrivilegeEscalation: true
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: "CeleryKubernetesExecutor"
