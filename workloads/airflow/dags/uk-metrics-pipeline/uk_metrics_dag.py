@@ -22,11 +22,12 @@ def uk_metrics_data_pipeline():
     - UK GDP Monthly (ONS Beta API)
     - UK Bank Rate Monthly (Bank of England IADB)
     
-    **UK Market data (2 metrics):**
+    **UK Market data (3 metrics):**
     - FTSE 100 Index (MarketWatch CSV API)
     - BoE Yield Curves - 80+ maturities, 4 types (Bank of England ZIP files)
+    - UK Swap Rates - 2Y, 5Y, 10Y, 30Y GBP Interest Rate Swaps (investiny)
     
-    **Total: 6 UK metrics collected daily on weekdays**
+    **Total: 7 UK metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for UK economic dashboard visualization and analysis.
     Complements the main US econometrics pipeline with comprehensive UK data.
@@ -284,6 +285,74 @@ def uk_metrics_data_pipeline():
             logger.error(f"Error collecting BoE yield curve data: {str(e)}")
             raise
 
+    @task.virtualenv(
+        task_id="collect_uk_swap_rates_data",
+        requirements=[
+            "marketinsights-collector[uk_swaps]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
+        ],
+        system_site_packages=False,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_uk_swap_rates",
+        queue="celery",  # Use Celery workers with pre-loaded secrets
+    )
+    def collect_uk_swap_rates_data():
+        """Collect UK GBP Interest Rate Swap curves (2Y, 5Y, 10Y, 30Y) from investiny."""
+        import logging
+        import os
+        from datetime import datetime, timedelta
+        from data_collectors.uk_swap_rates import collect_uk_swap_rates
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            
+            # For daily runs, try to get incremental data
+            # Check if we have existing data to determine if this is initial load
+            try:
+                from data_collectors.uk_swap_rates import UKSwapRatesCollector
+                collector = UKSwapRatesCollector(database_url)
+                
+                # Try to get the latest date from database
+                conn = collector.get_database_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT MAX(date) FROM uk_swap_rates")
+                latest_date = cursor.fetchone()[0]
+                cursor.close()
+                conn.close()
+                
+                if latest_date is None:
+                    # Initial load - get full history
+                    logger.info("No existing swap rates data - performing initial full history load")
+                    result = collect_uk_swap_rates(database_url=database_url, start_date=None)
+                else:
+                    # Incremental load - get data since last collection
+                    yesterday = datetime.now() - timedelta(days=1)
+                    next_date = latest_date + timedelta(days=1)
+                    if next_date <= yesterday.date():
+                        logger.info(f"Performing incremental swap rates load from {next_date}")
+                        result = collect_uk_swap_rates(database_url=database_url, start_date=next_date)
+                    else:
+                        logger.info("Swap rates data is up to date - no collection needed")
+                        result = 0
+                        
+            except Exception as e:
+                # Fallback to full history collection if database check fails
+                logger.info(f"Database check failed ({e}) - performing full history collection")
+                result = collect_uk_swap_rates(database_url=database_url, start_date=None)
+            
+            logger.info(f"Successfully collected {result} UK swap rates records")
+            return result
+        except Exception as e:
+            logger.error(f"Error collecting UK swap rates data: {str(e)}")
+            raise
+
 
     # Define task dependencies
     tables_task = create_uk_tables()
@@ -300,10 +369,13 @@ def uk_metrics_data_pipeline():
     # BoE comprehensive yield curve data
     boe_yield_curves_task = collect_boe_yield_curves_data()
     
+    # UK swap rates data
+    uk_swap_rates_task = collect_uk_swap_rates_data()
+    
     # Set dependencies - all collectors depend on tables being created
     tables_task >> [
         uk_cpi_task, uk_unemployment_task, uk_gdp_task, 
-        uk_bank_rate_task, ftse_100_task, boe_yield_curves_task
+        uk_bank_rate_task, ftse_100_task, boe_yield_curves_task, uk_swap_rates_task
     ]
 
 

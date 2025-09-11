@@ -216,3 +216,25 @@ CREATE TABLE IF NOT EXISTS gilt_market_prices (
 CREATE INDEX IF NOT EXISTS idx_gilt_market_scraped_date ON gilt_market_prices(scraped_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_maturity ON gilt_market_prices(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_bond_name ON gilt_market_prices(bond_name);
+
+-- UK Swap Rates Table (GBP Interest Rate Swaps)
+CREATE TABLE IF NOT EXISTS uk_swap_rates (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    maturity VARCHAR(10) NOT NULL,
+    maturity_years DECIMAL(4,1) NOT NULL,
+    open_rate DECIMAL(8,4) NOT NULL,
+    high_rate DECIMAL(8,4) NOT NULL,
+    low_rate DECIMAL(8,4) NOT NULL,
+    close_rate DECIMAL(8,4) NOT NULL,
+    source VARCHAR(50) DEFAULT 'investiny',
+    symbol VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, maturity)
+);
+
+-- Index for UK swap rates
+CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_date ON uk_swap_rates(date);
+CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_maturity ON uk_swap_rates(maturity);
+CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_date_maturity ON uk_swap_rates(date, maturity);
