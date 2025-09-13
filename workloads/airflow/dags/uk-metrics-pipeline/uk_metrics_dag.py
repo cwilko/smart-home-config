@@ -271,14 +271,14 @@ def uk_metrics_data_pipeline():
         """Collect comprehensive BoE yield curve data (80+ maturities, 4 types) from ZIP files."""
         import logging
         import os
-        from data_collectors.economic_indicators import collect_uk_gilt_yields
+        from data_collectors.economic_indicators import collect_boe_yield_curves
 
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger(__name__)
 
         try:
             database_url = os.getenv('DATABASE_URL')
-            result = collect_uk_gilt_yields(database_url=database_url)
+            result = collect_boe_yield_curves(database_url=database_url)
             logger.info(f"Successfully collected BoE yield curve data: {result}")
             return result
         except Exception as e:
