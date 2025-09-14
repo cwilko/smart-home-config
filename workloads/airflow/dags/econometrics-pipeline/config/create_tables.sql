@@ -182,6 +182,18 @@ CREATE TABLE IF NOT EXISTS gbp_usd_exchange_rate (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- UK Gilt Yields Table (5Y, 10Y, 20Y from Bank of England IADB)
+CREATE TABLE IF NOT EXISTS uk_gilt_yields (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    maturity_years DECIMAL(4,1) NOT NULL,
+    yield_rate DECIMAL(8,4) NOT NULL,
+    series_code VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, maturity_years)
+);
+
 -- UK indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_uk_cpi_date ON uk_consumer_price_index(date);
 CREATE INDEX IF NOT EXISTS idx_uk_monthly_bank_rate_date ON uk_monthly_bank_rate(date);
@@ -193,6 +205,9 @@ CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_date_maturity_type ON boe_yield_
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_yield_type ON boe_yield_curves(yield_type);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_maturity ON boe_yield_curves(maturity_years);
 CREATE INDEX IF NOT EXISTS idx_gbp_usd_date ON gbp_usd_exchange_rate(date);
+CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date ON uk_gilt_yields(date);
+CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_maturity ON uk_gilt_yields(maturity_years);
+CREATE INDEX IF NOT EXISTS idx_uk_gilt_yields_date_maturity ON uk_gilt_yields(date, maturity_years);
 
 -- Gilt Market Data Table (Real-time broker prices)
 CREATE TABLE IF NOT EXISTS gilt_market_prices (
