@@ -30,27 +30,32 @@ executor_env_overrides = {
     schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only - after UK markets close
     start_date=pendulum.datetime(2024, 1, 1, tz="US/Eastern"),
     catchup=False,
-    tags=["uk", "finance", "gilt", "web-scraping"],
+    tags=["uk", "finance", "bonds", "gilts", "corporate", "web-scraping"],
     max_active_runs=1,
 )
-def gilt_market_data_pipeline():
+def uk_bond_market_data_pipeline():
     """
-    ### UK Gilt Market Data Pipeline
+    ### UK Bond Market Data Pipeline
     
-    Collects real-time gilt market prices from Hargreaves Lansdown broker using Selenium web scraping.
+    Collects comprehensive UK bond market prices from Hargreaves Lansdown broker using Selenium web scraping.
     
     **Data collected:**
-    - **Nominal Gilts**: Bond names, clean/dirty prices, YTM, after-tax YTM
+    - **Government Gilts (Nominal)**: Bond names, clean/dirty prices, YTM, after-tax YTM
     - **Index-Linked Gilts**: Real yields, after-tax real yields, inflation assumptions
-    - Coupon rates and maturity dates
-    - Accrued interest calculations
+    - **Corporate Bonds (GBP)**: Company names, credit ratings, yields, credit spreads
+    - Coupon rates, maturity dates, and accrued interest calculations
     
     **Technology:**
     - Chrome-based web scraping using Selenium WebDriver
     - ARM64 optimized ChromeDriver via custom Docker image
     - Kubernetes executor with dedicated pod template
+    - Parallel collection from multiple bond market pages
     
-    Data is stored in PostgreSQL for UK economic dashboard visualization and breakeven inflation analysis.
+    Data enables comprehensive UK fixed income analysis including:
+    - Government yield curves vs corporate credit spreads
+    - Breakeven inflation analysis (nominal vs index-linked)
+    - Credit risk premiums and sector analysis
+    - After-tax yield optimization across bond types
     """
 
     @task.virtualenv(
@@ -125,10 +130,47 @@ def gilt_market_data_pipeline():
             logger.error(f"CRITICAL: Error collecting index-linked gilt prices: {str(e)}")
             raise RuntimeError(f"Index-linked gilt data collection failed: {e}") from e
 
-    # Execute the tasks (can run in parallel since they scrape different pages)
+    @task.virtualenv(
+        task_id="collect_corporate_bond_prices_data",
+        requirements=[
+            "marketinsights-collector[gilt_market]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
+        ],
+        system_site_packages=True,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_corporate_bond_prices",
+        queue="kubernetes",
+        executor_config=executor_env_overrides,
+    )
+    def collect_corporate_bond_prices_data():
+        """Collect real-time corporate bond prices from Hargreaves Lansdown broker."""
+        import logging
+        import os
+        from data_collectors.gilt_market_data import collect_corporate_bond_prices
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        logger.info("Starting corporate bond market data collection (using Chrome pod override)")
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_corporate_bond_prices(database_url=database_url)
+            logger.info(f"Successfully collected {result} corporate bond price records")
+            return result
+        except Exception as e:
+            logger.error(f"CRITICAL: Error collecting corporate bond prices: {str(e)}")
+            raise RuntimeError(f"Corporate bond data collection failed: {e}") from e
+
+    # Execute all tasks in parallel (they scrape different pages)
     gilt_market_task = collect_gilt_market_prices_data()
     index_linked_gilt_task = collect_index_linked_gilt_prices_data()
+    corporate_bond_task = collect_corporate_bond_prices_data()
 
 
 # Create the DAG instance
-gilt_market_dag = gilt_market_data_pipeline()
+uk_bond_market_dag = uk_bond_market_data_pipeline()
