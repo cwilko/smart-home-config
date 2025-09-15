@@ -253,3 +253,53 @@ CREATE TABLE IF NOT EXISTS uk_swap_rates (
 CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_date ON uk_swap_rates(date);
 CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_maturity ON uk_swap_rates(maturity);
 CREATE INDEX IF NOT EXISTS idx_uk_swap_rates_date_maturity ON uk_swap_rates(date, maturity);
+
+-- Index-Linked Gilt Market Prices Table (Real-time broker prices with real yields)
+CREATE TABLE IF NOT EXISTS index_linked_gilt_prices (
+    id SERIAL PRIMARY KEY,
+    bond_name VARCHAR(255) NOT NULL,
+    clean_price DECIMAL(10,6) NOT NULL,
+    accrued_interest DECIMAL(10,6) NOT NULL,
+    dirty_price DECIMAL(10,6) NOT NULL,
+    coupon_rate DECIMAL(8,6) NOT NULL,
+    maturity_date DATE NOT NULL,
+    years_to_maturity DECIMAL(8,4) NOT NULL,
+    real_yield DECIMAL(8,6),
+    after_tax_real_yield DECIMAL(8,6),
+    inflation_assumption DECIMAL(6,2) DEFAULT 3.0,
+    scraped_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(bond_name, scraped_date)
+);
+
+-- Index for index-linked gilt market data
+CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_scraped_date ON index_linked_gilt_prices(scraped_date);
+CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_maturity ON index_linked_gilt_prices(maturity_date);
+CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_bond_name ON index_linked_gilt_prices(bond_name);
+
+-- Corporate Bond Market Prices Table (Real-time broker prices with credit analysis)
+CREATE TABLE IF NOT EXISTS corporate_bond_prices (
+    id SERIAL PRIMARY KEY,
+    bond_name VARCHAR(255) NOT NULL,
+    company_name VARCHAR(100),
+    clean_price DECIMAL(10,6) NOT NULL,
+    accrued_interest DECIMAL(10,6) NOT NULL,
+    dirty_price DECIMAL(10,6) NOT NULL,
+    coupon_rate DECIMAL(8,6) NOT NULL,
+    maturity_date DATE NOT NULL,
+    years_to_maturity DECIMAL(8,4) NOT NULL,
+    ytm DECIMAL(8,6),
+    after_tax_ytm DECIMAL(8,6),
+    credit_rating VARCHAR(10) DEFAULT 'NR',
+    scraped_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(bond_name, scraped_date)
+);
+
+-- Index for corporate bond market data
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_scraped_date ON corporate_bond_prices(scraped_date);
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_maturity ON corporate_bond_prices(maturity_date);
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_company ON corporate_bond_prices(company_name);
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_rating ON corporate_bond_prices(credit_rating);
