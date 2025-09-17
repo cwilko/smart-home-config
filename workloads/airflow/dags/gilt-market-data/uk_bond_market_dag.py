@@ -28,7 +28,7 @@ executor_env_overrides = {
 
 @dag(
     schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only - after UK markets close
-    start_date=pendulum.datetime(2024, 1, 1, tz="US/Eastern"),
+    start_date=pendulum.datetime(2025, 1, 1, tz="UTC"),
     catchup=False,
     tags=["uk", "finance", "bonds", "gilts", "corporate", "web-scraping"],
     max_active_runs=1,
