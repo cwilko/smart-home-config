@@ -222,6 +222,11 @@ CREATE TABLE IF NOT EXISTS gilt_market_prices (
     ytm DECIMAL(8,6),
     after_tax_ytm DECIMAL(8,6),
     scraped_date DATE NOT NULL,
+    -- Bond identifiers (added for enhanced bond tracking)
+    currency_code VARCHAR(3),  -- Currency code (e.g., 'GBP', 'USD', 'EUR')
+    isin VARCHAR(12),           -- International Securities Identification Number
+    short_code VARCHAR(10),     -- HL internal identifier from URL
+    combined_id VARCHAR(30),    -- Full formatted ID: 'Currency | ISIN | Short Code'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(bond_name, scraped_date)
@@ -231,6 +236,8 @@ CREATE TABLE IF NOT EXISTS gilt_market_prices (
 CREATE INDEX IF NOT EXISTS idx_gilt_market_scraped_date ON gilt_market_prices(scraped_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_maturity ON gilt_market_prices(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_bond_name ON gilt_market_prices(bond_name);
+CREATE INDEX IF NOT EXISTS idx_gilt_market_isin ON gilt_market_prices(isin);
+CREATE INDEX IF NOT EXISTS idx_gilt_market_short_code ON gilt_market_prices(short_code);
 
 -- UK Swap Rates Table (GBP Interest Rate Swaps)
 CREATE TABLE IF NOT EXISTS uk_swap_rates (
@@ -268,6 +275,11 @@ CREATE TABLE IF NOT EXISTS index_linked_gilt_prices (
     after_tax_real_yield DECIMAL(8,6),
     inflation_assumption DECIMAL(6,2) DEFAULT 3.0,
     scraped_date DATE NOT NULL,
+    -- Bond identifiers (added for enhanced bond tracking)
+    currency_code VARCHAR(3),  -- Currency code (e.g., 'GBP', 'USD', 'EUR')
+    isin VARCHAR(12),           -- International Securities Identification Number
+    short_code VARCHAR(10),     -- HL internal identifier from URL
+    combined_id VARCHAR(30),    -- Full formatted ID: 'Currency | ISIN | Short Code'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(bond_name, scraped_date)
@@ -277,6 +289,8 @@ CREATE TABLE IF NOT EXISTS index_linked_gilt_prices (
 CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_scraped_date ON index_linked_gilt_prices(scraped_date);
 CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_maturity ON index_linked_gilt_prices(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_bond_name ON index_linked_gilt_prices(bond_name);
+CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_isin ON index_linked_gilt_prices(isin);
+CREATE INDEX IF NOT EXISTS idx_index_linked_gilt_short_code ON index_linked_gilt_prices(short_code);
 
 -- Corporate Bond Market Prices Table (Real-time broker prices with credit analysis)
 CREATE TABLE IF NOT EXISTS corporate_bond_prices (
@@ -293,6 +307,11 @@ CREATE TABLE IF NOT EXISTS corporate_bond_prices (
     after_tax_ytm DECIMAL(8,6),
     credit_rating VARCHAR(10) DEFAULT 'NR',
     scraped_date DATE NOT NULL,
+    -- Bond identifiers (added for enhanced bond tracking)
+    currency_code VARCHAR(3),  -- Currency code (e.g., 'GBP', 'USD', 'EUR')
+    isin VARCHAR(12),           -- International Securities Identification Number
+    short_code VARCHAR(10),     -- HL internal identifier from URL
+    combined_id VARCHAR(30),    -- Full formatted ID: 'Currency | ISIN | Short Code'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(bond_name, scraped_date)
@@ -303,3 +322,5 @@ CREATE INDEX IF NOT EXISTS idx_corporate_bond_scraped_date ON corporate_bond_pri
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_maturity ON corporate_bond_prices(maturity_date);
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_company ON corporate_bond_prices(company_name);
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_rating ON corporate_bond_prices(credit_rating);
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_isin ON corporate_bond_prices(isin);
+CREATE INDEX IF NOT EXISTS idx_corporate_bond_short_code ON corporate_bond_prices(short_code);
