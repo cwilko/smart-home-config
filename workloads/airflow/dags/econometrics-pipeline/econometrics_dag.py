@@ -4,8 +4,8 @@ import json
 
 
 @dag(
-    schedule_interval="0 23 * * 1-5",  # 6 PM ET (11 PM UTC) weekdays only
-    start_date=pendulum.datetime(2024, 1, 1, tz="US/Eastern"),
+    schedule_interval="0 23 * * 1-5",  # 10 PM UTC weekdays only
+    start_date=pendulum.datetime(2025, 1, 1, tz="UTC"),
     catchup=False,
     tags=["economics", "finance", "data"],
     max_active_runs=1,
