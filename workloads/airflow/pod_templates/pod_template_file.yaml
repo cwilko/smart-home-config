@@ -3,6 +3,9 @@ kind: Pod
 metadata: 
   name: airflow-worker 
   namespace: actions 
+  labels:
+    app: airflow
+    component: worker
 spec: 
   nodeSelector:
         arm64: "true"

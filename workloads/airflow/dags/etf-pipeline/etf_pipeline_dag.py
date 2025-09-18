@@ -187,13 +187,12 @@ def etf_data_pipeline():
     @task.virtualenv(
         task_id="collect_vgov_etf_data",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
             "requests>=2.31.0",
             "psycopg2-binary>=2.9.0",
-            "selenium>=4.0.0",
             "openpyxl>=3.1.0",
         ],
         system_site_packages=True,
@@ -257,14 +256,16 @@ def etf_data_pipeline():
     @task.virtualenv(
         task_id="collect_etf_prices_data",
         requirements=[
-            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
-            "investiny>=0.7.2",
+            "marketinsights-collector[investiny]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
             "pandas>=2.0.0",
+            "requests>=2.31.0",
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        queue="celery",
+        queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_etf_prices_data():
         """Collect ETF price data from investing.com for all 4 ETF tickers."""

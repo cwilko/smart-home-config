@@ -61,7 +61,7 @@ def uk_bond_market_data_pipeline():
     @task.virtualenv(
         task_id="collect_gilt_market_prices_data",
         requirements=[
-            "marketinsights-collector[gilt_market]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
@@ -97,7 +97,7 @@ def uk_bond_market_data_pipeline():
     @task.virtualenv(
         task_id="collect_index_linked_gilt_prices_data",
         requirements=[
-            "marketinsights-collector[gilt_market]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
@@ -133,7 +133,7 @@ def uk_bond_market_data_pipeline():
     @task.virtualenv(
         task_id="collect_corporate_bond_prices_data",
         requirements=[
-            "marketinsights-collector[gilt_market]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
