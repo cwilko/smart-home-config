@@ -22,12 +22,13 @@ def uk_metrics_data_pipeline():
     - UK GDP Monthly (ONS Beta API)
     - UK Bank Rate Monthly (Bank of England IADB)
     
-    **UK Market data (3 metrics):**
+    **UK Market data (4 metrics):**
     - FTSE 100 Index (MarketWatch CSV API)
     - UK Gilt Yields - 5Y, 10Y, 20Y (Bank of England IADB)
+    - BoE Comprehensive Yield Curves - 80+ maturities, 4 yield types (Bank of England ZIP files)
     - UK Swap Rates - 2Y, 5Y, 10Y, 30Y GBP Interest Rate Swaps (investiny)
     
-    **Total: 7 UK metrics collected daily on weekdays**
+    **Total: 8 UK metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for UK economic dashboard visualization and analysis.
     Complements the main US econometrics pipeline with comprehensive UK data.
@@ -286,6 +287,40 @@ def uk_metrics_data_pipeline():
             raise
 
     @task.virtualenv(
+        task_id="collect_boe_yield_curves_data",
+        requirements=[
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
+            "openpyxl>=3.1.0",  # Required for Excel file parsing
+        ],
+        system_site_packages=False,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_boe_yield_curves",
+        queue="celery",  # Use Celery workers with pre-loaded secrets
+    )
+    def collect_boe_yield_curves_data():
+        """Collect comprehensive BoE yield curves (80+ maturities, 4 yield types) from Bank of England ZIP files."""
+        import logging
+        import os
+        from data_collectors.economic_indicators import collect_boe_yield_curves
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_boe_yield_curves(database_url=database_url)
+            logger.info(f"Successfully collected {result} BoE comprehensive yield curves records")
+            return result
+        except Exception as e:
+            logger.error(f"Error collecting BoE yield curves data: {str(e)}")
+            raise
+
+    @task.virtualenv(
         task_id="collect_uk_swap_rates_data",
         requirements=[
             "marketinsights-collector[uk_swaps]@git+https://github.com/cwilko/marketinsights-collector.git",
@@ -334,13 +369,17 @@ def uk_metrics_data_pipeline():
     # UK gilt yields data
     uk_gilt_yields_task = collect_uk_gilt_yields_data()
     
+    # BoE comprehensive yield curves data  
+    boe_yield_curves_task = collect_boe_yield_curves_data()
+    
     # UK swap rates data
     uk_swap_rates_task = collect_uk_swap_rates_data()
     
     # Set dependencies - all collectors depend on tables being created
     tables_task >> [
         uk_cpi_task, uk_unemployment_task, uk_gdp_task, 
-        uk_bank_rate_task, ftse_100_task, uk_gilt_yields_task, uk_swap_rates_task
+        uk_bank_rate_task, ftse_100_task, uk_gilt_yields_task, 
+        boe_yield_curves_task, uk_swap_rates_task
     ]
 
 
