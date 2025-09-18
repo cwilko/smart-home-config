@@ -323,7 +323,7 @@ def uk_metrics_data_pipeline():
     @task.virtualenv(
         task_id="collect_uk_swap_rates_data",
         requirements=[
-            "marketinsights-collector[uk_swaps]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "marketinsights-collector[investiny]@git+https://github.com/cwilko/marketinsights-collector.git",
             "beautifulsoup4>=4.12.0",
             "lxml>=4.9.0",
             "pandas>=2.0.0",
