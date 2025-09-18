@@ -47,6 +47,7 @@ def etf_data_pipeline():
     
     **Data Types Collected:**
     - Historical NAV values for premium/discount analysis
+    - Historical price data from investing.com for arbitrage analysis
     - Current holdings for duration and credit analysis
     - Performance metrics for ETF evaluation
     
@@ -56,7 +57,7 @@ def etf_data_pipeline():
     - Creation/redemption flow monitoring
     - Breakeven inflation strategies via IGLT vs INXG
     
-    **Total: 4 ETF datasets collected daily on weekdays**
+    **Total: 5 ETF datasets collected daily on weekdays (4 NAV + 1 price dataset)**
     
     Data supports the Gilt Market Analysis Guide arbitrage strategies and integrates
     with comprehensive UK yield curves for professional-grade fixed income analysis.
@@ -257,6 +258,37 @@ def etf_data_pipeline():
             logger.error(f"Error collecting GLTY ETF data: {str(e)}")
             raise
 
+    @task.virtualenv(
+        task_id="collect_etf_prices_data",
+        requirements=[
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+            "investiny>=0.7.2",
+            "pandas>=2.0.0",
+            "psycopg2-binary>=2.9.0",
+        ],
+        system_site_packages=False,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_etf_prices",
+        queue="celery",
+    )
+    def collect_etf_prices_data():
+        """Collect ETF price data from investing.com for all 4 ETF tickers."""
+        import logging
+        import os
+        from data_collectors.etf_prices import collect_etf_prices
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_etf_prices(database_url=database_url, etf_tickers=['IGLT', 'INXG', 'VGOV', 'GLTY'])
+            logger.info(f"Successfully collected {result} ETF price records")
+            return result
+        except Exception as e:
+            logger.error(f"Error collecting ETF price data: {str(e)}")
+            raise
+
     # Define task dependencies
     tables_task = create_etf_tables()
     
@@ -265,9 +297,10 @@ def etf_data_pipeline():
     inxg_task = collect_inxg_etf_data()
     vgov_task = collect_vgov_etf_data()
     glty_task = collect_glty_etf_data()
+    etf_prices_task = collect_etf_prices_data()
     
     # Set dependencies - all collectors run in parallel after tables are created
-    tables_task >> [iglt_task, inxg_task, vgov_task, glty_task]
+    tables_task >> [iglt_task, inxg_task, vgov_task, glty_task, etf_prices_task]
 
 
 # Create the DAG instance
