@@ -24,6 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_etf_nav_source ON etf_nav_history (data_source);
 CREATE TABLE IF NOT EXISTS etf_price_history (
     date DATE NOT NULL,
     etf_ticker VARCHAR(10) NOT NULL,
+    symbol VARCHAR(100) NOT NULL,
     open_price DECIMAL(12, 6) NOT NULL,
     high_price DECIMAL(12, 6) NOT NULL,
     low_price DECIMAL(12, 6) NOT NULL,
