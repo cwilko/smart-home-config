@@ -129,7 +129,6 @@ def etf_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_iglt_etf",
         queue="celery",
     )
     def collect_iglt_etf_data():
@@ -164,7 +163,6 @@ def etf_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_inxg_etf",
         queue="celery",
     )
     def collect_inxg_etf_data():
@@ -200,7 +198,6 @@ def etf_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_vgov_etf",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
@@ -237,7 +234,6 @@ def etf_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_glty_etf",
         queue="celery",
     )
     def collect_glty_etf_data():
@@ -268,7 +264,6 @@ def etf_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_etf_prices",
         queue="celery",
     )
     def collect_etf_prices_data():
