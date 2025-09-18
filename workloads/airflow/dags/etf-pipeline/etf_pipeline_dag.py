@@ -194,6 +194,7 @@ def etf_data_pipeline():
             "requests>=2.31.0",
             "psycopg2-binary>=2.9.0",
             "openpyxl>=3.1.0",
+            "undetected-chromedriver>=3.5.0",
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
