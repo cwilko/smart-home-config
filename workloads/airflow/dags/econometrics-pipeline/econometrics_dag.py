@@ -23,14 +23,15 @@ def econometrics_data_pipeline():
     - Unemployment Rate (BLS API)
     - Gross Domestic Product (BEA API)
     
-    **Market data (5 metrics):**
+    **Market data (6 metrics):**
     - S&P 500 Index (FRED SP500 series)
     - VIX Volatility Index (FRED VIXCLS series)
     - Treasury Yield Curve - 10 maturities (FRED DGS* series)
     - TIPS Yields - 5 maturities (FRED DFII* series)
+    - Forward Inflation Expectations - T5YIFR (5yr-5yr forward)
     - P/E Ratios (FRED MULTPL series)
     
-    **Total: 10 metrics collected daily on weekdays**
+    **Total: 11 metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for dashboard visualization and analysis.
     """
@@ -320,7 +321,7 @@ def econometrics_data_pipeline():
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_us_tips_yields():
-        """Collect US TIPS yield data from FRED API."""
+        """Collect US TIPS yield data and forward inflation expectations from FRED API."""
         import logging
         import os
         from data_collectors.us_tips_data import collect_us_tips
@@ -331,7 +332,7 @@ def econometrics_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_us_tips(database_url=database_url)
-            logger.info(f"Successfully collected {result} US TIPS yield records")
+            logger.info(f"Successfully collected {result} US TIPS yield and forward inflation records")
             return result
         except Exception as e:
             logger.error(f"Error collecting US TIPS yield data: {str(e)}")

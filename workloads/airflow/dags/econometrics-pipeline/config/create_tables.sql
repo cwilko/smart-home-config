@@ -336,7 +336,24 @@ CREATE TABLE IF NOT EXISTS us_tips_yields (
     UNIQUE(date, maturity)
 );
 
+-- US Forward Inflation Expectations Table (T5YIFR, etc.)
+CREATE TABLE IF NOT EXISTS us_forward_inflation_expectations (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    maturity_label VARCHAR(10) NOT NULL,
+    expectation_rate DECIMAL(8,4) NOT NULL,
+    series_id VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, series_id)
+);
+
 -- Index for US TIPS data
 CREATE INDEX IF NOT EXISTS idx_us_tips_yields_date ON us_tips_yields(date);
 CREATE INDEX IF NOT EXISTS idx_us_tips_yields_maturity ON us_tips_yields(maturity);
 CREATE INDEX IF NOT EXISTS idx_us_tips_yields_date_maturity ON us_tips_yields(date, maturity);
+
+-- Index for US Forward Inflation Expectations
+CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_date ON us_forward_inflation_expectations(date);
+CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_maturity ON us_forward_inflation_expectations(maturity_label);
+CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_series ON us_forward_inflation_expectations(series_id);
+CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_date_series ON us_forward_inflation_expectations(date, series_id);
