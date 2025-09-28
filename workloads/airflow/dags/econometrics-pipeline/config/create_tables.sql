@@ -324,3 +324,19 @@ CREATE INDEX IF NOT EXISTS idx_corporate_bond_company ON corporate_bond_prices(c
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_rating ON corporate_bond_prices(credit_rating);
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_isin ON corporate_bond_prices(isin);
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_short_code ON corporate_bond_prices(short_code);
+
+-- US TIPS (Treasury Inflation-Protected Securities) Table
+CREATE TABLE IF NOT EXISTS us_tips_yields (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    maturity VARCHAR(10) NOT NULL,
+    maturity_years DECIMAL(4,1) NOT NULL,
+    yield_rate DECIMAL(8,4) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, maturity)
+);
+
+-- Index for US TIPS data
+CREATE INDEX IF NOT EXISTS idx_us_tips_yields_date ON us_tips_yields(date);
+CREATE INDEX IF NOT EXISTS idx_us_tips_yields_maturity ON us_tips_yields(maturity);
+CREATE INDEX IF NOT EXISTS idx_us_tips_yields_date_maturity ON us_tips_yields(date, maturity);

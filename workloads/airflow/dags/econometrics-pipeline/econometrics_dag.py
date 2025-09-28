@@ -23,13 +23,14 @@ def econometrics_data_pipeline():
     - Unemployment Rate (BLS API)
     - Gross Domestic Product (BEA API)
     
-    **Market data (4 metrics):**
+    **Market data (5 metrics):**
     - S&P 500 Index (FRED SP500 series)
     - VIX Volatility Index (FRED VIXCLS series)
     - Treasury Yield Curve - 10 maturities (FRED DGS* series)
+    - TIPS Yields - 5 maturities (FRED DFII* series)
     - P/E Ratios (FRED MULTPL series)
     
-    **Total: 9 metrics collected daily on weekdays**
+    **Total: 10 metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for dashboard visualization and analysis.
     """
@@ -310,6 +311,32 @@ def econometrics_data_pipeline():
             logger.error(f"Error collecting Treasury yield data: {str(e)}")
             raise
 
+    @task.virtualenv(
+        task_id="collect_us_tips_yields",
+        requirements=[
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+        ],
+        system_site_packages=True,
+        queue="celery",  # Use Celery workers with pre-loaded secrets
+    )
+    def collect_us_tips_yields():
+        """Collect US TIPS yield data from FRED API."""
+        import logging
+        import os
+        from data_collectors.us_tips_data import collect_us_tips
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_us_tips(database_url=database_url)
+            logger.info(f"Successfully collected {result} US TIPS yield records")
+            return result
+        except Exception as e:
+            logger.error(f"Error collecting US TIPS yield data: {str(e)}")
+            raise
+
     # Define task dependencies
     tables_task = create_tables()
     
@@ -324,13 +351,14 @@ def econometrics_data_pipeline():
     sp500_task = collect_sp500_data()
     vix_task = collect_vix_data()
     treasury_task = collect_treasury_yields()
+    tips_task = collect_us_tips_yields()
     pe_ratios_task = collect_pe_ratios()
     
     # Set dependencies - all collectors depend on tables being created
     tables_task >> [
         daily_fed_funds_task, monthly_fed_funds_task, cpi_task, 
         unemployment_task, gdp_task, sp500_task, vix_task, 
-        treasury_task, pe_ratios_task
+        treasury_task, tips_task, pe_ratios_task
     ]
 
 
