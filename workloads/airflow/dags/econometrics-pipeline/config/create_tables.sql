@@ -333,6 +333,7 @@ CREATE TABLE IF NOT EXISTS us_tips_yields (
     maturity_years DECIMAL(4,1) NOT NULL,
     yield_rate DECIMAL(8,4) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(date, maturity)
 );
 
@@ -344,6 +345,7 @@ CREATE TABLE IF NOT EXISTS us_forward_inflation_expectations (
     expectation_rate DECIMAL(8,4) NOT NULL,
     series_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(date, series_id)
 );
 
