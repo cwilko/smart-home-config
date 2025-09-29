@@ -99,7 +99,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_cpi",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_cpi_data():
@@ -132,7 +131,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_unemployment",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_unemployment_data():
@@ -165,7 +163,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_gdp",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gdp_data():
@@ -198,7 +195,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_bank_rate",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_bank_rate_data():
@@ -231,7 +227,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_daily_bank_rate",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_daily_bank_rate_data():
@@ -265,7 +260,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_ftse_100",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_ftse_100_data():
@@ -299,7 +293,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_gilt_yields",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_gilt_yields_data():
@@ -333,7 +326,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_boe_yield_curves",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_boe_yield_curves_data():
@@ -366,7 +358,6 @@ def uk_metrics_data_pipeline():
         ],
         system_site_packages=False,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_uk_swap_rates",
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_uk_swap_rates_data():
