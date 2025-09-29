@@ -48,6 +48,18 @@ CREATE TABLE IF NOT EXISTS gross_domestic_product (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS real_gdp_growth_components (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    real_gdp_growth DECIMAL(10,4),
+    consumption_contribution DECIMAL(10,4),
+    investment_contribution DECIMAL(10,4),
+    government_contribution DECIMAL(10,4),
+    net_exports_contribution DECIMAL(10,4),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Market data tables
 CREATE TABLE IF NOT EXISTS sp500_index (
     id SERIAL PRIMARY KEY,
@@ -98,6 +110,7 @@ CREATE INDEX IF NOT EXISTS idx_fed_funds_date ON federal_funds_rate(date);
 CREATE INDEX IF NOT EXISTS idx_daily_fed_funds_date ON daily_federal_funds_rate(date);
 CREATE INDEX IF NOT EXISTS idx_unemployment_date ON unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_gdp_quarter ON gross_domestic_product(quarter);
+CREATE INDEX IF NOT EXISTS idx_real_gdp_growth_components_date ON real_gdp_growth_components(date);
 CREATE INDEX IF NOT EXISTS idx_sp500_date ON sp500_index(date);
 CREATE INDEX IF NOT EXISTS idx_vix_date ON vix_index(date);
 CREATE INDEX IF NOT EXISTS idx_pe_ratios_date ON pe_ratios(date);
