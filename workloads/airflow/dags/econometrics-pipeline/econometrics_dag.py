@@ -16,12 +16,13 @@ def econometrics_data_pipeline():
     
     Collects economic and financial data from various government and financial sources:
     
-    **Economic indicators (5 metrics):**
+    **Economic indicators (6 metrics):**
     - Daily Federal Funds Rate (FRED DFF series)
     - Monthly Federal Funds Rate (FRED FEDFUNDS series) 
     - Consumer Price Index (BLS API)
     - Unemployment Rate (BLS API)
     - Gross Domestic Product (BEA API)
+    - Real GDP Growth Components (FRED A191RL1Q225SBEA + components)
     
     **Market data (6 metrics):**
     - S&P 500 Index (FRED SP500 series)
@@ -31,7 +32,7 @@ def econometrics_data_pipeline():
     - Forward Inflation Expectations - T5YIFR (5yr-5yr forward)
     - P/E Ratios (FRED MULTPL series)
     
-    **Total: 11 metrics collected daily on weekdays**
+    **Total: 12 metrics collected daily on weekdays**
     
     Data is stored in PostgreSQL for dashboard visualization and analysis.
     """
@@ -242,6 +243,33 @@ def econometrics_data_pipeline():
             raise
 
     @task.virtualenv(
+        task_id="collect_real_gdp_growth_components",
+        requirements=[
+            "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
+        ],
+        system_site_packages=False,
+        pip_install_options=["--no-user"],
+        queue="celery",  # Use Celery workers with pre-loaded secrets
+    )
+    def collect_real_gdp_growth_components():
+        """Collect Real GDP growth rate and components from FRED API."""
+        import logging
+        import os
+        from data_collectors.economic_indicators import collect_real_gdp_growth_components
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_real_gdp_growth_components(database_url=database_url)
+            logger.info(f"Successfully collected {result} Real GDP growth component records")
+            return result
+        except Exception as e:
+            logger.error(f"Error collecting Real GDP growth component data: {str(e)}")
+            raise
+
+    @task.virtualenv(
         task_id="collect_vix_data",
         requirements=[
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
@@ -358,6 +386,7 @@ def econometrics_data_pipeline():
     cpi_task = collect_cpi_data()
     unemployment_task = collect_unemployment_rate()
     gdp_task = collect_gdp_data()
+    real_gdp_growth_task = collect_real_gdp_growth_components()
     
     # Market data
     sp500_task = collect_sp500_data()
@@ -369,7 +398,7 @@ def econometrics_data_pipeline():
     # Set dependencies - all collectors depend on tables being created
     tables_task >> [
         daily_fed_funds_task, monthly_fed_funds_task, cpi_task, 
-        unemployment_task, gdp_task, sp500_task, vix_task, 
+        unemployment_task, gdp_task, real_gdp_growth_task, sp500_task, vix_task, 
         treasury_task, tips_task, pe_ratios_task
     ]
 
