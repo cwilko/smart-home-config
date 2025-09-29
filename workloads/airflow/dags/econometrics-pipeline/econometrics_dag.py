@@ -42,6 +42,7 @@ def econometrics_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  
     )
     def create_tables():
@@ -84,6 +85,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_fed_funds_rate():
@@ -110,6 +112,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_cpi_data():
@@ -136,6 +139,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_sp500_data():
@@ -162,6 +166,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_monthly_fed_funds_rate():
@@ -188,6 +193,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_unemployment_rate():
@@ -214,6 +220,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_gdp_data():
@@ -240,6 +247,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_vix_data():
@@ -266,6 +274,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_pe_ratios():
@@ -292,6 +301,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_treasury_yields():
@@ -318,6 +328,7 @@ def econometrics_data_pipeline():
             "marketinsights-collector@git+https://github.com/cwilko/marketinsights-collector.git",
         ],
         system_site_packages=False,
+        pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
     )
     def collect_us_tips_yields():
