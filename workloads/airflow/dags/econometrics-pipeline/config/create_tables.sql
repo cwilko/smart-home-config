@@ -56,7 +56,16 @@ CREATE TABLE IF NOT EXISTS real_gdp_growth_components (
     investment_contribution DECIMAL(10,4),
     government_contribution DECIMAL(10,4),
     net_exports_contribution DECIMAL(10,4),
-    gdp_now_forecast DECIMAL(10,4),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- GDPNow Forecasts Table (Real-time GDP growth forecasts from Atlanta Fed)
+CREATE TABLE IF NOT EXISTS gdpnow_forecasts (
+    id SERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    forecast_rate DECIMAL(10,4) NOT NULL,
+    data_source VARCHAR(50) DEFAULT 'Atlanta_Fed_GDPNow',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -112,6 +121,7 @@ CREATE INDEX IF NOT EXISTS idx_daily_fed_funds_date ON daily_federal_funds_rate(
 CREATE INDEX IF NOT EXISTS idx_unemployment_date ON unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_gdp_quarter ON gross_domestic_product(quarter);
 CREATE INDEX IF NOT EXISTS idx_real_gdp_growth_components_date ON real_gdp_growth_components(date);
+CREATE INDEX IF NOT EXISTS idx_gdpnow_forecasts_date ON gdpnow_forecasts(date);
 CREATE INDEX IF NOT EXISTS idx_sp500_date ON sp500_index(date);
 CREATE INDEX IF NOT EXISTS idx_vix_date ON vix_index(date);
 CREATE INDEX IF NOT EXISTS idx_pe_ratios_date ON pe_ratios(date);
