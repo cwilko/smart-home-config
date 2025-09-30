@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS real_gdp_growth_components (
     investment_contribution DECIMAL(10,4),
     government_contribution DECIMAL(10,4),
     net_exports_contribution DECIMAL(10,4),
+    gdp_now_forecast DECIMAL(10,4),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
