@@ -61,6 +61,8 @@ CREATE TABLE IF NOT EXISTS real_gdp_growth_components (
 );
 
 -- GDPNow Forecasts Table (Real-time GDP growth forecasts from Atlanta Fed)
+-- Note: Forecasts are revised multiple times per month for the same quarter
+-- Records with the same date will be updated with latest forecast revisions
 CREATE TABLE IF NOT EXISTS gdpnow_forecasts (
     id SERIAL PRIMARY KEY,
     date DATE NOT NULL UNIQUE,
