@@ -69,7 +69,8 @@ def etf_data_pipeline():
             "psycopg2-binary>=2.9.0",
         ],
         system_site_packages=True,
-        queue="celery",  
+        queue="celery",
+        retries=1,  # Retry once if task fails
     )
     def create_etf_tables():
         """Create ETF database tables if they don't exist."""
@@ -130,6 +131,7 @@ def etf_data_pipeline():
         system_site_packages=False,
         pip_install_options=["--no-user"],
         queue="celery",
+        retries=1,  # Retry once if task fails
     )
     def collect_iglt_etf_data():
         """Collect iShares Core UK Gilts ETF (IGLT) NAV and holdings data."""
@@ -164,6 +166,7 @@ def etf_data_pipeline():
         system_site_packages=False,
         pip_install_options=["--no-user"],
         queue="celery",
+        retries=1,  # Retry once if task fails
     )
     def collect_inxg_etf_data():
         """Collect iShares UK Index-Linked Gilts ETF (INXG) NAV and holdings data."""
@@ -200,6 +203,7 @@ def etf_data_pipeline():
         pip_install_options=["--no-user"],
         queue="kubernetes",
         executor_config=executor_env_overrides,
+        retries=1,  # Retry once if task fails
     )
     def collect_vgov_etf_data():
         """Collect Vanguard UK Gilt UCITS ETF (VGOV) historical price data using Selenium."""
@@ -235,6 +239,7 @@ def etf_data_pipeline():
         system_site_packages=False,
         pip_install_options=["--no-user"],
         queue="celery",
+        retries=1,  # Retry once if task fails
     )
     def collect_glty_etf_data():
         """Collect SSGA SPDR Bloomberg UK Gilt ETF (GLTY) historical NAV data."""
@@ -267,6 +272,7 @@ def etf_data_pipeline():
         system_site_packages=False,
         pip_install_options=["--no-user"],
         queue="celery",  # Use Celery workers with pre-loaded secrets
+        retries=1,  # Retry once if task fails
     )
     def collect_etf_prices_data():
         """Collect ETF price data from investing.com for all 4 ETF tickers."""
