@@ -168,10 +168,12 @@ CREATE TABLE IF NOT EXISTS uk_unemployment_rate (
 
 CREATE TABLE IF NOT EXISTS uk_gross_domestic_product (
     id SERIAL PRIMARY KEY,
-    date DATE NOT NULL UNIQUE,  -- Changed from 'quarter' to 'date' for monthly GDP data
+    date DATE NOT NULL,  -- Changed from 'quarter' to 'date' for monthly GDP data
+    sector_classification VARCHAR(10) NOT NULL,  -- ONS sector classification code (A, A--T, B-E, F, G-T)
     gdp_index DECIMAL(15,4) NOT NULL,  -- Changed from 'gdp_billions' to 'gdp_index' to match ONS data
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(date, sector_classification)  -- Allow multiple sectors per date
 );
 
 -- UK Market Data Tables
@@ -226,6 +228,8 @@ CREATE INDEX IF NOT EXISTS idx_uk_monthly_bank_rate_date ON uk_monthly_bank_rate
 CREATE INDEX IF NOT EXISTS idx_uk_daily_bank_rate_date ON uk_daily_bank_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_unemployment_date ON uk_unemployment_rate(date);
 CREATE INDEX IF NOT EXISTS idx_uk_gdp_date ON uk_gross_domestic_product(date);  -- Changed from quarter to date
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_sector ON uk_gross_domestic_product(sector_classification);
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_date_sector ON uk_gross_domestic_product(date, sector_classification);
 CREATE INDEX IF NOT EXISTS idx_ftse_100_date ON ftse_100_index(date);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_date_maturity_type ON boe_yield_curves(date, maturity_years, yield_type);
 CREATE INDEX IF NOT EXISTS idx_boe_yield_curves_yield_type ON boe_yield_curves(yield_type);
@@ -385,3 +389,22 @@ CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_date ON us_forward_inflation
 CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_maturity ON us_forward_inflation_expectations(maturity_label);
 CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_series ON us_forward_inflation_expectations(series_id);
 CREATE INDEX IF NOT EXISTS idx_us_forward_inflation_date_series ON us_forward_inflation_expectations(date, series_id);
+
+-- UK GDP Sector Weights Table
+CREATE TABLE IF NOT EXISTS uk_gdp_sector_weights (
+    id SERIAL PRIMARY KEY,
+    section VARCHAR(2) NOT NULL,
+    description TEXT NOT NULL,
+    category VARCHAR(100),
+    weight DECIMAL(10,4) NOT NULL,
+    data_source VARCHAR(50) DEFAULT 'ONS_GDP_Source_Catalogue',
+    file_version VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(section, data_source, file_version)
+);
+
+-- Index for UK GDP Sector Weights
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_sector_weights_section ON uk_gdp_sector_weights(section);
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_sector_weights_source ON uk_gdp_sector_weights(data_source);
+CREATE INDEX IF NOT EXISTS idx_uk_gdp_sector_weights_version ON uk_gdp_sector_weights(file_version);
