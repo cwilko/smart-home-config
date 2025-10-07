@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS uk_inflation_coicop_hierarchy CASCADE;
 -- Enables efficient parent-child queries and contribution calculations
 CREATE TABLE uk_inflation_coicop_hierarchy (
     coicop_id VARCHAR(15) PRIMARY KEY,  -- e.g., '00', '01.1', '01.1.1.1', '12.7.0.4'
-    level INTEGER NOT NULL CHECK (level BETWEEN 1 AND 4),
+    level INTEGER NOT NULL CHECK (level BETWEEN 0 AND 4),
     parent_id VARCHAR(15),              -- Reference to parent COICOP
     description TEXT NOT NULL,          -- e.g., 'BREAD & CEREALS'
     sort_order BIGINT,                  -- For proper hierarchical ordering
@@ -21,9 +21,9 @@ CREATE TABLE uk_inflation_coicop_hierarchy (
     -- Constraints
     FOREIGN KEY (parent_id) REFERENCES uk_inflation_coicop_hierarchy(coicop_id),
     
-    -- Level 1 items should have no parent
-    CONSTRAINT check_level1_no_parent CHECK (
-        (level = 1 AND parent_id IS NULL) OR (level > 1 AND parent_id IS NOT NULL)
+    -- Level 0 (root) and Level 1 items should have no parent, others should have a parent
+    CONSTRAINT check_level_parent_rules CHECK (
+        (level IN (0, 1) AND parent_id IS NULL) OR (level > 1 AND parent_id IS NOT NULL)
     )
 );
 
@@ -156,7 +156,7 @@ WHERE current.index_value IS NOT NULL;
 -- View: Hierarchy tree structure for easy navigation
 CREATE VIEW uk_inflation_hierarchy_tree AS
 WITH RECURSIVE tree AS (
-    -- Level 1 (root categories)
+    -- Level 0 and 1 (root categories)
     SELECT 
         coicop_id,
         level,
@@ -167,7 +167,7 @@ WITH RECURSIVE tree AS (
         0 as depth,
         ARRAY[coicop_id]::VARCHAR[] as path
     FROM uk_inflation_coicop_hierarchy 
-    WHERE level = 1
+    WHERE level <= 1 AND parent_id IS NULL
     
     UNION ALL
     
