@@ -164,7 +164,7 @@ WITH RECURSIVE tree AS (
         description,
         coicop_id as root_id,
         0 as depth,
-        ARRAY[coicop_id] as path
+        ARRAY[coicop_id]::VARCHAR[] as path
     FROM uk_inflation_coicop_hierarchy 
     WHERE level = 1
     
