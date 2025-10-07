@@ -162,6 +162,7 @@ WITH RECURSIVE tree AS (
         level,
         parent_id,
         description,
+        sort_order,
         coicop_id as root_id,
         0 as depth,
         ARRAY[coicop_id]::VARCHAR[] as path
@@ -176,6 +177,7 @@ WITH RECURSIVE tree AS (
         h.level,
         h.parent_id,
         h.description,
+        h.sort_order,
         t.root_id,
         t.depth + 1,
         t.path || h.coicop_id
