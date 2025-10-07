@@ -21,9 +21,9 @@ CREATE TABLE uk_inflation_coicop_hierarchy (
     -- Constraints
     FOREIGN KEY (parent_id) REFERENCES uk_inflation_coicop_hierarchy(coicop_id),
     
-    -- Level 0 (root) and Level 1 items should have no parent, others should have a parent
+    -- Level 0 (root) should have no parent, all other levels should have a parent
     CONSTRAINT check_level_parent_rules CHECK (
-        (level IN (0, 1) AND parent_id IS NULL) OR (level > 1 AND parent_id IS NOT NULL)
+        (level = 0 AND parent_id IS NULL) OR (level > 0 AND parent_id IS NOT NULL)
     )
 );
 
