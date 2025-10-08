@@ -1,17 +1,14 @@
--- UK Inflation Data Tables
+-- UK Inflation Data Tables - DAG Safe Version
 -- Designed for efficient CPI/CPIH/RPI rate calculations and contribution analysis
 -- All tables prefixed with 'uk_inflation_' for easy identification
-
--- Drop tables if they exist (in dependency order)
-DROP TABLE IF EXISTS uk_inflation_price_data CASCADE;
-DROP TABLE IF EXISTS uk_inflation_coicop_hierarchy CASCADE;
+-- NOTE: This version uses CREATE TABLE IF NOT EXISTS for DAG safety
 
 -- =============================================================================
 -- COICOP Hierarchy Reference Table
 -- =============================================================================
 -- Stores the hierarchical structure of COICOP categories
 -- Enables efficient parent-child queries and contribution calculations
-CREATE TABLE uk_inflation_coicop_hierarchy (
+CREATE TABLE IF NOT EXISTS uk_inflation_coicop_hierarchy (
     coicop_id VARCHAR(15) PRIMARY KEY,  -- e.g., '00', '01.1', '01.1.1.1', '12.7.0.4'
     level INTEGER NOT NULL CHECK (level BETWEEN 0 AND 4),
     parent_id VARCHAR(15),              -- Reference to parent COICOP
@@ -32,7 +29,7 @@ CREATE TABLE uk_inflation_coicop_hierarchy (
 -- =============================================================================
 -- Stores minimal data: index values and weights for calculation
 -- Optimized for fast retrieval of current + historical data for rate calculations
-CREATE TABLE uk_inflation_price_data (
+CREATE TABLE IF NOT EXISTS uk_inflation_price_data (
     date DATE NOT NULL,                 -- First day of month (e.g., '2024-12-01')
     coicop_id VARCHAR(15) NOT NULL,     -- Reference to COICOP category
     series_type VARCHAR(5) NOT NULL,    -- 'CPI', 'CPIH', 'RPI'
@@ -61,29 +58,29 @@ CREATE TABLE uk_inflation_price_data (
 -- =============================================================================
 
 -- Core hierarchy indexes
-CREATE INDEX idx_uk_inflation_hierarchy_level 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_hierarchy_level 
     ON uk_inflation_coicop_hierarchy(level);
-CREATE INDEX idx_uk_inflation_hierarchy_parent 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_hierarchy_parent 
     ON uk_inflation_coicop_hierarchy(parent_id);
-CREATE INDEX idx_uk_inflation_hierarchy_sort 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_hierarchy_sort 
     ON uk_inflation_coicop_hierarchy(sort_order);
 
 -- Critical indexes for YoY rate calculations
 -- This index optimizes the "current + 12 months ago" lookup pattern
-CREATE INDEX idx_uk_inflation_yoy_calc 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_yoy_calc 
     ON uk_inflation_price_data(coicop_id, series_type, date);
 
 -- Index for date-based queries (monthly reports)
-CREATE INDEX idx_uk_inflation_date_series 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_date_series 
     ON uk_inflation_price_data(date, series_type);
 
 -- Composite index for hierarchy + data joins
-CREATE INDEX idx_uk_inflation_hierarchy_data 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_hierarchy_data 
     ON uk_inflation_price_data(series_type, date) 
     INCLUDE (coicop_id, index_value, weight_value);
 
 -- Index for time series analysis
-CREATE INDEX idx_uk_inflation_timeseries 
+CREATE INDEX IF NOT EXISTS idx_uk_inflation_timeseries 
     ON uk_inflation_price_data(coicop_id, series_type, date)
     INCLUDE (index_value, weight_value);
 
