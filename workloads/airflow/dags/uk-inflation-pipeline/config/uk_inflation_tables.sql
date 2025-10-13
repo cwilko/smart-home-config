@@ -124,7 +124,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- =============================================================================
 
 -- View: Get current month data with 12-month historical for YoY calculations
-CREATE VIEW uk_inflation_yoy_ready AS
+CREATE VIEW IF NOT EXISTS uk_inflation_yoy_ready AS
 SELECT 
     current.date,
     current.coicop_id,
@@ -151,7 +151,7 @@ JOIN uk_inflation_coicop_hierarchy h ON current.coicop_id = h.coicop_id
 WHERE current.index_value IS NOT NULL;
 
 -- View: Hierarchy tree structure for easy navigation
-CREATE VIEW uk_inflation_hierarchy_tree AS
+CREATE VIEW IF NOT EXISTS uk_inflation_hierarchy_tree AS
 WITH RECURSIVE tree AS (
     -- Level 0 and 1 (root categories)
     SELECT 
