@@ -37,12 +37,14 @@ def uk_bond_market_data_pipeline():
     """
     ### UK Bond Market Data Pipeline
     
-    Collects comprehensive UK bond market prices from Hargreaves Lansdown broker using Selenium web scraping.
+    Collects comprehensive UK bond market prices from multiple brokers using Selenium web scraping.
     
     **Data collected:**
     - **Government Gilts (Nominal)**: Bond names, clean/dirty prices, YTM, after-tax YTM
     - **Index-Linked Gilts**: Real yields, after-tax real yields, inflation assumptions
     - **Corporate Bonds (GBP)**: Company names, credit ratings, yields, credit spreads
+    - **AJ Bell Gilts**: Alternative broker prices for cross-broker comparison
+    - **AJ Bell Corporate Bonds**: Alternative corporate bond prices with full yield calculations
     - Coupon rates, maturity dates, and accrued interest calculations
     
     **Technology:**
@@ -166,13 +168,88 @@ def uk_bond_market_data_pipeline():
             logger.error(f"CRITICAL: Error collecting corporate bond prices: {str(e)}")
             raise RuntimeError(f"Corporate bond data collection failed: {e}") from e
 
+    @task.virtualenv(
+        task_id="collect_ajbell_gilt_prices_data",
+        requirements=[
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
+        ],
+        system_site_packages=True,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_ajbell_gilt_prices",
+        queue="kubernetes",
+        executor_config=executor_env_overrides,
+    )
+    def collect_ajbell_gilt_prices_data():
+        """Collect real-time gilt market prices from AJ Bell broker (alternative source)."""
+        import logging
+        import os
+        from data_collectors.ajbell_gilt_data import collect_ajbell_gilt_prices
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        logger.info("Starting AJ Bell gilt market data collection (using Chrome pod override)")
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_ajbell_gilt_prices(database_url=database_url)
+            logger.info(f"Successfully collected {result} AJ Bell gilt price records")
+            return result
+        except Exception as e:
+            logger.error(f"CRITICAL: Error collecting AJ Bell gilt prices: {str(e)}")
+            raise RuntimeError(f"AJ Bell gilt data collection failed: {e}") from e
+
+    @task.virtualenv(
+        task_id="collect_ajbell_corporate_bond_prices_data",
+        requirements=[
+            "marketinsights-collector[selenium]@git+https://github.com/cwilko/marketinsights-collector.git",
+            "beautifulsoup4>=4.12.0",
+            "lxml>=4.9.0",
+            "pandas>=2.0.0",
+            "requests>=2.31.0",
+            "psycopg2-binary>=2.9.0",
+            "scipy>=1.11.0",
+        ],
+        system_site_packages=True,
+        pip_install_options=["--no-user"],
+        venv_cache_path="/tmp/venv_ajbell_corporate_bond_prices",
+        queue="kubernetes",
+        executor_config=executor_env_overrides,
+    )
+    def collect_ajbell_corporate_bond_prices_data():
+        """Collect real-time corporate bond prices from AJ Bell broker (alternative source)."""
+        import logging
+        import os
+        from data_collectors.gilt_market_data import collect_ajbell_corporate_bond_prices
+
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
+        logger.info("Starting AJ Bell corporate bond data collection (using Chrome pod override)")
+
+        try:
+            database_url = os.getenv('DATABASE_URL')
+            result = collect_ajbell_corporate_bond_prices(database_url=database_url)
+            logger.info(f"Successfully collected {result} AJ Bell corporate bond price records")
+            return result
+        except Exception as e:
+            logger.error(f"CRITICAL: Error collecting AJ Bell corporate bond prices: {str(e)}")
+            raise RuntimeError(f"AJ Bell corporate bond data collection failed: {e}") from e
+
     # Execute all tasks sequentially (they are resource-intensive Chrome scraping tasks)
     gilt_market_task = collect_gilt_market_prices_data()
     index_linked_gilt_task = collect_index_linked_gilt_prices_data()
     corporate_bond_task = collect_corporate_bond_prices_data()
+    ajbell_gilt_task = collect_ajbell_gilt_prices_data()
+    ajbell_corporate_bond_task = collect_ajbell_corporate_bond_prices_data()
     
     # Create sequential dependencies to avoid resource contention
-    gilt_market_task >> index_linked_gilt_task >> corporate_bond_task
+    gilt_market_task >> index_linked_gilt_task >> corporate_bond_task >> ajbell_gilt_task >> ajbell_corporate_bond_task
 
 
 # Create the DAG instance
