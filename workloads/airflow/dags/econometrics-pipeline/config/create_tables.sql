@@ -269,6 +269,37 @@ CREATE INDEX IF NOT EXISTS idx_gilt_market_bond_name ON gilt_market_prices(bond_
 CREATE INDEX IF NOT EXISTS idx_gilt_market_isin ON gilt_market_prices(isin);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_short_code ON gilt_market_prices(short_code);
 
+-- AJ Bell Gilt Market Data Table (Alternative broker prices for cross-broker comparison)
+CREATE TABLE IF NOT EXISTS ajbell_gilt_prices (\n    id SERIAL PRIMARY KEY,
+    bond_name VARCHAR(255) NOT NULL,
+    clean_price DECIMAL(10,6) NOT NULL,
+    accrued_interest DECIMAL(10,6),
+    dirty_price DECIMAL(10,6),
+    coupon_rate DECIMAL(8,6) NOT NULL,
+    maturity_date DATE NOT NULL,
+    years_to_maturity DECIMAL(8,4) NOT NULL,
+    ytm DECIMAL(8,6),
+    after_tax_ytm DECIMAL(8,6),
+    scraped_date DATE NOT NULL,
+    -- Bond identifiers (consistent with gilt_market_prices structure)
+    currency_code VARCHAR(3) DEFAULT 'GBP',  -- Currency code (defaulting to GBP for UK gilts)
+    isin VARCHAR(12),                        -- International Securities Identification Number
+    short_code VARCHAR(10),                  -- AJ Bell internal identifier
+    combined_id VARCHAR(30),                 -- Full formatted ID: 'Currency | ISIN | Short Code'
+    data_source VARCHAR(50) DEFAULT 'AJ_Bell',  -- Track data source for cross-broker analysis
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(bond_name, scraped_date)
+);
+
+-- Index for AJ Bell gilt market data
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_scraped_date ON ajbell_gilt_prices(scraped_date);
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_maturity ON ajbell_gilt_prices(maturity_date);
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_bond_name ON ajbell_gilt_prices(bond_name);
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_isin ON ajbell_gilt_prices(isin);
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_short_code ON ajbell_gilt_prices(short_code);
+CREATE INDEX IF NOT EXISTS idx_ajbell_gilt_data_source ON ajbell_gilt_prices(data_source);
+
 -- UK Swap Rates Table (GBP Interest Rate Swaps)
 CREATE TABLE IF NOT EXISTS uk_swap_rates (
     id SERIAL PRIMARY KEY,
