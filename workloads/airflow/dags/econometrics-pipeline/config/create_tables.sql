@@ -270,7 +270,8 @@ CREATE INDEX IF NOT EXISTS idx_gilt_market_isin ON gilt_market_prices(isin);
 CREATE INDEX IF NOT EXISTS idx_gilt_market_short_code ON gilt_market_prices(short_code);
 
 -- AJ Bell Gilt Market Data Table (Alternative broker prices for cross-broker comparison)
-CREATE TABLE IF NOT EXISTS ajbell_gilt_prices (\n    id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS ajbell_gilt_prices (
+    id SERIAL PRIMARY KEY,
     bond_name VARCHAR(255) NOT NULL,
     clean_price DECIMAL(10,6) NOT NULL,
     accrued_interest DECIMAL(10,6),
