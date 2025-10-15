@@ -72,7 +72,6 @@ def uk_bond_market_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_gilt_market_prices",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
@@ -108,7 +107,6 @@ def uk_bond_market_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_index_linked_gilt_prices",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
@@ -144,7 +142,6 @@ def uk_bond_market_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_corporate_bond_prices",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
@@ -180,7 +177,6 @@ def uk_bond_market_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_ajbell_gilt_prices",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
@@ -217,7 +213,6 @@ def uk_bond_market_data_pipeline():
         ],
         system_site_packages=True,
         pip_install_options=["--no-user"],
-        venv_cache_path="/tmp/venv_ajbell_corporate_bond_prices",
         queue="kubernetes",
         executor_config=executor_env_overrides,
     )
