@@ -386,6 +386,41 @@ CREATE INDEX IF NOT EXISTS idx_corporate_bond_rating ON corporate_bond_prices(cr
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_isin ON corporate_bond_prices(isin);
 CREATE INDEX IF NOT EXISTS idx_corporate_bond_short_code ON corporate_bond_prices(short_code);
 
+-- AJ Bell Corporate Bond Market Prices Table (Alternative broker prices for cross-broker comparison)
+CREATE TABLE IF NOT EXISTS ajbell_corporate_bond_prices (
+    id SERIAL PRIMARY KEY,
+    bond_name VARCHAR(255) NOT NULL,
+    company_name VARCHAR(100),
+    clean_price DECIMAL(10,6) NOT NULL,
+    accrued_interest DECIMAL(10,6) NOT NULL,
+    dirty_price DECIMAL(10,6) NOT NULL,
+    coupon_rate DECIMAL(8,6) NOT NULL,
+    maturity_date DATE NOT NULL,
+    years_to_maturity DECIMAL(8,4) NOT NULL,
+    ytm DECIMAL(8,6),
+    after_tax_ytm DECIMAL(8,6),
+    credit_rating VARCHAR(10) DEFAULT 'NR',
+    scraped_date DATE NOT NULL,
+    -- Bond identifiers (consistent with corporate_bond_prices structure)
+    currency_code VARCHAR(3) DEFAULT 'GBP',  -- Currency code (defaulting to GBP for UK corporate bonds)
+    isin VARCHAR(12),                        -- International Securities Identification Number
+    short_code VARCHAR(10),                  -- AJ Bell internal identifier
+    combined_id VARCHAR(30),                 -- Full formatted ID: 'Currency | ISIN | Short Code'
+    data_source VARCHAR(50) DEFAULT 'AJ_Bell',  -- Track data source for cross-broker analysis
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(bond_name, scraped_date)
+);
+
+-- Index for AJ Bell corporate bond market data
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_scraped_date ON ajbell_corporate_bond_prices(scraped_date);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_maturity ON ajbell_corporate_bond_prices(maturity_date);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_company ON ajbell_corporate_bond_prices(company_name);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_rating ON ajbell_corporate_bond_prices(credit_rating);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_isin ON ajbell_corporate_bond_prices(isin);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_short_code ON ajbell_corporate_bond_prices(short_code);
+CREATE INDEX IF NOT EXISTS idx_ajbell_corporate_bond_data_source ON ajbell_corporate_bond_prices(data_source);
+
 -- US TIPS (Treasury Inflation-Protected Securities) Table
 CREATE TABLE IF NOT EXISTS us_tips_yields (
     id SERIAL PRIMARY KEY,
