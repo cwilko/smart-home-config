@@ -236,15 +236,14 @@ def uk_bond_market_data_pipeline():
             logger.error(f"CRITICAL: Error collecting AJ Bell corporate bond prices: {str(e)}")
             raise RuntimeError(f"AJ Bell corporate bond data collection failed: {e}") from e
 
-    # Execute all tasks sequentially (they are resource-intensive Chrome scraping tasks)
+    # Execute all tasks in parallel (independent data collection from different sources)
     gilt_market_task = collect_gilt_market_prices_data()
     index_linked_gilt_task = collect_index_linked_gilt_prices_data()
     corporate_bond_task = collect_corporate_bond_prices_data()
     ajbell_gilt_task = collect_ajbell_gilt_prices_data()
     ajbell_corporate_bond_task = collect_ajbell_corporate_bond_prices_data()
     
-    # Create sequential dependencies to avoid resource contention
-    gilt_market_task >> index_linked_gilt_task >> corporate_bond_task >> ajbell_gilt_task >> ajbell_corporate_bond_task
+    # No dependencies - all tasks run in parallel for maximum efficiency
 
 
 # Create the DAG instance
