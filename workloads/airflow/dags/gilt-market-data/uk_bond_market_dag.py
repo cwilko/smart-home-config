@@ -89,6 +89,12 @@ def uk_bond_market_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_gilt_market_prices(database_url=database_url)
+            
+            # Treat 0 records as failure - gilt market should always have data
+            if result == 0:
+                logger.error("CRITICAL: Collected 0 gilt records - this indicates a system failure (Chrome timeout, network issues, etc.)")
+                raise RuntimeError("Gilt market data collection returned 0 records - likely Chrome/network failure")
+            
             logger.info(f"Successfully collected {result} gilt market price records")
             return result
         except Exception as e:
@@ -124,6 +130,12 @@ def uk_bond_market_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_index_linked_gilt_prices(database_url=database_url)
+            
+            # Treat 0 records as failure - index-linked gilt market should have data
+            if result == 0:
+                logger.error("CRITICAL: Collected 0 index-linked gilt records - this indicates a system failure (Chrome timeout, network issues, etc.)")
+                raise RuntimeError("Index-linked gilt data collection returned 0 records - likely Chrome/network failure")
+            
             logger.info(f"Successfully collected {result} index-linked gilt price records")
             return result
         except Exception as e:
@@ -159,6 +171,12 @@ def uk_bond_market_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_corporate_bond_prices(database_url=database_url)
+            
+            # Corporate bonds might legitimately have 0 records (market conditions), so allow 0
+            # but log it for monitoring
+            if result == 0:
+                logger.warning("WARNING: Collected 0 corporate bond records - check if market data is available")
+            
             logger.info(f"Successfully collected {result} corporate bond price records")
             return result
         except Exception as e:
@@ -194,6 +212,12 @@ def uk_bond_market_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_ajbell_gilt_prices(database_url=database_url)
+            
+            # Treat 0 records as failure - AJ Bell gilt market should have data
+            if result == 0:
+                logger.error("CRITICAL: Collected 0 AJ Bell gilt records - this indicates a system failure (Chrome timeout, network issues, etc.)")
+                raise RuntimeError("AJ Bell gilt data collection returned 0 records - likely Chrome/network failure")
+            
             logger.info(f"Successfully collected {result} AJ Bell gilt price records")
             return result
         except Exception as e:
@@ -230,6 +254,12 @@ def uk_bond_market_data_pipeline():
         try:
             database_url = os.getenv('DATABASE_URL')
             result = collect_ajbell_corporate_bond_prices(database_url=database_url)
+            
+            # AJ Bell corporate bonds might legitimately have 0 records, so allow 0
+            # but log it for monitoring
+            if result == 0:
+                logger.warning("WARNING: Collected 0 AJ Bell corporate bond records - check if market data is available")
+            
             logger.info(f"Successfully collected {result} AJ Bell corporate bond price records")
             return result
         except Exception as e:
