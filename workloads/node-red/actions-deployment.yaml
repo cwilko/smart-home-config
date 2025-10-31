@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: actions-service
+  namespace: actions
+spec:
+  selector:
+    app: actions
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 1880
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actions-deployment
+  namespace: actions
+  labels:
+    app: actions
+  annotations:
+    fluxcd.io/automated: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: actions
+  template:
+    metadata:
+      labels:
+        app: actions
+    spec:
+      containers:
+      - name: smart-home-actions
+        image: wilkobets/smart-home-actions:latest
+        ports:
+        - containerPort: 1880
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: actions-secrets  
