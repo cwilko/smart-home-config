@@ -66,9 +66,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: squid-api-service
+            name: squid-service
             port: 
-              number: 80
+              name: api
   - host: www.squirrelnet.co.uk
     http:
       paths:
@@ -76,9 +76,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: squid-api-service
+            name: squid-service
             port: 
-              number: 80
+              name: api
 
 ---
 

@@ -359,6 +359,16 @@ spec:
           seccompProfile:
             type: RuntimeDefault
       dnsPolicy: ClusterFirst
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - k8s-worker4
       nodeSelector:
         kubernetes.io/os: linux
       serviceAccountName: ingress-nginx
