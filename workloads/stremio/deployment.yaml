@@ -25,6 +25,8 @@ spec:
         app: squirrel-stream
     spec:
       serviceAccountName: squirrel-stream-sa
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker4
       
       containers:
       # Squirrel Stream application container
