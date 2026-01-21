@@ -117,3 +117,12 @@ metadata:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
 
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: privileged
+  labels:
+    # Required for Democratic CSI to run mounter pods with host privileges
+    pod-security.kubernetes.io/enforce: privileged
