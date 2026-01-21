@@ -1,0 +1,321 @@
+apiVersion: v1
+data:
+  squid.conf: "#pid_filename /run/squid.pid\n\nworkers 1\ncpu_affinity_map process_numbers=1
+    cores=1\n\nacl SSL_ports port 443\nacl Safe_ports port 80          # http\nacl
+    Safe_ports port 21          # ftp\nacl Safe_ports port 443         # https\nacl
+    Safe_ports port 70          # gopher\nacl Safe_ports port 210         # wais\nacl
+    Safe_ports port 1025-65535  # unregistered ports\nacl Safe_ports port 280         #
+    http-mgmt\nacl Safe_ports port 488         # gss-http\nacl Safe_ports port 591
+    \        # filemaker\nacl Safe_ports port 777         # multiling http\n\n# Recommended
+    default for manager:\nacl manager proto cache_object\n\n## Local network ACLs\nacl
+    localnet src 192.168.0.0/16\n# For testing purposes - docker\nacl dockernet src
+    172.17.0.0/16\n# Kubernetes pod network\nacl k8snet src 10.244.0.0/16\n\n#\n#
+    Recommended minimum Access Permission configuration:\n#\n# Deny requests to certain
+    unsafe ports\nhttp_access deny !Safe_ports\n\n# Deny CONNECT to other than secure
+    SSL ports\nhttp_access deny CONNECT !SSL_ports\n\n# Only allow cachemgr access
+    from localhost\nhttp_access allow localhost manager\n# Allow cache manager access
+    from localnet\nhttp_access allow manager localnet\n\n\nhttp_access deny manager\n\n#
+    This default configuration only allows localhost requests because a more\n# permissive
+    Squid installation could introduce new attack vectors into the\n# network by proxying
+    external TCP connections to unprotected services.\nhttp_access allow localhost\n\n#
+    The two deny rules below are unnecessary in this default configuration\n# because
+    they are followed by a \"deny all\" rule. However, they may become\n# critically
+    important when you start allowing external requests below them.\n\n# Protect web
+    applications running on the same server as Squid. They often\n# assume that only
+    local users can access them at \"localhost\" ports.\n#http_access deny to_localhost\n\n#
+    Protect cloud servers that provide local users with sensitive info about\n# their
+    server via certain well-known link-local (a.k.a. APIPA) addresses.\n#http_access
+    deny to_linklocal\n\n# Local access rules\nhttp_access allow localnet\nhttp_access
+    allow dockernet\nhttp_access allow k8snet\n\n# Cache ACLs - allow caching of successful
+    responses\nacl success_status http_status 200 206 301 302 304\nacl real_debrid
+    dstdomain .download.real-debrid.com\n\n# Cache directives\n#cache allow real_debrid
+    success_status\n#cache allow success_status\n#cache deny all\n\nhttp_access deny
+    all\n\nmaximum_object_size 200 GB\nmaximum_object_size_in_memory 5 MB\nminimum_object_size
+    1 KB               # Cache objects larger than 1KB\n\n# Stop Squid from being
+    \"chatty\" with the kernel\n#read_ahead_gap 64 MB\nrange_offset_limit 50 MB\n\n#
+    Increase the socket buffers to reduce context switching\ntcp_recv_bufsize 1 MB\n\ncollapsed_forwarding
+    on\n#quick_abort_min -1 KB\n#quick_abort_max -1 KB\nrange_forward_on_cache_miss
+    on\n#quick_abort_pct 100\n\n# Deny ranges starting beyond 10GB  \n#acl range_beyond_10gb
+    req_header Range -i bytes=[1-9][0-9]{10,}-\n#acl range_beyond_200b req_header
+    Range -i bytes=200-\n\n#cache deny range_beyond_10gb\n#cache allow all\n#cache
+    deny all\n\n#collapsed_forwarding_access deny range_beyond_10gb\n#collapsed_forwarding_access
+    allow all\n\n# Store ID program for cache key normalization\n# Required for dynamic
+    urls from RD\n\nstore_id_program /usr/local/scripts/squid_store_id.py\nstore_id_children
+    5 startup=1 idle=1\nstore_id_access allow all\n\n#http_port 3128 ssl-bump \\\n#
+    \   cert=/etc/squid/ssl_cert/myCA.pem \\\n#    generate-host-certificates=on \\\n#
+    \   dynamic_cert_mem_cache_size=4MB \\\n#    options=NO_SSLv3,NO_TLSv1 \\\n#    cipher=HIGH:MEDIUM:!LOW:!RC4:!SEED:!IDEA:!3DES:!MD5:!EXP:!PSK:!DSS
+    \ # NEW: More flexible cipher selection\n\nhttp_port 3128 ssl-bump \\\n    cert=/etc/squid/ssl_cert/myCA.pem
+    \\\n    generate-host-certificates=on \\\n    dynamic_cert_mem_cache_size=32MB
+    \\\n    options=NO_SSLv3,NO_TLSv1,NO_TLSv1_1,SINGLE_ECDH_USE,CIPHER_SERVER_PREFERENCE
+    \\\n    cipher=ECDHE-RSA-AES128-GCM-SHA256:AES128-GCM-SHA256\n\n# Custom log format
+    with content length\n# Standard squid format but with human-readable timestamp\nlogformat
+    custom %{%Y-%m-%d %H:%M:%S}tl %6tr %>a %Ss/%03>Hs %<st %rm %ru %[un %Sh/%<a %mt\n#logformat
+    detailed %tl %6tr %>a %Ss/%03>Hs %<st %rm  %ru %[un %Sh/%<a %mt Content-Length:%>h{Content-Length}
+    Range:%>h{Range}\n\n# Use both default and detailed logging\naccess_log /var/log/squid/access.log
+    custom\n# Also log to stdout for kubectl logs (via symlink created by entrypoint)\naccess_log
+    /var/log/squid/stdout.log custom\n#access_log /var/log/squid/access-detailed.log
+    detailed\n\nacl step1 at_step SslBump1\nssl_bump peek step1\nssl_bump bump all\n\n#
+    SSL certificate generation program (Ubuntu path)\nsslcrtd_program /usr/lib/squid/security_file_certgen
+    -s /var/lib/squid/ssl_db -M 4MB\nsslcrtd_children 8 startup=1 idle=1\n\nssl_bump
+    server-first all\nsslproxy_cert_error allow all          # NEW: Ignores ALL SSL
+    certificate errors\n\n\nacl all src all\nhttp_access allow all\n\n# Real-Debrid
+    API: 5 min to 24 hours\n# Override all cache-prevention headers for Real-Debrid\nrefresh_pattern
+    ^https://.*\\.download\\.real-debrid\\.com/ 43200 95% 259200 override-expire ignore-private
+    ignore-no-store override-lastmod ignore-reload reload-into-ims\n\n# Also override
+    by content type\nrefresh_pattern . 43200 95% 259200\n\ncache_dir aufs /var/spool/squid
+    250000 16 256\n\n\n#debug_options ALL,1 84,9\n#debug_options 73,3\n#debug_options
+    ALL,1 88,9 11,5 90,3 20,3 85,5\n# More comprehensive cache debugging\n#debug_options
+    ALL,1 11,9 58,9 20,9 32,9 86,9 85,9 88,9 90,3\npinger_enable off\n"
+  squid_store_id.py: "#!/usr/bin/python3\nimport sys\nimport re\nimport subprocess\nimport
+    os\nimport signal\nimport time\nimport atexit\n\n# --- Pre-fetch Configuration
+    ---\nSQUID_PROXY_HOST = '127.0.0.1'\nSQUID_PROXY_PORT = '3128'\nLOG_LEVEL = os.environ.get('SQUID_STORE_ID_LOG_LEVEL',
+    'INFO')  # Options: 'DEBUG', 'INFO', 'WARNING', 'ERROR'\nLOG_FILE = '/var/log/squid/store_id_debug.log'\nLOG_TO_STDERR
+    = os.environ.get('SQUID_STORE_ID_LOG_TO_STDERR', 'False').lower() in ('true',
+    '1', 'yes', 'on')\nPREFETCH_ENABLED = os.environ.get('SQUID_STORE_ID_PREFETCH_ENABLED',
+    'True').lower() in ('true', '1', 'yes', 'on')\nPREFETCH_HEAD_START_DELAY = float(os.environ.get('SQUID_PREFETCH_DELAY',
+    '3.0'))  # Seconds for pre-fetch head start\n\n# --- Signal Handler for Zombie
+    Process Cleanup ---\ndef sigchld_handler(signum, frame):\n    \"\"\"Clean up zombie
+    child processes when they terminate\"\"\"\n    try:\n        while True:\n            #
+    Non-blocking wait for any child process\n            pid, status = os.waitpid(-1,
+    os.WNOHANG)\n            if pid == 0:\n                # No more child processes
+    to clean up\n                break\n            log_message('DEBUG', f'Cleaned
+    up child process {pid} with status {status}')\n    except OSError:\n        #
+    No child processes exist\n        pass\n\n# Register the signal handler\nsignal.signal(signal.SIGCHLD,
+    sigchld_handler)\n\n# File-based coordination for multiple instances\nPREFETCH_LOCK_FILE
+    = \"/var/log/squid/squid_prefetch.lock\"\nPREFETCH_PID_FILE = \"/var/log/squid/squid_prefetch.pid\"\n\nLOG_MAPPING
+    = {\n    'DEBUG': 1,\n    'INFO': 2,\n    'WARNING': 3,\n    'ERROR': 4\n}\nCURRENT_LOG_LEVEL
+    = LOG_MAPPING.get(LOG_LEVEL.upper(), 2)\n\ndef log_message(level, message):\n
+    \   \"\"\"Log message to dedicated file and optionally to stderr\"\"\"\n    if
+    LOG_MAPPING.get(level.upper(), 0) >= CURRENT_LOG_LEVEL:\n        timestamp = time.strftime(\"%Y-%m-%d
+    %H:%M:%S\")\n        formatted_msg = f\"[{timestamp}] STORE_ID {level.upper()}:
+    {message}\\n\"\n        \n        # Always log to file\n        try:\n            with
+    open(LOG_FILE, 'a') as f:\n                f.write(formatted_msg)\n                f.flush()\n
+    \       except Exception:\n            pass  # Don't let logging errors break
+    the script\n        \n        # Optionally log to stdout pipe for k8s pod logs\n
+    \       if LOG_TO_STDERR:\n            try:\n                with open('/var/log/squid/stdout_pipe',
+    'w') as f:\n                    f.write(formatted_msg)\n                    f.flush()\n
+    \           except Exception:\n                pass\n\ndef start_prefetch(url,
+    store_id):\n    \"\"\"Start pre-fetch with atomic coordination\"\"\"\n    \n    #
+    Check for existing pre-fetch of same content first (optimization)\n    existing_match
+    = is_same_content_prefetching(store_id)\n    log_message('DEBUG', f\"Pre-fetch
+    exists check for {store_id}: {existing_match}\")\n    if existing_match:\n        log_message('DEBUG',
+    f\"Pre-fetch already active for store ID: {store_id}\")\n        return \"exists\"
+    \ # Same content already prefetching, no wait needed\n    \n    # Atomically acquire
+    lock (handles termination if needed)\n    lock_result = acquire_prefetch_lock(store_id)\n
+    \   log_message('DEBUG', f\"acquire_prefetch_lock for {store_id} returned: {lock_result}\")\n
+    \   if lock_result:\n        # We got the lock - start the actual pre-fetch process\n
+    \       log_message('DEBUG', f\"Starting actual pre-fetch for {store_id}\")\n
+    \       actual_start_prefetch(url, store_id)\n        return True  # We successfully
+    started the pre-fetch\n    else:\n        log_message('DEBUG', f\"Failed to acquire
+    pre-fetch lock for {store_id}\")\n        return False  # Another instance started
+    it (race condition)\n\ndef is_same_content_prefetching(store_id):\n    \"\"\"Check
+    if same content is already being pre-fetched\"\"\"\n    try:\n        log_message('DEBUG',
+    f\"Checking lock file: {PREFETCH_LOCK_FILE}\")\n        if os.path.exists(PREFETCH_LOCK_FILE):\n
+    \           log_message('DEBUG', f\"Lock file exists\")\n            with open(PREFETCH_LOCK_FILE,
+    'r') as f:\n                lock_content = f.read().strip()\n                log_message('DEBUG',
+    f\"Lock file content: '{lock_content}'\")\n                # Parse lock content:
+    PID:FILENAME:TIMESTAMP (without rd-cache:// prefix)\n                lock_data
+    = lock_content.split(':', 2)\n                log_message('DEBUG', f\"Lock data
+    parts: {lock_data}, length: {len(lock_data)}\")\n                if len(lock_data)
+    >= 2:\n                    existing_filename = lock_data[1]\n                    #
+    Compare with store_id after removing rd-cache:// prefix\n                    store_filename
+    = store_id.replace('rd-cache://', '')\n                    log_message('DEBUG',
+    f\"Existing filename: '{existing_filename}', checking against: '{store_filename}'\")\n
+    \                   match = existing_filename == store_filename\n                    log_message('DEBUG',
+    f\"Filenames match: {match}\")\n                    return match\n                else:\n
+    \                   log_message('DEBUG', f\"Lock data has insufficient parts:
+    {len(lock_data)}\")\n        else:\n            log_message('DEBUG', f\"Lock file
+    does not exist\")\n    except (OSError, IndexError) as e:\n        log_message('DEBUG',
+    f\"Exception in is_same_content_prefetching: {e}\")\n        pass\n    log_message('DEBUG',
+    f\"Returning False from is_same_content_prefetching\")\n    return False\n\ndef
+    atomic_replace_lock(old_store_id_pid, old_store_id, new_store_id):\n    \"\"\"Atomically
+    replace existing lock with new one\"\"\"\n    try:\n        log_message('DEBUG',
+    f\"Starting atomic_replace_lock: old_store_id_pid={old_store_id_pid}, old_store_id={old_store_id},
+    new_store_id={new_store_id}\")\n        \n        # Get the actual wget PID from
+    the PID file, not the store_id script PID\n        wget_pid = None\n        try:\n
+    \           if os.path.exists(PREFETCH_PID_FILE):\n                with open(PREFETCH_PID_FILE,
+    'r') as f:\n                    wget_pid = int(f.read().strip())\n                    log_message('DEBUG',
+    f\"Found wget PID {wget_pid} in PID file\")\n            else:\n                log_message('DEBUG',
+    f\"PID file {PREFETCH_PID_FILE} does not exist\")\n        except (OSError, ValueError)
+    as e:\n            log_message('DEBUG', f\"Failed to read wget PID from file:
+    {e}\")\n        \n        # Terminate old wget process if we found it\n        if
+    wget_pid:\n            try:\n                # First check if process exists\n
+    \               os.kill(wget_pid, 0)  # Signal 0 just checks if process exists\n
+    \               log_message('DEBUG', f\"Wget process {wget_pid} exists, attempting
+    to terminate\")\n                \n                # Now actually terminate it\n
+    \               os.kill(wget_pid, signal.SIGTERM)\n                log_message('INFO',
+    f\"Terminated wget PID {wget_pid} for {old_store_id}\")\n            except (ProcessLookupError,
+    OSError) as e:\n                log_message('DEBUG', f\"Wget process {wget_pid}
+    already gone or not found: {e}\")\n        else:\n            log_message('DEBUG',
+    f\"No wget PID found to terminate\")\n        \n        # Atomic lock replacement
+    using rename\n        temp_lock = f\"{PREFETCH_LOCK_FILE}.{os.getpid()}.tmp\"\n
+    \       log_message('DEBUG', f\"Creating temp lock file: {temp_lock}\")\n        try:\n
+    \           with open(temp_lock, 'w') as f:\n                # Store filename
+    without rd-cache:// prefix\n                filename = new_store_id.replace('rd-cache://',
+    '')\n                lock_data = f\"{os.getpid()}:{filename}:{time.time()}\"\n
+    \               f.write(lock_data)\n            log_message('DEBUG', f\"Wrote
+    temp lock data: {lock_data}\")\n            \n            # Atomic rename to replace
+    old lock\n            os.rename(temp_lock, PREFETCH_LOCK_FILE)\n            log_message('DEBUG',
+    f\"Successfully replaced lock file with new data\")\n            return True\n
+    \           \n        except OSError as e:\n            log_message('ERROR', f\"Failed
+    to create/rename lock file: {e}\")\n            # Cleanup temp file and fail\n
+    \           try:\n                os.remove(temp_lock)\n            except OSError:\n
+    \               pass\n            return False\n            \n    except Exception
+    as e:\n        log_message('ERROR', f\"Unexpected error in atomic_replace_lock:
+    {e}\")\n        return False\n\ndef acquire_prefetch_lock(store_id):\n    \"\"\"Atomically
+    acquire lock, terminating different content if needed\"\"\"\n    try:\n        cleanup_stale_locks()\n
+    \       \n        # Try to acquire lock - handles both new and termination cases
+    atomically\n        while True:\n            try:\n                # Attempt atomic
+    lock creation\n                with open(PREFETCH_LOCK_FILE, 'x') as f:\n                    #
+    Store filename without rd-cache:// prefix\n                    filename = store_id.replace('rd-cache://',
+    '')\n                    lock_data = f\"{os.getpid()}:{filename}:{time.time()}\"\n
+    \                   f.write(lock_data)\n                log_message('DEBUG', f\"Acquired
+    new pre-fetch lock for {store_id}\")\n                return True  # Successfully
+    acquired new lock\n                \n            except FileExistsError:\n                #
+    Lock exists - check if it's same or different content\n                try:\n
+    \                   with open(PREFETCH_LOCK_FILE, 'r') as f:\n                        lock_content
+    = f.read().strip()\n                        # Parse lock content: PID:FILENAME:TIMESTAMP
+    (without rd-cache:// prefix)\n                        lock_data = lock_content.split(':',
+    2)\n                        if len(lock_data) >= 2:\n                            existing_pid
+    = int(lock_data[0])\n                            existing_filename = lock_data[1]\n
+    \                           # Compare filenames (both without rd-cache:// prefix)\n
+    \                           store_filename = store_id.replace('rd-cache://', '')\n
+    \                           \n                            if existing_filename
+    == store_filename:\n                                # Same content already being
+    pre-fetched\n                                log_message('DEBUG', f\"Pre-fetch
+    lock already exists for same content: {store_id}\")\n                                return
+    False\n                            else:\n                                # Different
+    content - terminate and try atomic replacement\n                                existing_store_id
+    = f\"rd-cache://{existing_filename}\"\n                                log_message('INFO',
+    f\"Switching from {existing_store_id} to {store_id}\")\n                                result
+    = atomic_replace_lock(existing_pid, existing_store_id, store_id)\n                                log_message('DEBUG',
+    f\"atomic_replace_lock returned: {result}\")\n                                return
+    result\n                        else:\n                            continue  #
+    Invalid format, retry\n                                \n                except
+    (OSError, ValueError, IndexError):\n                    # Corrupted lock file
+    - remove and retry\n                    try:\n                        os.remove(PREFETCH_LOCK_FILE)\n
+    \                       log_message('DEBUG', \"Removed corrupted lock file, retrying\")\n
+    \                       continue  # Retry lock acquisition\n                    except
+    OSError:\n                        return False\n                        \n    except
+    Exception as e:\n        log_message('WARNING', f\"Failed to acquire lock: {e}\")\n
+    \       return False\n\ndef cleanup_stale_locks():\n    \"\"\"Clean up locks from
+    dead processes\"\"\"\n    try:\n        if os.path.exists(PREFETCH_LOCK_FILE):\n
+    \           with open(PREFETCH_LOCK_FILE, 'r') as f:\n                lock_content
+    = f.read().strip()\n                # Parse lock content: PID:FILENAME:TIMESTAMP
+    (without rd-cache:// prefix)\n                lock_data = lock_content.split(':',
+    2)\n                if len(lock_data) >= 3:\n                    lock_pid = int(lock_data[0])\n
+    \                   lock_time = float(lock_data[2])\n                else:\n                    return
+    \ # Invalid format\n                \n                # Check if process is still
+    running\n                try:\n                    os.kill(lock_pid, 0)  # Check
+    if process exists\n                except ProcessLookupError:\n                    #
+    Process is dead, remove stale lock\n                    os.remove(PREFETCH_LOCK_FILE)\n
+    \                   log_message('DEBUG', f\"Removed stale lock from dead process
+    {lock_pid}\")\n                        \n    except (OSError, ValueError, IndexError):\n
+    \       # If we can't read the lock file, remove it\n        try:\n            os.remove(PREFETCH_LOCK_FILE)\n
+    \       except OSError:\n            pass\n\ndef actual_start_prefetch(url, store_id):\n
+    \   \"\"\"Actually start the pre-fetch wget process\"\"\"\n    log_message('INFO',
+    f\"Starting pre-fetch for: {url} (store ID: {store_id})\")\n    \n    # Construct
+    wget command (proxy configured via /etc/wgetrc)\n    wget_command = [\n        'wget',\n
+    \       '--progress=dot:giga',  # Show progress with dots (1 dot = 1MB)\n        '--server-response',
+    \  # Show HTTP headers and response codes\n        '--no-check-certificate',  #
+    Skip SSL certificate verification\n        '-O', '/dev/null',  # Discard output\n
+    \       url\n    ]\n    \n    log_message('DEBUG', f\"Wget command: {' '.join(wget_command)}\")\n
+    \   \n    try:\n        # Create unique progress log file in squid log directory\n
+    \       progress_file = f\"/var/log/squid/wget_progress_{int(time.time())}_{os.getpid()}.log\"\n
+    \       \n        # Open progress file for writing\n        progress_log = open(progress_file,
+    'w')\n        \n        # Start wget process with stderr redirected to progress
+    file\n        prefetch_process = subprocess.Popen(\n            wget_command,
+    \n            preexec_fn=os.setsid,\n            stdout=subprocess.DEVNULL,\n
+    \           stderr=progress_log\n        )\n        \n        # Write PID to file
+    for tracking\n        with open(PREFETCH_PID_FILE, 'w') as f:\n            f.write(str(prefetch_process.pid))\n
+    \       \n        log_message('INFO', f\"Pre-fetch started (PID: {prefetch_process.pid})
+    for {url} (store ID: {store_id})\")\n        log_message('INFO', f\"Monitor progress:
+    tail -f {progress_file}\")\n        \n        # Note: progress_log file handle
+    will remain open for the wget process\n        \n    except Exception as e:\n
+    \       log_message('ERROR', f\"Failed to start pre-fetch for {url}: {e}\")\n
+    \       # Clean up lock on failure\n        try:\n            os.remove(PREFETCH_LOCK_FILE)\n
+    \       except OSError:\n            pass\n\ndef cleanup_prefetch():\n    \"\"\"Cleanup
+    function called on exit - removes lock files and terminates processes\"\"\"\n
+    \   try:\n        # Terminate active pre-fetch process if we own it\n        if
+    os.path.exists(PREFETCH_PID_FILE):\n            try:\n                with open(PREFETCH_PID_FILE,
+    'r') as f:\n                    pid = int(f.read().strip())\n                    \n
+    \               # Try to terminate the process (kill specific PID, not process
+    group to avoid killing Squid)\n                try:\n                    os.kill(pid,
+    signal.SIGTERM)\n                    log_message('DEBUG', f'Terminated pre-fetch
+    process {pid} on exit')\n                except (ProcessLookupError, OSError):\n
+    \                   pass  # Process already gone\n                    \n            except
+    (OSError, ValueError):\n                pass\n                \n        # Clean
+    up lock and PID files\n        for file_path in [PREFETCH_LOCK_FILE, PREFETCH_PID_FILE]:\n
+    \           try:\n                if os.path.exists(file_path):\n                    os.remove(file_path)\n
+    \           except OSError:\n                pass\n                \n    except
+    Exception:\n        pass  # Don't let cleanup errors break the script\n\n# Register
+    cleanup function\natexit.register(cleanup_prefetch)\n\ndef generate_store_id(url,
+    is_prefetch_request=False):\n    \"\"\"Generate normalized store ID for caching\"\"\"\n
+    \   try:\n        # Pattern for Real-Debrid downloads\n        # https://XX-X.download.real-debrid.com/d/TOKEN/filename.ext\n
+    \       rd_pattern = r'https://\\d+-\\d+\\.download\\.real-debrid\\.com/d/([^/]+)/(.+)'\n
+    \       log_message('DEBUG', f'Testing URL against pattern: {rd_pattern}')\n        \n
+    \       rd_match = re.match(rd_pattern, url)\n        log_message('DEBUG', f'Regex
+    match result: {rd_match}')\n        \n        if rd_match:\n            filename
+    = rd_match.group(2)\n            log_message('DEBUG', f'Extracted filename: {filename}')\n
+    \           \n            # Create normalized cache key based on filename first\n
+    \           # This makes same file cache together regardless of server\n            store_id
+    = f\"rd-cache://{filename}\"\n            log_message('DEBUG', f'Generated store_id:
+    {store_id}')\n            \n            # Handle pre-fetch coordination for Real-Debrid
+    URLs (only for client requests, not pre-fetch requests)\n            if PREFETCH_ENABLED
+    and not is_prefetch_request:\n                try:\n                    # Try
+    to start pre-fetch (handles existing/new/race conditions)\n                    prefetch_result
+    = start_prefetch(url, store_id)\n                    \n                    if
+    prefetch_result == \"exists\":\n                        log_message('INFO', f'Pre-fetch
+    already active for same content, no wait needed')\n                    elif prefetch_result:\n
+    \                       log_message('INFO', f'Pre-fetch started by this instance,
+    waiting {PREFETCH_HEAD_START_DELAY}s for head start')\n                        time.sleep(PREFETCH_HEAD_START_DELAY)\n
+    \                       log_message('DEBUG', 'Pre-fetch head start delay completed')\n
+    \                   else:\n                        log_message('INFO', f'Pre-fetch
+    handled by another instance, waiting {PREFETCH_HEAD_START_DELAY}s for head start')\n
+    \                       time.sleep(PREFETCH_HEAD_START_DELAY)\n                        log_message('DEBUG',
+    'Pre-fetch head start delay completed')\n                        \n                except
+    Exception as e:\n                    log_message('WARNING', f'Failed in pre-fetch
+    coordination: {e}')\n                    # Continue anyway - store ID generation
+    should not fail due to pre-fetch issues\n            elif is_prefetch_request:\n
+    \               log_message('DEBUG', 'Skipping pre-fetch coordination for pre-fetch
+    request itself')\n            \n            return store_id\n        \n        log_message('DEBUG',
+    'No regex match, returning original URL')\n        # Return original URL for everything
+    else\n        return url\n        \n    except Exception as e:\n        log_message('ERROR',
+    f'Exception in generate_store_id: {e}')\n        return url\n\ndef main():\n    #
+    Simple startup test - write to a basic file to confirm script runs\n    try:\n
+    \       with open('/tmp/store_id_startup.txt', 'w') as f:\n            f.write(f\"Script
+    started at {time.strftime('%Y-%m-%d %H:%M:%S')}\\n\")\n    except Exception:\n
+    \       pass\n    \n    # Test logging function\n    log_message('INFO', 'Store
+    ID script started')\n    \n    while True:\n        try:\n            line = sys.stdin.readline()\n
+    \           if not line:\n                log_message('DEBUG', 'No more input,
+    breaking')\n                break\n                \n            line = line.strip()\n
+    \           log_message('DEBUG', f'Received input: \"{line}\"')\n            \n
+    \           if not line:\n                log_message('DEBUG', 'Empty line, returning
+    ERR')\n                print(\"ERR\")\n                sys.stdout.flush()\n                continue\n
+    \           \n            # Input format: URL IP/- username method\n            parts
+    = line.split()\n            log_message('DEBUG', f'Split into {len(parts)} parts:
+    {parts}')\n            \n            if len(parts) >= 1:\n                url
+    = parts[0]\n                # Extract client IP from input format: URL IP/FQDN
+    username method\n                client_ip = parts[1].split('/')[0] if len(parts)
+    > 1 else '-'\n                \n                # Detect if this is a pre-fetch
+    request (from localhost) vs media client\n                is_prefetch_request
+    = (client_ip == '127.0.0.1')\n                \n                log_message('DEBUG',
+    f'Processing URL: {url}, Client IP: {client_ip}, Is prefetch: {is_prefetch_request}')\n
+    \               store_id = generate_store_id(url, is_prefetch_request)\n                log_message('DEBUG',
+    f'Generated store_id: {store_id}')\n                \n                # Squid
+    expects: \"OK store-id=<store_id>\" format\n                if store_id != url:\n
+    \                   # We have a custom store ID\n                    log_message('INFO',
+    f'Returning custom store_id for {url}: {store_id}')\n                    print(f\"OK
+    store-id={store_id}\")\n                else:\n                    # Use original
+    URL (no custom store ID)\n                    log_message('DEBUG', f'No custom
+    store_id for {url}, returning ERR')\n                    print(\"ERR\")\n                sys.stdout.flush()\n
+    \           else:\n                log_message('DEBUG', 'Invalid input format,
+    returning ERR')\n                print(\"ERR\")\n                sys.stdout.flush()\n
+    \               \n        except KeyboardInterrupt:\n            break\n        except
+    Exception:\n            print(\"ERR\")\n            sys.stdout.flush()\n\nif __name__
+    == \"__main__\":\n    main()\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: squid-config
+  namespace: public
