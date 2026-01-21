@@ -235,7 +235,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: squid-api-service
+            name: squid-service
             port: 
-              number: 80
+              name: api
 
