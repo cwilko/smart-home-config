@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: squid-sa
+  namespace: public
+automountServiceAccountToken: false
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: squid
+  namespace: public
+  labels:
+    app: squid
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: squid
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: squid
+    spec:
+      serviceAccountName: squid-sa
+      nodeSelector:
+        kubernetes.io/hostname: k8s-worker4
+      
+      containers:
+      - name: squid
+        image: wilkobets/squid:v5
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3128
+          name: proxy
+        - containerPort: 8080
+          name: api
+        
+        env:
+        - name: SQUID_STORE_ID_LOG_LEVEL
+          value: "DEBUG"
+        - name: SQUID_PREFETCH_DELAY
+          value: "3.0"
+        - name: SQUID_STORE_ID_LOG_TO_STDERR
+          value: "true"
+        - name: SQUID_API_LOG_LEVEL
+          value: "INFO"
+        
+        volumeMounts:
+        - name: squid-config
+          mountPath: /etc/squid/squid.conf
+          subPath: squid.conf
+          readOnly: true
+        - name: squid-config
+          mountPath: /usr/local/scripts
+          readOnly: true
+        - name: ssl-cert
+          mountPath: /etc/squid/ssl_cert/myCA.pem
+          subPath: myCA.pem
+          readOnly: true
+        - name: squid-cache
+          mountPath: /var/cache/squid
+        - name: squid-spool
+          mountPath: /var/spool/squid
+        - name: squid-logs
+          mountPath: /var/log/squid
+        
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: true
+          capabilities:
+            add: ["CAP_NET_RAW", "CAP_CHOWN", "CAP_FOWNER"]
+            drop: []
+
+      # Security and scheduling
+      securityContext:
+        # fsGroup: 13  # Commented out - conflicts with container running as root
+      
+      volumes:
+      - name: squid-config
+        configMap:
+          name: squid-config
+          defaultMode: 0755
+      - name: ssl-cert
+        secret:
+          secretName: squid-ssl-cert
+      - name: squid-spool
+        persistentVolumeClaim:
+          claimName: squid-data
+      - name: squid-cache
+        emptyDir: {}
+      - name: squid-logs
+        emptyDir: {}
+      
+      restartPolicy: Always
