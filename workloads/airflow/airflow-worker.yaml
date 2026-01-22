@@ -20,13 +20,12 @@ spec:
     spec: 
       serviceAccountName: airflow-scheduler
       nodeSelector:
-        arm64: "true"
+        kubernetes.io/arch: amd64
       containers:         
         - name: airflow-worker 
           image: wilkobets/airflow:latest
           imagePullPolicy: Always 
           securityContext: 
-            runAsUser: 50000
             allowPrivilegeEscalation: false
             capabilities:
               drop:

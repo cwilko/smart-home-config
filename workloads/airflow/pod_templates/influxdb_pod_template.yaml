@@ -3,12 +3,12 @@ kind: Pod
 metadata: 
   name: influxdb-backup
   namespace: storage 
-spec: 
+spec:
   nodeSelector:
-        arm64: "true"
-  containers: 
+        kubernetes.io/arch: amd64
+  containers:
     - name: base
-      image: arm64v8/influxdb:1.7.10
+      image: influxdb:1.7.10
       command: ["influxd", "backup", "-portable", "-database", "telegraf", "-host", "influxdb-service:8088", "/tmp/snapshot"]
       env:
       - name: INFLUXDB_HTTP_ENABLED
