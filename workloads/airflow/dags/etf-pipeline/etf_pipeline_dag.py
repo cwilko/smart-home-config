@@ -7,7 +7,6 @@ from kubernetes import client as k8s
 executor_env_overrides = {
     "pod_override": k8s.V1Pod(
         spec=k8s.V1PodSpec(
-            node_selector={"arm64": "true"},
             containers=[
                 k8s.V1Container(
                     name="base",
