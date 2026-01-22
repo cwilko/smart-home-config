@@ -28,7 +28,17 @@ spec:
       serviceAccountName: squid-sa
       nodeSelector:
         kubernetes.io/hostname: k8s-worker4
-      
+
+      initContainers:
+      - name: clear-cache
+        image: busybox
+        command: ['sh', '-c', 'rm -rf /var/spool/squid/* || true']
+        volumeMounts:
+        - name: squid-spool
+          mountPath: /var/spool/squid
+        securityContext:
+          runAsUser: 0
+
       containers:
       - name: squid
         image: wilkobets/squid:v5
