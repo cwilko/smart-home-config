@@ -17,7 +17,7 @@ spec:
     spec: 
       serviceAccountName: airflow-scheduler
       nodeSelector:
-        arm64: "true"
+        kubernetes.io/arch: amd64
       initContainers:
         - name: init-db
           resources:
@@ -39,9 +39,7 @@ spec:
       containers:         
         - name: airflow-scheduler 
           image: wilkobets/airflow:latest
-          imagePullPolicy: Always 
-          securityContext: 
-            runAsUser: 50000
+          imagePullPolicy: Always
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: "CeleryKubernetesExecutor"
