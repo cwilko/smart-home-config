@@ -9,7 +9,12 @@ spec:
   containers:
     - name: base
       image: influxdb:1.7.10
-      command: ["influxd", "backup", "-portable", "-database", "telegraf", "-host", "influxdb-service:8088", "/tmp/snapshot"]
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          BACKUP_DIR="/tmp/snapshot/backup-$(date +%Y%m%d-%H%M%S)"
+          mkdir -p "$BACKUP_DIR"
+          influxd backup -portable -database telegraf -host influxdb-service:8088 "$BACKUP_DIR"
       env:
       - name: INFLUXDB_HTTP_ENABLED
         value: "false"
