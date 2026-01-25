@@ -1,5 +1,5 @@
 secrets/**/*.yaml
 secrets/**/keyfile*
-secrets/cert
+secrets/**/cert
 secrets/**/*.txt
 .DS_Store
