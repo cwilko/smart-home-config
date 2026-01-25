@@ -33,12 +33,17 @@ spec:
       labels:
         app: actions
     spec:
+      nodeSelector:
+        # Execute the following against the relevant node:
+        # kubectl describe node <node-name>
+        arm64: "true"
       containers:
       - name: smart-home-actions
-        image: cwilko/smart-home-actions:latest
+        image: wilkobets/smart-home-actions:latest
         ports:
         - containerPort: 1880
         imagePullPolicy: Always
         envFrom:
           - secretRef:
               name: actions-secrets  
+      
