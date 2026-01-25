@@ -1,16 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    app: influxdb
-  name: influxdb-data
-  namespace: storage
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  name: influxdb-data-vnext
+  namespace: storage # You can change this to any namespace
 spec:
-spec:
+  storageClassName: truenas-nvmeof
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
   resources:
     requests:
-      storage: 100Mi
+      storage: 20Gi
