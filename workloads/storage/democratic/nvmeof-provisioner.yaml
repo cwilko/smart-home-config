@@ -48,7 +48,7 @@ metadata:
     app.kubernetes.io/instance: democratic-csi-nvmeof
     app.kubernetes.io/managed-by: Helm
 provisioner: org.democratic-csi.nvmeof
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
 allowedTopologies:
