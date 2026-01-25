@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: influxdb-restore
+  namespace: storage
+spec:
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+        - name: influx-restore
+          image: influxdb:1.7.10
+          # We use the -host flag to talk to the live InfluxDB instance
+          command: 
+            - "influxd"
+            - "restore"
+            - "-portable"
+            - "-db"
+            - "telegraf"
+            - "-host"
+            - "influxdb-service:8088"
+            - "/tmp/snapshot"
+          volumeMounts:
+            - mountPath: /tmp/snapshot
+              name: backup-data
+              readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: backup-data
+          persistentVolumeClaim:
+            claimName: influxdb-backup-data
