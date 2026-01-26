@@ -87,4 +87,4 @@ spec:
           name: airflow-resources
         - name: airflow-logs-pv 
           persistentVolumeClaim: 
-            claimName: airflow-logs-pvc 
+            claimName: airflow-logs-data

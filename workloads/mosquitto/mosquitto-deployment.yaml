@@ -32,30 +32,10 @@ spec:
       labels:
         app: mosquitto
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
       - name: mosquitto
         image: eclipse-mosquitto:1.6
         ports:
         - containerPort: 1883
- #       volumeMounts:
- #       - name: mosquitto
- #         mountPath: /srv/mqtt/config
- #       - name: localtime
- #         mountPath: /etc/localtime
- #       - name: mosquitto-data
- #         mountPath: /srv/mqtt/data
- #       - name: mosquitto-log
- #         mountPath: /srv/mqtt/log
- #     volumes:
- #     - name: mosquitto
- #       persistentVolumeClaim:
- #         claimName: mosquitto
- #     - name: mosquitto-data
- #       persistentVolumeClaim:
- #         claimName: mosquitto-data
- #     - name: mosquitto-log
- #       persistentVolumeClaim:
- #         claimName: mosquitto-log
- #     - name: localtime
- #       hostPath:
- #         path: /etc/localtime

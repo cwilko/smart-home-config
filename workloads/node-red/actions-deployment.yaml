@@ -34,9 +34,7 @@ spec:
         app: actions
     spec:
       nodeSelector:
-        # Execute the following against the relevant node:
-        # kubectl describe node <node-name>
-        arm64: "true"
+        kubernetes.io/arch: amd64
       containers:
       - name: smart-home-actions
         image: wilkobets/smart-home-actions:latest

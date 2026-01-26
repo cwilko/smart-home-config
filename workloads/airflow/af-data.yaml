@@ -1,17 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    app: airflow
-  name: airflow-logs-pvc
-  namespace: actions
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  name: airflow-logs-data
+  namespace: actions 
 spec:
-spec:
+  storageClassName: truenas-nvmeof
   accessModes:
-  - ReadWriteMany
+    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
   resources:
     requests:
-      storage: 200Mi
-
+      storage: 20Gi

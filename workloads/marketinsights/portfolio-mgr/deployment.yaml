@@ -12,8 +12,10 @@ spec:
       labels:
         app: portfolio-mgr
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
-        - image: cwilko/marketinsights-portfolio-mgr
+        - image: wilkobets/marketinsights-portfolio-mgr
           name: portfolio-mgr
           tty: true
           imagePullPolicy: Always

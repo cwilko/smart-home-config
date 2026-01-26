@@ -13,8 +13,20 @@ spec:
       labels:
         app: lgtv
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      initContainers:
+        - name: copy-keys
+          image: busybox
+          command: ['sh', '-c', 'cp /secret-keys/* /root/.lgtv2/ || true']
+          volumeMounts:
+          - mountPath: /secret-keys
+            name: lgtv-secret
+            readOnly: true
+          - mountPath: /root/.lgtv2
+            name: lgtv-keys
       containers:
-        - image: cwilko/lgtv2mqtt:latest
+        - image: wilkobets/lgtv2mqtt:latest
           name: lgtv
           imagePullPolicy: Always
           env:
@@ -22,10 +34,11 @@ spec:
             value: "-t 192.168.1.12 -u mqtt://192.168.1.202"
           volumeMounts:
           - mountPath: /root/.lgtv2
-            name: lgtv-secret
-            readOnly: true         
+            name: lgtv-keys
       restartPolicy: Always
-      volumes:         
+      volumes:
+      - name: lgtv-keys
+        emptyDir: {}
       - name: lgtv-secret
         secret:
           secretName: lgtv-secret
