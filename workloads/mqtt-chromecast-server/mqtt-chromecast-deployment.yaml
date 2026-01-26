@@ -14,8 +14,10 @@ spec:
         app: mqtt-chromecast
     spec:
       hostNetwork: true
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
-        - image: cwilko/mqtt-chromecast-server
+        - image: wilkobets/mqtt-chromecast-server
           name: mqtt-chromecast
           imagePullPolicy: Always
           securityContext:

@@ -13,8 +13,10 @@ spec:
       labels:
         app: googlefit
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
-        - image: cwilko/googlefit2mqtt:latest
+        - image: wilkobets/googlefit2mqtt:latest
           name: googlefit
           imagePullPolicy: Always
           envFrom:

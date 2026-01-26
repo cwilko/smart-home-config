@@ -22,6 +22,8 @@ spec:
         app: nfs-client-provisioner
     spec:
       serviceAccountName: nfs-client-provisioner
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: nfs-client-provisioner
           image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.0
@@ -35,10 +37,6 @@ spec:
               value: 192.168.1.72
             - name: NFS_PATH
               value: /mnt/SSD_pool/data/kubernetes
-      nodeSelector:
-        # Execute the following against the relevant node:
-        # kubectl describe node <node-name>
-        arm64: "true"
       volumes:
         - name: nfs-client-root
           nfs:

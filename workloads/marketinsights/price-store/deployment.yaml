@@ -12,8 +12,10 @@ spec:
       labels:
         app: marketinsights
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
-        - image: cwilko/marketinsights-price-store
+        - image: wilkobets/marketinsights-price-store
           name: price-store
           tty: true
           imagePullPolicy: Always

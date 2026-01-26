@@ -13,6 +13,8 @@ spec:
       labels:
         app: postgres      
     spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
       containers:
         - name: postgres
           image: postgres:12.15-bullseye
@@ -36,7 +38,7 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: postgres-data
+            claimName: postgres-data-nvme
         - name: postgres-config
           configMap:
             name: postgres-config 

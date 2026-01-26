@@ -1,17 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    app: postgres
-  name: postgres-data
-  namespace: storage
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  name: postgres-data-nvme
+  namespace: storage # You can change this to any namespace
 spec:
-spec:
+  storageClassName: truenas-nvmeof
   accessModes:
-  - ReadWriteMany
+    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
   resources:
     requests:
-      storage: 5Gi
-
+      storage: 20Gi
