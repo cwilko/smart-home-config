@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1 
 metadata: 
   name: airflow 
-  namespace: actions 
+  namespace: automation 
   labels:
     app: airflow
 spec: 
@@ -52,7 +52,7 @@ spec:
             - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/pod_templates/pod_template_file.yaml"
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
-              value: "actions"
+              value: "automation"
             - name: AIRFLOW__CELERY_KUBERNETES_EXECUTOR__KUBERNETES_QUEUE
               value: "kubernetes"
             - name: AIRFLOW__CORE__DAGS_FOLDER 
@@ -70,16 +70,16 @@ spec:
           envFrom:
             - secretRef:
                 name: airflow-secret
-          volumeMounts: 
-            - name: airflow-logs-pv 
-              mountPath: /opt/airflow/logs              
-              readOnly: false 
+          volumeMounts:
+            - name: airflow-logs-pv
+              mountPath: /opt/airflow/logs
+              readOnly: false
             - name: airflow-resources
               mountPath: "/opt/airflow/sync"
-              readOnly: true   
-          command: 
-            - airflow 
-          args: 
+              readOnly: true
+          command:
+            - airflow
+          args:
             - scheduler 
         - name: airflow-webserver
           env:
@@ -92,7 +92,7 @@ spec:
             - name: AIRFLOW__CORE__DAGS_FOLDER 
               value: "/opt/airflow/sync/smart-home-config/workloads/airflow/dags" 
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE 
-              value: "actions"
+              value: "automation"
             - name: AIRFLOW__CELERY_KUBERNETES_EXECUTOR__KUBERNETES_QUEUE
               value: "kubernetes"
             - name: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION

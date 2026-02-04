@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: telegraf-config-arm
-  namespace: triggers
+  namespace: iot
 data:
   telegraf.conf: |
     # Telegraf Configuration for ARM nodes (Raspberry Pi)

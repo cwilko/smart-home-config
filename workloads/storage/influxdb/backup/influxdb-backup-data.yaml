@@ -5,12 +5,10 @@ metadata:
     app: influxdb-backup
   name: influxdb-backup-data
   namespace: storage
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
-spec:
 spec:
   accessModes:
   - ReadWriteOnce
+  storageClassName: managed-nfs-storage
   resources:
     requests:
       storage: 500Mi

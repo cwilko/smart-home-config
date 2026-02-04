@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-data
+  namespace: storage # You can change this to any namespace
+spec:
+  storageClassName: truenas-nvmeof
+  accessModes:
+    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
+  resources:
+    requests:
+      storage: 20Gi

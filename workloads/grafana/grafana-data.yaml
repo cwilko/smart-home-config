@@ -4,11 +4,9 @@ metadata:
   labels:
     app: grafana
   name: grafana-data
-  namespace: grafana
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  namespace: automation
 spec:
-spec:
+  storageClassName: managed-nfs-storage
   accessModes:
   - ReadWriteOnce
   resources:

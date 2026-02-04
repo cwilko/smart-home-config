@@ -4,7 +4,7 @@ metadata:
   labels:
     name: airflow
   name: airflow-scheduler 
-  namespace: actions
+  namespace: automation
 
 ---
 
@@ -24,9 +24,9 @@ rules:
   - apiGroups: [""] 
     resources: ["pods/exec"] 
     verbs: ["get", "list", "create", "delete", "watch", "patch"] 
-  - apiGroups: [""] 
-    resources: ["events"] 
-    verbs: ["list"] 
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch"] 
 
 
 ---
@@ -44,4 +44,4 @@ roleRef:
 subjects: 
   - kind: ServiceAccount 
     name: airflow-scheduler 
-    namespace: actions
+    namespace: automation

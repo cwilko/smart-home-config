@@ -1,0 +1,16 @@
+dbrp "telegraf"."autogen"
+
+var topic = 'home'
+
+var data = stream
+    |from()
+        .measurement('climate')
+        .groupBy('name')
+
+data
+    // Triggers a critical alert when a sensor has not reported for more than 2h
+    |deadman(0.0, 2h)
+        .stateChangesOnly()
+        .message('{{ index .Tags "name" }} {{ if eq .Level "OK" }}climate sensor is online{{ else }}climate sensor has been offline for 2 hours{{ end }}')
+        .topic(topic)
+        .mqtt('events/' + topic + '/sensor/climate/health/priority/{{ .Level }}')

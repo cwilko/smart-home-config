@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vscode-env
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: vscode-env
+  template:
+    metadata:
+      labels:
+        app: vscode-env
+    spec:
+      initContainers:
+      - name: network-joiner
+        image: busybox
+        envFrom:
+        - secretRef:
+            name: zerotier-secret
+        command: [ "sh", "-c", "touch /networks.d/$(NETWORK_ID).conf" ]
+        volumeMounts:
+          - name: tmp
+            subPath: config
+            mountPath: /networks.d
+      serviceAccountName: k8s-admin
+      containers:
+      - name: zerotier
+        image: zyclonite/zerotier:1.14.2
+        imagePullPolicy: IfNotPresent
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - SYS_ADMIN
+          privileged: true
+        volumeMounts:
+          - mountPath: /var/lib/zerotier-one/authtoken.secret
+            name: zerotier-secret
+            readOnly: true
+            subPath: authtoken.secret
+          - mountPath: /var/lib/zerotier-one/identity.secret
+            name: zerotier-secret
+            readOnly: true
+            subPath: identity.secret
+          - mountPath: /var/lib/zerotier-one/identity.public
+            name: zerotier-secret
+            readOnly: true
+            subPath: identity.public
+          - name: tmp
+            subPath: config
+            mountPath: /var/lib/zerotier-one/networks.d
+      - name: ssh-bastion
+        image: cwilko/alpine-ssh
+        resources: {}
+        envFrom:
+        - secretRef:
+            name: ssh-secret
+        volumeMounts:
+          - mountPath: /development
+            name: vscode-data
+      restartPolicy: Always
+      volumes:        
+        - name: zerotier-secret
+          secret:
+            secretName: zerotier-secret
+        - name: tmp
+          persistentVolumeClaim:
+              claimName: temp-data-pvc
+        - name: vscode-data
+          persistentVolumeClaim:
+              claimName: vscode-data

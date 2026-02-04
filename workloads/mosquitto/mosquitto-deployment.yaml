@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mosquitto
-  namespace: mosquitto
+  name: mqtt
+  namespace: automation
   labels:
-    app: mosquitto
-    kubernetes.io/name: "mosquitto"
+    app: mqtt
+    kubernetes.io/name: "mqtt"
 spec:
   selector:
-    app: mosquitto
+    app: mqtt
   type: LoadBalancer
   loadBalancerIP: 192.168.1.202
   ports:
-  - name: mosquitto
+  - name: mqtt
     port: 1883
 
 ---
@@ -20,22 +20,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mosquitto
-  namespace: mosquitto
+  name: mqtt
+  namespace: automation
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mosquitto
+      app: mqtt
   template:
     metadata:
       labels:
-        app: mosquitto
+        app: mqtt
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       containers:
-      - name: mosquitto
+      - name: mqtt
         image: eclipse-mosquitto:1.6
         ports:
         - containerPort: 1883

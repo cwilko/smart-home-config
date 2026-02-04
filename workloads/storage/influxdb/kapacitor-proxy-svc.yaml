@@ -5,6 +5,6 @@ metadata:
   namespace: storage
 spec:
   type: ExternalName
-  externalName: kapacitor-service.alerting.svc.cluster.local
+  externalName: kapacitor-service.automation.svc.cluster.local
   ports:
   - port: 9092

@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: actions-service
-  namespace: actions
+  name: node-red-service
+  namespace: automation
 spec:
   selector:
-    app: actions
+    app: node-red
   type: NodePort
   ports:
     - protocol: TCP
@@ -17,26 +17,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: actions-deployment
-  namespace: actions
+  name: node-red-deployment
+  namespace: automation
   labels:
-    app: actions
+    app: node-red
   annotations:
     fluxcd.io/automated: "true"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: actions
+      app: node-red
   template:
     metadata:
       labels:
-        app: actions
+        app: node-red
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       containers:
-      - name: smart-home-actions
+      - name: node-red
         image: wilkobets/smart-home-actions:latest
         ports:
         - containerPort: 1880

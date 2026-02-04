@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: smart-home-collector
-  namespace: triggers
+  namespace: iot
 spec:
   selector:
     matchLabels:

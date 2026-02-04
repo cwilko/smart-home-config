@@ -6,7 +6,7 @@ apiVersion: v1
 kind: ConfigMap 
 metadata: 
   name: airflow-config
-  namespace: actions
+  namespace: automation
 data:
   # These are system-specified config overrides. 
   webserver_config.py: |-

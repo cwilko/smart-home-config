@@ -2,8 +2,12 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: metallb
-  name: metallb-system
+    app: system
+    # Required for Democratic CSI to run mounter pods with host privileges
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+  name: system
 
 ---
 
@@ -11,26 +15,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: mosquitto
-  name: mosquitto
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app: triggers
-  name: triggers
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app: actions
-  name: actions
+    app: automation
+  name: automation
 
 ---
 
@@ -47,33 +33,6 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: grafana
-  name: grafana
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app: alerting
-  name: alerting
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app: devices
-  name: devices
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
     app: marketinsights
   name: marketinsights
 
@@ -83,8 +42,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: dev
-  name: dev
+    app: media
+  name: media
 
 ---
 
@@ -92,37 +51,5 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    app: tailscale
-  name: tailscale
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: public
-  labels:
-    name: public
-    network-policy: isolated
-    purpose: public-services
-
----
-
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ingress-nginx
-  labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: privileged
-  labels:
-    # Required for Democratic CSI to run mounter pods with host privileges
-    pod-security.kubernetes.io/enforce: privileged
+    app: iot
+  name: iot

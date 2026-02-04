@@ -4,11 +4,9 @@ metadata:
   labels:
     app: kapacitor
   name: kapacitor-scripts
-  namespace: alerting
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  namespace: automation
 spec:
-spec:
+  storageClassName: managed-nfs-storage
   accessModes:
   - ReadWriteOnce
   resources:

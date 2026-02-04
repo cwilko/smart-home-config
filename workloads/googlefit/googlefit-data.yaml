@@ -4,11 +4,9 @@ metadata:
   labels:
     app: googlefit
   name: googlefit-data
-  namespace: devices
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
+  namespace: iot
 spec:
-spec:
+  storageClassName: managed-nfs-storage
   accessModes:
   - ReadWriteOnce
   resources:

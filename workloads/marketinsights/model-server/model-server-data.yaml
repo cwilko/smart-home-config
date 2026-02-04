@@ -5,10 +5,8 @@ metadata:
     app: model-server
   name: model-server-data
   namespace: marketinsights
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "managed-nfs-storage"
 spec:
-spec:
+  storageClassName: managed-nfs-storage
   accessModes:
   - ReadWriteOnce
   resources:

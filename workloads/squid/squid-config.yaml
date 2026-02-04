@@ -318,4 +318,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: squid-config
-  namespace: public
+  namespace: media
