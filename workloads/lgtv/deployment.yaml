@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: lgtv
-  namespace: devices
+  namespace: iot
 spec:
   selector:
     matchLabels:

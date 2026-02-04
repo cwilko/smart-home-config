@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: grafana-ingress
-  namespace: grafana
+  namespace: automation
 spec:
   ingressClassName: nginx
   rules:
@@ -23,7 +23,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: actions-ingress
-  namespace: actions
+  namespace: automation
 spec:
   ingressClassName: nginx
   rules:
@@ -34,7 +34,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: actions-service
+            name: node-red-service
             port: 
               number: 80
 
@@ -107,7 +107,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: airflow-ingress
-  namespace: actions
+  namespace: automation
 spec:
   ingressClassName: nginx
   rules:
@@ -182,7 +182,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: squirrel-stream-nip-ingress
-  namespace: public
+  namespace: media
 spec:
   ingressClassName: nginx
   rules:
@@ -203,7 +203,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stremio-proxy-nip-ingress
-  namespace: public
+  namespace: media
 spec:
   ingressClassName: nginx
   rules:
@@ -224,7 +224,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: squid-api-nip-ingress
-  namespace: public
+  namespace: media
 spec:
   ingressClassName: nginx
   rules:

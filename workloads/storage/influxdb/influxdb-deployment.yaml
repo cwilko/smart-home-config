@@ -39,7 +39,7 @@ spec:
       volumes:
         - name: influxdb-data
           persistentVolumeClaim:
-            claimName: influxdb-data-vnext
+            claimName: influxdb-data
         - name: influxdb-config
           configMap:
             name: influxdb-config

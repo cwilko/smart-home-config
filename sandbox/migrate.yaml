@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-logs-permission-fix
+  namespace: actions
+spec:
+  template:
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      containers:
+      - name: fixer
+        image: alpine:latest
+        # -R is recursive, -v is verbose so you can see the progress in logs
+        command: ["/bin/sh", "-c", "chown -Rv 50000:0 /opt/airflow/logs"]
+        securityContext:
+          runAsUser: 0
+          privileged: false
+        volumeMounts:
+        - name: logs-ptr
+          mountPath: /opt/airflow/logs
+      restartPolicy: Never
+      volumes:
+      - name: logs-ptr
+        persistentVolumeClaim:
+          claimName: airflow-logs-data
+  backoffLimit: 1

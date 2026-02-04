@@ -1,12 +1,39 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: influxdb-data-pv
+  annotations:
+    pv.kubernetes.io/provisioned-by: org.democratic-csi.nvmeof
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: truenas-nvmeof
+  volumeMode: Filesystem
+  csi:
+    driver: org.democratic-csi.nvmeof
+    fsType: ext4
+    volumeHandle: k8s-storage-influxdb-data  
+    volumeAttributes:
+      node_attach_driver: nvmeof
+      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-storage-influxdb-data 
+      nsid: "1"
+      provisioner_driver: freenas-api-nvmeof
+      transport: ""
+      transports: tcp://10.0.0.1:4420  # Update to tcp://192.168.1.72:4420 if needed
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: influxdb-data-vnext
-  namespace: storage # You can change this to any namespace
+  name: influxdb-data
+  namespace: storage
 spec:
-  storageClassName: truenas-nvmeof
   accessModes:
-    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
+    - ReadWriteOnce
+  storageClassName: truenas-nvmeof
+  volumeName: influxdb-data-pv  # Binds to the PV above
   resources:
     requests:
       storage: 20Gi

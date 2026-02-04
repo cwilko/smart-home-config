@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nfs-client-provisioner
   # replace with namespace where provisioner is deployed
-  namespace: storage
+  namespace: system
 spec:
   replicas: 1
   selector:

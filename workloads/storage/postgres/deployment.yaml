@@ -38,7 +38,7 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: postgres-data-nvme
+            claimName: postgres-data
         - name: postgres-config
           configMap:
             name: postgres-config 

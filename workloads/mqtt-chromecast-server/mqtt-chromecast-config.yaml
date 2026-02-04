@@ -13,4 +13,4 @@ data:
 kind: ConfigMap
 metadata:
   name: mqtt-chromecast-config
-  namespace: actions
+  namespace: media

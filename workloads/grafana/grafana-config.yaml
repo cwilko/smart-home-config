@@ -759,4 +759,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: grafana-config
-  namespace: grafana
+  namespace: automation

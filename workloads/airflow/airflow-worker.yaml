@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1 
 metadata: 
   name: airflow-worker 
-  namespace: actions 
+  namespace: automation 
   labels:
     app: airflow
     component: worker

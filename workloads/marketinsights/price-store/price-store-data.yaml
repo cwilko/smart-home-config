@@ -1,12 +1,39 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: price-store-data-pv
+  annotations:
+    pv.kubernetes.io/provisioned-by: org.democratic-csi.nvmeof
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: truenas-nvmeof
+  volumeMode: Filesystem
+  csi:
+    driver: org.democratic-csi.nvmeof
+    fsType: ext4
+    volumeHandle: k8s-marketinsights
+    volumeAttributes:
+      node_attach_driver: nvmeof
+      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-marketinsights
+      nsid: "1"
+      provisioner_driver: freenas-api-nvmeof
+      transport: ""
+      transports: tcp://10.0.0.1:4420  
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: price-store-data
-  namespace: marketinsights 
+  namespace: marketinsights
 spec:
-  storageClassName: truenas-nvmeof
   accessModes:
-    - ReadWriteOnce # NVMe-of is block storage, so RWO is standard
+    - ReadWriteOnce
+  storageClassName: truenas-nvmeof
+  volumeName: price-store-data-pv  # Binds to the PV above
   resources:
     requests:
       storage: 5Gi

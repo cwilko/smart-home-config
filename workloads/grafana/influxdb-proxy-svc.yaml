@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: influxdb-service
-  namespace: grafana
+  namespace: automation
 spec:
   type: ExternalName
   externalName: influxdb-service.storage.svc.cluster.local

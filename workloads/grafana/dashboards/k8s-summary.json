@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 9111,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1586121660684,
+  "iteration": 1770074794321,
   "links": [],
   "panels": [
     {
@@ -145,10 +144,6 @@
         "mode": "spectrum",
         "thresholds": []
       },
-      "data": {
-        "decimals": null,
-        "unitFormat": "short"
-      },
       "datasource": "Analysis Server",
       "gridPos": {
         "h": 11,
@@ -164,6 +159,11 @@
       "links": [],
       "nullPointMode": "as empty",
       "options": {},
+      "pageSize": 15,
+      "seriesFilterIndex": -1,
+      "statusmap": {
+        "ConfigVersion": "v1"
+      },
       "targets": [
         {
           "alias": "$tag_container_name",
@@ -228,22 +228,30 @@
       "timeShift": null,
       "title": "Pod State",
       "tooltip": {
-        "show": true
+        "extraInfo": "",
+        "freezeOnClick": true,
+        "items": [],
+        "show": true,
+        "showExtraInfo": false,
+        "showItems": false
       },
       "type": "flant-statusmap-panel",
       "useMax": true,
+      "usingPagination": false,
       "xAxis": {
-        "labelFormat": "%a %m/%d",
-        "minBucketWidthToShowWeekends": 4,
-        "show": true,
-        "showCrosshair": true,
-        "showWeekends": true
+        "show": true
       },
       "yAxis": {
-        "show": true,
-        "showCrosshair": false
+        "maxWidth": -1,
+        "minWidth": -1,
+        "show": true
       },
-      "yAxisSort": "metrics"
+      "yAxisSort": "metrics",
+      "yLabel": {
+        "delimiter": "",
+        "labelTemplate": "",
+        "usingSplitLabel": false
+      }
     },
     {
       "datasource": "Analysis Server",
@@ -425,8 +433,8 @@
           "measurement": "kubernetes_pod_container",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT mean(\"value\") FROM \"cpu/usage_rate\" WHERE \"type\" = 'pod' AND \"labels\" =~ /k8s-app:fluentd-logging,/ AND $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": false,
+          "query": "SELECT mean(\"cpu_usage_nanocores\")  / 1000000 FROM \"kubernetes_pod_container\" WHERE (\"namespace\" =~ /^$ns$/ AND \"container_name\" =~ /^$name$/) AND $timeFilter GROUP BY time($__interval), \"container_name\" fill(null)",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -485,7 +493,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
+          "label": "millicores",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -506,7 +514,7 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
   "tags": [
@@ -573,8 +581,8 @@
     ]
   },
   "time": {
-    "from": "now-24h",
-    "to": "now"
+    "from": "2026-02-02T21:36:24.236Z",
+    "to": "2026-02-02T23:25:50.418Z"
   },
   "timepicker": {
     "refresh_intervals": [

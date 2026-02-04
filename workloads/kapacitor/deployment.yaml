@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kapacitor
-  namespace: alerting
+  namespace: automation
 spec:
   selector:
     matchLabels:
@@ -21,7 +21,7 @@ spec:
           name: kapacitor
           env:
           - name: KAPACITOR_HOSTNAME
-            value: "kapacitor-service.alerting.svc.cluster.local"
+            value: "kapacitor-service.automation.svc.cluster.local"
           - name: KAPACITOR_HTTP_LOG_ENABLED
             value: "false"
           - name: KAPACITOR_STATS_ENABLED

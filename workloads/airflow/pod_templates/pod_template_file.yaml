@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod 
 metadata: 
   name: airflow-worker 
-  namespace: actions 
+  namespace: automation 
   labels:
     app: airflow
     component: worker

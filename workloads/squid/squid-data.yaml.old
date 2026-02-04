@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: squid-data
+  namespace: public # You can change this to any namespace
+spec:
+  storageClassName: truenas-nvmeof
+  accessModes:
+    - ReadWriteOnce # iSCSI is block storage, so RWO is standard
+  resources:
+    requests:
+      storage: 200Gi
