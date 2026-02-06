@@ -723,8 +723,16 @@ data:
     [feature_toggles]
     # enable features, separated by spaces
     ;enable =
+  loki-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki.storage.svc.cluster.local:3100
   system_playlist.json: |-
     {
+       "uid":"system",
        "name":"System Dashboard",
        "interval":"30s",
        "items":[
@@ -744,6 +752,7 @@ data:
     }
   home_playlist.json: |-
     {
+       "uid":"home",
        "name":"Home Dashboard",
        "interval":"30s",
        "items":[

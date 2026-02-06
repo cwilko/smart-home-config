@@ -1,0 +1,174 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 16,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "editorMode": "code",
+          "expr": "{job=\"fluentbit\", kubernetes_namespace_name=~\"$namespace\", kubernetes_pod_name=~\"$pod_name\"} | json | line_format \"[{{.kubernetes_pod_name}}] {{.log}}\"  ",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs",
+      "type": "logs"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "label": "kubernetes_namespace_name",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "airflow-6d7d79548f-kfh69",
+            "airflow-worker-5ff9555fcc-qg82p",
+            "controller-5995677bd5-2hql4",
+            "coredns-7f496c8d7d-gr7tg",
+            "democratic-csi-nvmeof-controller-7cc856db8d-dgln8",
+            "democratic-csi-nvmeof-node-dcqlq",
+            "influxdb-deployment-5bb7c6b99f-kj22r",
+            "ingress-nginx-controller-b69f4c98b-f2tdr",
+            "kapacitor-568fd8fd7d-p4jdn",
+            "lgtv-69cb76f55b-r87bd",
+            "mqtt-chromecast-7899447fc8-9dqbp",
+            "node-red-deployment-db6c8b47-wqqvn",
+            "redis-54b7498b9c-k28jx",
+            "smart-home-collector-58bd6d5f66-jx7vk",
+            "speaker-4pn4l",
+            "squid-58b6c49dd6-sc8rm"
+          ],
+          "value": [
+            "airflow-6d7d79548f-kfh69",
+            "airflow-worker-5ff9555fcc-qg82p",
+            "controller-5995677bd5-2hql4",
+            "coredns-7f496c8d7d-gr7tg",
+            "democratic-csi-nvmeof-controller-7cc856db8d-dgln8",
+            "democratic-csi-nvmeof-node-dcqlq",
+            "influxdb-deployment-5bb7c6b99f-kj22r",
+            "ingress-nginx-controller-b69f4c98b-f2tdr",
+            "kapacitor-568fd8fd7d-p4jdn",
+            "lgtv-69cb76f55b-r87bd",
+            "mqtt-chromecast-7899447fc8-9dqbp",
+            "node-red-deployment-db6c8b47-wqqvn",
+            "redis-54b7498b9c-k28jx",
+            "smart-home-collector-58bd6d5f66-jx7vk",
+            "speaker-4pn4l",
+            "squid-58b6c49dd6-sc8rm"
+          ]
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "P8E80F9AEF21F6940"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Pod",
+        "multi": true,
+        "name": "pod_name",
+        "options": [],
+        "query": {
+          "label": "kubernetes_pod_name",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Kuberenetes Logs",
+  "uid": "dfccz3mbkobgge",
+  "version": 2,
+  "weekStart": ""
+}
