@@ -50,6 +50,8 @@ spec:
                 name: airflow-secret
             - secretRef:
                 name: airflow-econometrics-secret
+            - secretRef:
+                name: ai-secrets
           volumeMounts: 
             - name: airflow-logs-pv 
               mountPath: /opt/airflow/logs              

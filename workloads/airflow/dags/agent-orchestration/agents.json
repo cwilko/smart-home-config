@@ -1,0 +1,9 @@
+{
+    "routed": {},
+    "scheduled": {
+        "data_collector": {
+            "schedule": "0 3 * * 0",
+            "scheduled_task": "Review your skill file's existing data pipeline coverage and any already-documented candidate sources. Identify at most 1-2 new, currently-undocumented data sources relevant to this homelab's financial/macroeconomic data pipelines, and document each using the structured format in your skill file's 'Documenting a candidate source' section. If nothing new is found, note that briefly and stop."
+        }
+    }
+}
