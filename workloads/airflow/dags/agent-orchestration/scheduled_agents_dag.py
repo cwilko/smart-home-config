@@ -1,7 +1,14 @@
+import os
+import sys
+
 import pendulum
 from airflow.decorators import dag, task
 
-import agent_lib
+# Airflow doesn't reliably put a DAG file's own directory on sys.path, so a
+# plain `import agent_lib` isn't guaranteed to resolve even though the file
+# sits right next to this one — add it explicitly rather than rely on that.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import agent_lib  # noqa: E402
 
 # One Airflow DAG per agent that has a "schedule" entry in agents.json —
 # for agents with nothing external to react to (e.g. "periodically look for

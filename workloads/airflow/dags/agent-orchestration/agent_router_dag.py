@@ -1,8 +1,15 @@
+import os
+import sys
+
 import pendulum
 from airflow.decorators import dag, task
 from airflow.operators.empty import EmptyOperator
 
-import agent_lib
+# Airflow doesn't reliably put a DAG file's own directory on sys.path, so a
+# plain `import agent_lib` isn't guaranteed to resolve even though the file
+# sits right next to this one — add it explicitly rather than rely on that.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import agent_lib  # noqa: E402
 
 # Agents are discovered from a config file, not hardcoded — see README.md.
 # Shared plumbing (pod template, PVCs, pool/launch-task construction) lives
