@@ -106,6 +106,7 @@ def ensure_pools(agent_types) -> None:
             name=pool_name(agent_type),
             slots=1,
             description=f"Serializes claudebox {agent_type} agent invocations (shared session-state subdirectory)",
+            include_deferred=False,
         )
 
 
