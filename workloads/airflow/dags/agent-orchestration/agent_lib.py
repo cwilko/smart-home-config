@@ -227,6 +227,7 @@ def build_launch_task(agent_type: str, arguments: list) -> KubernetesPodOperator
         # concurrent pods for the SAME agent would race (different agents
         # run freely in parallel — separate subdirectories, separate pools).
         pool=pool_name(agent_type),
+        queue="celery",
         get_logs=True,
         is_delete_operator_pod=True,
     )

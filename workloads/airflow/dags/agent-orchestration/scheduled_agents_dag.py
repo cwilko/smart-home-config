@@ -37,11 +37,11 @@ def _build_scheduled_agent_dag(agent_type: str, schedule: str, scheduled_task: s
         see agent_router_dag.py for the event-driven path this skips.
         """
 
-        @task
+        @task(queue="celery")
         def ensure_agent_pools():
             agent_lib.ensure_pools([agent_type])
 
-        @task
+        @task(queue="celery")
         def ensure_agent_storage():
             agent_lib.ensure_storage()
 
