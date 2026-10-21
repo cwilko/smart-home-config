@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: claudebox-agent
+  namespace: automation
+spec:
+  # psyb0t/claudebox is published multi-arch (amd64+arm64); amd64 pinned here
+  # only to match this cluster's existing convention, not an image requirement.
+  nodeSelector:
+    kubernetes.io/arch: amd64
+  restartPolicy: Never
+  containers:
+    - name: base
+      image: psyb0t/claudebox:latest
+      resources:
+        # TODO: unverified placeholder — tune once you've observed real usage.
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "2"
+          memory: "4Gi"
