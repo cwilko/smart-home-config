@@ -158,6 +158,15 @@ def build_launch_task(agent_type: str, arguments: list) -> KubernetesPodOperator
         # not the official git-sync image: that's built for continuous
         # syncing in a long-lived pod, overkill for a one-shot fetch-and-exit
         # init container.
+        #
+        # Also chowns both subPath dirs to 1000:1000 (aicode's fixed UID/GID
+        # in the claudebox image) before the main container starts. The NFS
+        # storage class leaves new subdirectories owned by GID 100, and the
+        # claudebox entrypoint tries to realign its aicode user's GID to
+        # match whatever owns the workspace it's handed — but GID 100 is
+        # already the image's own pre-existing "users" group, so that
+        # groupmod collides and aborts the entrypoint. Pre-chowning to
+        # aicode's own UID/GID gives it nothing to realign.
         init_containers=[
             k8s.V1Container(
                 name="fetch-skill-config",
@@ -166,11 +175,13 @@ def build_launch_task(agent_type: str, arguments: list) -> KubernetesPodOperator
                 args=[
                     f"git clone --depth 1 {SKILLS_GIT_REPO} /tmp/repo && "
                     f"cp /tmp/repo/{SKILLS_GIT_PATH}/{agent_type}/SKILL.md /workspace/ && "
-                    f"cp /tmp/repo/{SKILLS_GIT_PATH}/{agent_type}/.mcp.json /workspace/"
+                    f"cp /tmp/repo/{SKILLS_GIT_PATH}/{agent_type}/.mcp.json /workspace/ && "
+                    "chown -R 1000:1000 /workspace /claude-state"
                 ],
                 env=[k8s.V1EnvVar(name="AGENT_TYPE", value=agent_type)],
                 volume_mounts=[
                     k8s.V1VolumeMount(name="workspace", mount_path="/workspace", sub_path_expr="$(AGENT_TYPE)"),
+                    k8s.V1VolumeMount(name="claude-state", mount_path="/claude-state", sub_path_expr="$(AGENT_TYPE)"),
                 ],
             ),
         ],
