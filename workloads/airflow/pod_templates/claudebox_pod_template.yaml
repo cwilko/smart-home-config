@@ -4,14 +4,20 @@ metadata:
   name: claudebox-agent
   namespace: automation
 spec:
-  # psyb0t/claudebox is published multi-arch (amd64+arm64); amd64 pinned here
-  # only to match this cluster's existing convention, not an image requirement.
+  # Multi-arch (amd64+arm64); amd64 pinned here only to match this cluster's
+  # existing convention, not an image requirement.
   nodeSelector:
     kubernetes.io/arch: amd64
   restartPolicy: Never
   containers:
     - name: base
-      image: psyb0t/claudebox:latest
+      # wilkobets/claudebox-k8s, not psyb0t/claudebox directly: a thin
+      # derivative that patches the base aicodebox entrypoint's UID/GID
+      # rematch step, which otherwise aborts the container outright when the
+      # mounted workspace's owning GID (100 on this cluster's NFS exports)
+      # collides with Ubuntu's pre-existing "users" group of the same GID.
+      # See https://github.com/cwilko/claudebox-k8s.
+      image: wilkobets/claudebox-k8s:latest
       resources:
         # TODO: unverified placeholder — tune once you've observed real usage.
         requests:
