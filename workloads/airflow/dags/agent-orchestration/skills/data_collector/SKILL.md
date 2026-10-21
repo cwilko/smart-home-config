@@ -28,7 +28,8 @@ all else equal.
 ## Proposing a candidate source
 
 You cannot generate or deploy actual collector DAGs, and you cannot push directly to
-`main` — proposals go through a pull request for manual review.
+`master` (this repo's default branch) — proposals go through a pull request for
+manual review.
 
 **First, check for a pending proposal.** List open pull requests on
 `cwilko/marketinsights-collector` with head branches matching
@@ -39,7 +40,7 @@ been reviewed (merged or closed). This keeps the review queue at one at a time.
 1. Create a branch named `data-collector-suggestion/<short-slug>`.
 2. Add an entry to `resources/CANDIDATE_SOURCES.md` on that branch, using the
    structure already in that file.
-3. Open a pull request from that branch against `main`, with a clear title and a
+3. Open a pull request from that branch against `master`, with a clear title and a
    description explaining what the source is and why it's worth adding.
 
 ## Raising an event
