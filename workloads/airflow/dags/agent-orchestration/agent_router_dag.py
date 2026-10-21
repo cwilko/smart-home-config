@@ -55,7 +55,7 @@ def agent_router():
     this DAG's classifier entirely and launches with a fixed prompt instead.
     """
 
-    @task
+    @task(queue="celery")
     def ensure_agent_pools():
         """
         Idempotently (re)create the per-agent pools this DAG relies on to
@@ -67,7 +67,7 @@ def agent_router():
         """
         agent_lib.ensure_pools(AGENT_TYPES)
 
-    @task
+    @task(queue="celery")
     def ensure_agent_storage():
         """
         Idempotently create the two shared NFS-backed PVCs every agent's
@@ -82,6 +82,7 @@ def agent_router():
         task_id="route_event",
         requirements=["langchain-google-genai"],
         system_site_packages=False,
+        queue="celery",
     )
     def route_event(agent_descriptions: dict[str, str], **context) -> dict:
         """Classify the incoming event and decide which agent should handle it, if any."""
@@ -130,7 +131,7 @@ def agent_router():
 
         return decision.model_dump()
 
-    @task.branch
+    @task.branch(queue="celery")
     def choose_agent(routing_decision: dict) -> str:
         if routing_decision["agent_type"] == NONE_AGENT_TYPE:
             return NO_MATCH_TASK_ID
@@ -142,7 +143,7 @@ def agent_router():
     branch = choose_agent(routing_decision)
     [pools_ready, storage_ready] >> branch
 
-    no_agent_matched = EmptyOperator(task_id=NO_MATCH_TASK_ID)
+    no_agent_matched = EmptyOperator(task_id=NO_MATCH_TASK_ID, queue="celery")
     branch >> no_agent_matched
 
     for agent_type in AGENT_TYPES:
