@@ -1,10 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana-ingress
+  name: grafana-nipio-ingress
   namespace: automation
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: grafana.192.168.1.203.nip.io
     http:
@@ -14,7 +16,7 @@ spec:
         backend:
           service:
             name: grafana-service
-            port: 
+            port:
               number: 80
 
 ---
@@ -22,10 +24,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: actions-ingress
+  name: actions-nipio-ingress
   namespace: automation
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: actions.192.168.1.203.nip.io
     http:
@@ -35,7 +39,7 @@ spec:
         backend:
           service:
             name: node-red-service
-            port: 
+            port:
               number: 80
 
 ---
@@ -43,73 +47,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: marketinsights-api-ingress
-  namespace: marketinsights
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: marketinsights-api.192.168.1.203.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: marketinsights-api-service
-            port: 
-              number: 80
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: mi-price-store-ingress
-  namespace: marketinsights
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: pricestore.192.168.1.203.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: price-store-service
-            port: 
-              number: 80
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: portfolio-mgr-ingress
-  namespace: marketinsights
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: portfolio-mgr.192.168.1.203.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: portfolio-mgr-service
-            port: 
-              number: 80
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: airflow-ingress
+  name: airflow-nipio-ingress
   namespace: automation
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: airflow.192.168.1.203.nip.io
     http:
@@ -119,7 +62,7 @@ spec:
         backend:
           service:
             name: airflow-service
-            port: 
+            port:
               number: 80
 
 ---
@@ -127,10 +70,81 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: model-server-ingress
+  name: marketinsights-api-nipio-ingress
   namespace: marketinsights
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
+  rules:
+  - host: marketinsights-api.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: marketinsights-api-service
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mi-price-store-nipio-ingress
+  namespace: marketinsights
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: pricestore.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: price-store-service
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portfolio-mgr-nipio-ingress
+  namespace: marketinsights
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: portfolio-mgr.192.168.1.203.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: portfolio-mgr-service
+            port:
+              number: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: model-server-nipio-ingress
+  namespace: marketinsights
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
   rules:
   - host: model-server.192.168.1.203.nip.io
     http:
@@ -140,7 +154,7 @@ spec:
         backend:
           service:
             name: model-server-http-service
-            port: 
+            port:
               number: 80
 
 ---
@@ -148,43 +162,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: model-server-grpc-ingress
-  namespace: marketinsights
-  annotations:
-    allowed-values: CN=client
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
-    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "false"
-    nginx.ingress.kubernetes.io/auth-tls-secret: marketinsights/tls-secret
-    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-    nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
-spec:
-  ingressClassName: nginx
-  tls:
-    - secretName: tls-secret
-      hosts:
-        - model-server-grpc.192.168.1.203.nip.io
-  rules:
-  - host: model-server-grpc.192.168.1.203.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: model-server-grpc-service
-            port: 
-              number: 8500
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: squirrel-stream-nip-ingress
+  name: squirrel-stream-nipio-ingress
   namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: stremio-addon.192.168.1.203.nip.io
     http:
@@ -194,7 +177,7 @@ spec:
         backend:
           service:
             name: squirrel-stream
-            port: 
+            port:
               number: 3001
 
 ---
@@ -202,10 +185,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: stremio-proxy-nip-ingress
+  name: stremio-proxy-nipio-ingress
   namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: stremio-proxy.192.168.1.203.nip.io
     http:
@@ -215,7 +200,7 @@ spec:
         backend:
           service:
             name: stremio-proxy-service
-            port: 
+            port:
               number: 80
 
 ---
@@ -223,10 +208,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: squid-api-nip-ingress
+  name: squid-api-nipio-ingress
   namespace: media
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: media-squid-root-redirect@kubernetescrd
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
   - host: squid.192.168.1.203.nip.io
     http:
@@ -236,6 +224,41 @@ spec:
         backend:
           service:
             name: squid-service
-            port: 
+            port:
               name: api
 
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: model-server-grpc-mtls
+  namespace: marketinsights
+spec:
+  clientAuth:
+    clientAuthType: RequireAndVerifyClientCert
+    secretNames:
+      - tls-secret
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: model-server-grpc
+  namespace: marketinsights
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: tls-secret
+    options:
+      name: model-server-grpc-mtls
+      namespace: marketinsights
+  routes:
+  - match: Host(`model-server-grpc.192.168.1.203.nip.io`)
+    kind: Rule
+    services:
+    - name: model-server-grpc-service
+      port: 8500
+      scheme: h2c
