@@ -1,0 +1,158 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: marketinsights-api-stripprefix
+  namespace: marketinsights
+spec:
+  stripPrefix:
+    prefixes:
+      - /marketinsights-api
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: model-server-stripprefix
+  namespace: marketinsights
+spec:
+  stripPrefix:
+    prefixes:
+      - /model-server
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pricestore-stripprefix
+  namespace: marketinsights
+spec:
+  stripPrefix:
+    prefixes:
+      - /pricestore
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: portfolio-mgr-stripprefix
+  namespace: marketinsights
+spec:
+  stripPrefix:
+    prefixes:
+      - /portfolio-mgr
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: squid-api-stripprefix
+  namespace: media
+spec:
+  stripPrefix:
+    prefixes:
+      - /squid
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: squid-api-path-root-redirect
+  namespace: media
+spec:
+  redirectRegex:
+    regex: ^(https?://[^/]+/squid)/?$
+    replacement: ${1}/api/health
+    permanent: false
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stremio-addon-stripprefix
+  namespace: media
+spec:
+  stripPrefix:
+    prefixes:
+      - /stremio-addon
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: stremio-addon-path-root-redirect
+  namespace: media
+spec:
+  redirectRegex:
+    regex: ^(https?://[^/]+/stremio-addon)/?$
+    replacement: ${1}/manifest.json
+    permanent: false
+
+---
+
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: api-squirrelnet
+  namespace: marketinsights
+spec:
+  entryPoints:
+    - websecure
+  tls: {}
+  routes:
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/marketinsights-api`)
+    kind: Rule
+    middlewares:
+    - name: marketinsights-api-stripprefix
+    services:
+    - name: marketinsights-api-service
+      port: 80
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/model-server`)
+    kind: Rule
+    middlewares:
+    - name: model-server-stripprefix
+    services:
+    - name: model-server-http-service
+      port: 80
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/pricestore`)
+    kind: Rule
+    middlewares:
+    - name: pricestore-stripprefix
+    services:
+    - name: price-store-service
+      port: 80
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/portfolio-mgr`)
+    kind: Rule
+    middlewares:
+    - name: portfolio-mgr-stripprefix
+    services:
+    - name: portfolio-mgr-service
+      port: 80
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/squid`)
+    kind: Rule
+    middlewares:
+    - name: squid-api-path-root-redirect
+      namespace: media
+    - name: squid-api-stripprefix
+      namespace: media
+    services:
+    - name: squid-service
+      namespace: media
+      port: 8080
+  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/stremio-addon`)
+    kind: Rule
+    middlewares:
+    - name: stremio-addon-path-root-redirect
+      namespace: media
+    - name: stremio-addon-stripprefix
+      namespace: media
+    services:
+    - name: squirrel-stream
+      namespace: media
+      port: 3001

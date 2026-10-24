@@ -1,5 +1,9 @@
 secrets/**/*.yaml
 secrets/**/keyfile*
-secrets/**/cert
+secrets/**/cert/*
+!secrets/cert/model-server/
+secrets/cert/model-server/*
+!secrets/cert/model-server/cert.conf
+!secrets/cert/model-server/generate-certs.sh
 secrets/**/*.txt
 .DS_Store

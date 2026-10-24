@@ -1,0 +1,30 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: system
+spec:
+  entryPoints:
+    - websecure
+  tls: {}
+  routes:
+  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/api`)
+    kind: Rule
+    services:
+    - name: api@internal
+      kind: TraefikService
+  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/dashboard`)
+    kind: Rule
+    middlewares:
+    - name: dashboard_stripprefix@internal
+    services:
+    - name: dashboard@internal
+      kind: TraefikService
+  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/`)
+    kind: Rule
+    middlewares:
+    - name: dashboard_redirect@internal
+    - name: dashboard_stripprefix@internal
+    services:
+    - name: dashboard@internal
+      kind: TraefikService
