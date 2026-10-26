@@ -185,29 +185,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: stremio-proxy-nipio-ingress
-  namespace: media
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls: "true"
-spec:
-  ingressClassName: traefik
-  rules:
-  - host: stremio-proxy.192.168.1.203.nip.io
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: stremio-proxy-service
-            port:
-              number: 80
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: squid-api-nipio-ingress
   namespace: media
   annotations:
