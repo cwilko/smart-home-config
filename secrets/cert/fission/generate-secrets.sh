@@ -1,8 +1,8 @@
 #!/bin/bash
 # Regenerates the webhook CA and serving cert for the optional Fission admission webhook
-# (sandbox/fission/optional/webhook-server.yaml), as one unsealed and one sealed Secret in secrets/. Run from anywhere;
+# (workloads/fission/optional/webhook-server.yaml), as one unsealed and one sealed Secret in secrets/. Run from anywhere;
 # certs and keys land next to this script. Re-running rotates everything, so re-apply the sealed secret and restart the
-# webhook pod afterwards. Re-run sandbox/fission/generate-yamls.sh afterwards if ca.crt changed.
+# webhook pod afterwards. Re-run workloads/fission/generate-yamls.sh afterwards if ca.crt changed.
 # Fission's internal auth is turned off (internalAuth.enabled: false in helm-values.yaml), so there is no
 # fission-internal-auth Secret.
 set -euo pipefail

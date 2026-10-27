@@ -6,7 +6,7 @@
 graph TB
     subgraph "External Access"
         Internet((Internet))
-        Domain[squirrelnet.co.uk + *.squirrelnet.co.uk<br/>+ *.192.168.1.203.nip.io]
+        Domain[squirrelhome.co.uk + *.squirrelhome.co.uk<br/>+ *.192.168.1.203.nip.io]
         Internet --> Domain
     end
 
@@ -16,7 +16,7 @@ graph TB
     end
 
     subgraph "Ingress Layer"
-        TraefikIngress[Traefik Ingress Controller<br/>192.168.1.203<br/>HTTP+HTTPS on nip.io hosts,<br/>HTTPS-only on squirrelnet.co.uk,<br/>mTLS via TLSOption for model-server-grpc]
+        TraefikIngress[Traefik Ingress Controller<br/>192.168.1.203<br/>HTTP+HTTPS on nip.io hosts,<br/>HTTPS-only on squirrelhome.co.uk,<br/>mTLS via TLSOption for model-server-grpc]
         MetalLB --> TraefikIngress
     end
 
@@ -27,6 +27,11 @@ graph TB
             Kapacitor[Kapacitor<br/>Stream Processing]
             NodeRed[Node-RED<br/>reactive automation/notifications]
             Mosquitto[Mosquitto MQTT Broker<br/>Port 1883]
+            Fission[Fission control plane<br/>router, executor, buildermgr]
+        end
+
+        subgraph "services namespace"
+            FissionFunctions[Fission functions<br/>scale-to-zero pods]
         end
 
         subgraph "marketinsights namespace"
@@ -97,6 +102,8 @@ graph TB
     TraefikIngress -. mTLS .-> ModelServer
     TraefikIngress --> SquirrelStream
     TraefikIngress --> Squid
+    TraefikIngress --> Fission
+    Fission --> FissionFunctions
 
     %% Data Flow Connections
     Grafana --> InfluxDB
@@ -137,7 +144,7 @@ graph TB
     classDef external fill:#ffebee
 
     class InfluxDB,PostgreSQL,Redis,NFS storage
-    class Grafana,Airflow,MarketAPI,SquirrelStream,NodeRed app
+    class Grafana,Airflow,MarketAPI,SquirrelStream,NodeRed,Fission,FissionFunctions app
     class MetalLB,TraefikIngress,SealedSecrets,MetalLBController infrastructure
     class MetricsCollector,Loki monitoring
     class Internet,Domain external
@@ -146,18 +153,30 @@ graph TB
 ## Architecture Summary
 
 ### Infrastructure Layers
-1. **External Access**: Domain routing through squirrelnet.co.uk
+1. **External Access**: Domain routing through squirrelhome.co.uk
 2. **Load Balancing**: MetalLB providing IPs 192.168.1.201-210  
-3. **Ingress**: Traefik handling TLS termination and routing — plain HTTP and HTTPS on nip.io hosts, HTTPS-only on `squirrelnet.co.uk` subdomains/paths, and mutual TLS (via a `TLSOption` + `IngressRoute`) for the model-server gRPC endpoint
+3. **Ingress**: Traefik handling TLS termination and routing — plain HTTP and HTTPS on nip.io hosts, HTTPS-only on `squirrelhome.co.uk` subdomains/paths, and mutual TLS (via a `TLSOption` + `IngressRoute`) for the model-server gRPC endpoint
 4. **Applications**: Multi-namespace deployment across different domains
 
 ### Key Components
 - **Data Pipeline**: Airflow orchestrates ETL jobs with CeleryKubernetesExecutor
 - **Monitoring Stack**: Grafana + InfluxDB + Kapacitor for time-series visualization
 - **Automation**: Telegraf (MQTT → InfluxDB structural pipeline) and Node-RED (reactive branching/fan-out, e.g. MQTT-triggered notifications) — see [Automation Styles](#automation-styles) below for how these differ from Airflow and from serverless functions
+- **Serverless Functions**: Fission runs small HTTP functions that scale to zero, with code shipped as a GitHub-release zip or an existing image fronted by Fission — see [Serverless Functions (Fission)](#serverless-functions-fission) below
 - **IoT Hub**: Mosquitto MQTT broker connecting various smart home devices
 - **Market Analytics**: Dedicated namespace for financial data processing, including a gRPC endpoint protected by mutual TLS
 - **Storage**: Multi-tier with InfluxDB (time-series), PostgreSQL (relational), Redis (cache), Loki (logs)
+
+### Serverless Functions (Fission)
+[Fission](https://fission.io) (v1.27.0) provides the callable-unit role. It is deployed from plain YAML (Helm only renders it) and exposed through Traefik.
+
+- **Control plane** (`automation`, Deployments prefixed `fission-`): `fission-router` (matches paths to `HTTPTrigger`s and proxies to function pods), `fission-executor` (creates, scales and reaps function pods; scales idle functions to zero) and `fission-buildermgr` (required even though nothing is built in the cluster: it sets the build status every Package needs).
+- **Functions** run in `services`. The executor is chosen per function: `poolmgr` (warm pool, fast start), `newdeploy` (own Deployment, scales to zero) or `container` (an existing image).
+- **Code delivery**: a small `literal` Package, or a `url` Package pointing at a GitHub-release zip with its sha256, so there is no image or registry for function code.
+- **Not deployed**: the admission webhook (the CRDs validate themselves), `storagesvc`, and the timer and Kubernetes-watch triggers.
+- **Exposure**: Traefik sends anything on the API host that no other route claims to the Fission router, HTTPS only. Fission has no caller authentication, so the host is kept LAN-only.
+
+Details, how the YAML is generated, and the release-to-package flow are in [`workloads/fission/README.md`](workloads/fission/README.md).
 
 ### Node Architecture
 - ARM64 nodes for specific workloads (InfluxDB, Airflow)
@@ -166,7 +185,8 @@ graph TB
 
 ### Namespaces
 - `system`: Traefik (ingress controller, holds `192.168.1.203`), MetalLB controller, Sealed Secrets controller, Democratic CSI, NFS provisioner
-- `automation`: Grafana, Airflow (scheduler + worker), Kapacitor, Node-RED, Mosquitto MQTT broker
+- `automation`: Grafana, Airflow (scheduler + worker), Kapacitor, Node-RED, Mosquitto MQTT broker, Fission control plane (router, executor, buildermgr)
+- `services`: Fission functions, environments, packages and triggers (function pods scale to zero)
 - `marketinsights`: MarketInsights API, Model Server (TensorFlow Serving, gRPC+HTTP), Portfolio Manager, Price Store
 - `media`: Squid proxy, Squirrel Stream (Stremio addon), MQTT Chromecast server
 - `iot`: Smart Home Collector, Tuya, LG TV, Google Fit integrations
@@ -183,7 +203,7 @@ The lab uses four distinct automation/integration patterns, each suited to a dif
 |---|---|---|---|---|---|
 | **Structural data pipeline** | Telegraf | Continuous, same path every message — declarative input → processor → output plugins, no branching | Purpose-built for high-volume, schema-consistent telemetry; minimal per-message overhead; config-driven, no custom code | No branching/decision logic, no fan-out to heterogeneous destinations | Reading MQTT messages and writing them straight into InfluxDB |
 | **Reactive branching/fan-out** | Node-RED | Event-driven (MQTT, webhook, timer) where the response involves a decision and/or multiple destinations | Visual/low-code; large library of integration nodes; fast to wire up heterogeneous fan-out | Flows are JSON blobs (poor git diff/review); not great for complex logic, retries, or heavy computation | Generating notifications from MQTT events and fanning them out to multiple destination platforms |
-| **Reusable callable unit** | Serverless function (OpenFaaS) | Synchronous request/response — given input, compute/transform/fetch and return a result | Independently versioned and scaled; code-first (real tests/CI/git history); callable by multiple consumers (apps, MCP tools, Node-RED itself) | No built-in orchestration, retries, or dependency handling between steps | (Planned) general-purpose API functions callable by multiple consumers in the lab |
+| **Reusable callable unit** | Serverless function (Fission) | Synchronous HTTP request/response — the router matches a path to a function and returns its result | Independently versioned and scaled, down to zero when idle; code-first (real tests/CI/git history), shipped as a GitHub-release zip with no image or registry, or an existing image fronted by the container executor; callable by multiple consumers (apps, MCP tools, Node-RED itself) | No built-in orchestration, retries, or dependency handling between steps; a cold start of a few seconds when scaled to zero; no caller authentication, so exposure is controlled at Traefik | Small HTTP functions whose code is built by GitHub Actions and fetched from a release, and existing services fronted by Fission — see [Serverless Functions (Fission)](#serverless-functions-fission) |
 | **Multi-step orchestration** | Airflow | Scheduled and/or triggered via its API — multi-step pipeline with dependencies between steps | Retries/backoff, dependency graphs, historical run visibility/audit trail; suited to batch/ETL work | Not low-latency — triggering via API returns a run ID, not an inline result; heavier than the task warrants for simple actions | Scheduled ETL jobs for market-insights data via `CeleryKubernetesExecutor` |
 
 These aren't mutually exclusive — a common pattern is layering them, e.g. Node-RED reacting to an event and calling a serverless function to do the actual unit of work, or an Airflow task itself invoking a serverless function as one orchestrated step. The question is which one is acting as the orchestrator and which is doing the actual work, not which single tool to use exclusively.
