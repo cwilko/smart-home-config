@@ -62,3 +62,12 @@ metadata:
   labels:
     app: cert-manager
   name: cert-manager
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: services
+  name: services

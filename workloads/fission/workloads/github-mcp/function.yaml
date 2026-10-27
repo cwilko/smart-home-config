@@ -1,0 +1,130 @@
+# Token-injecting proxy in front of GitHub's hosted MCP server, run by Fission's container executor from the stock
+# Caddy image (no custom image, no code). The Caddyfile is in configmap.yaml (source: Caddyfile in this directory).
+#
+# Caddy adds the real GitHub token (secret github-secret, which must exist in the services namespace) to every request and
+# forwards it to https://api.githubcopilot.com/mcp/, replacing any Authorization header the caller sent. There is no caller
+# authentication: this is for internal clients only, behind the HTTPS-only ingress.
+# Paths (the Fission router trims the prefix): /github-mcp/ -> /mcp/, /github-mcp/readonly -> /mcp/readonly. Client headers such
+# as X-MCP-Toolsets and X-MCP-Readonly are passed through.
+#
+# Generated with the Fission CLI v1.27.0 (the Function in --spec mode in a scratch directory, because --dry refuses while a
+# function of the same name exists; the trigger in --dry mode), then applied with kubectl:
+#   fission spec init
+#   fission fn run-container --name github-mcp --namespace services --image caddy:2.11.7-alpine --port 8080 \
+#     --minscale 0 --maxscale 2 --idletimeout 120 --graceperiod 10 --mincpu 20 --maxcpu 250 --minmemory 32 --maxmemory 128 --spec
+#   fission route create --name github-mcp --function github-mcp --namespace services --prefix /github-mcp \
+#     --method GET --method POST --method DELETE --dry
+# The CLI has no flags for the parts marked "added by hand" below; everything else is its output as printed.
+apiVersion: fission.io/v1
+kind: Function
+metadata:
+  name: github-mcp
+  namespace: services
+spec:
+  InvokeStrategy:
+    ExecutionStrategy:
+      ExecutorType: container
+      MaxScale: 2
+      MinScale: 0
+      SpecializationTimeout: 120
+      TargetCPUPercent: 0
+    StrategyType: execution
+  environment:
+    namespace: ""
+  functionTimeout: 60
+  idletimeout: 120
+  package:
+    packageref:
+      namespace: ""
+  podspec:
+    containers:
+    - image: caddy:2.11.7-alpine
+      name: github-mcp
+      # added by hand: the GitHub token comes from a Secret in this namespace
+      env:
+      - name: GITHUB_PERSONAL_ACCESS_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: GITHUB_PERSONAL_ACCESS_TOKEN
+            name: github-secret
+      ports:
+      - containerPort: 8080
+        name: http-env
+      # added by hand: do not send traffic until Caddy is listening
+      readinessProbe:
+        periodSeconds: 2
+        tcpSocket:
+          port: 8080
+      resources: {}
+      # added by hand: run unprivileged. The caddy image gives its binary a file capability, so NET_BIND_SERVICE
+      # has to stay in the bounding set or the binary will not start; it listens on 8080 and does not use it.
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          add:
+          - NET_BIND_SERVICE
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65532
+      # added by hand: the Caddyfile (read-only) and scratch space for Caddy, since the root filesystem is read-only
+      volumeMounts:
+      - mountPath: /etc/caddy
+        name: caddyfile
+        readOnly: true
+      - mountPath: /data
+        name: data
+      - mountPath: /config
+        name: config
+    imagePullSecrets:
+    - {}
+    terminationGracePeriodSeconds: 10
+    # added by hand
+    volumes:
+    - configMap:
+        name: github-mcp-caddyfile
+      name: caddyfile
+    - emptyDir: {}
+      name: data
+    - emptyDir: {}
+      name: config
+  resources:
+    limits:
+      cpu: 250m
+      memory: 128Mi
+    requests:
+      cpu: 20m
+      memory: 32Mi
+  # added by hand: MCP responses can be SSE / chunked and a client may hold a GET stream open, so opt into the router's
+  # streaming path. The idle timeout is reset by every chunk; a stream with no bytes for this long is cut.
+  streaming:
+    idleTimeoutSeconds: 300
+status: {}
+---
+apiVersion: fission.io/v1
+kind: HTTPTrigger
+metadata:
+  name: github-mcp
+  namespace: services
+spec:
+  createingress: false
+  functionref:
+    functionweights: null
+    name: github-mcp
+    type: name
+  host: ""
+  ingressconfig:
+    annotations: null
+    host: '*'
+    path: /github-mcp
+    tls: ""
+  method: ""
+  methods:
+  - GET
+  - POST
+  - DELETE
+  prefix: /github-mcp
+  relativeurl: ""
+status: {}
+
