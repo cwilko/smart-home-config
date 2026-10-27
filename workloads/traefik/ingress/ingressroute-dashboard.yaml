@@ -8,19 +8,19 @@ spec:
     - websecure
   tls: {}
   routes:
-  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/api`)
+  - match: Host(`traefik.squirrelhome.co.uk`) && PathPrefix(`/api`)
     kind: Rule
     services:
     - name: api@internal
       kind: TraefikService
-  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/dashboard`)
+  - match: Host(`traefik.squirrelhome.co.uk`) && PathPrefix(`/dashboard`)
     kind: Rule
     middlewares:
     - name: dashboard_stripprefix@internal
     services:
     - name: dashboard@internal
       kind: TraefikService
-  - match: Host(`traefik.squirrelnet.co.uk`) && PathPrefix(`/`)
+  - match: Host(`traefik.squirrelhome.co.uk`) && PathPrefix(`/`)
     kind: Rule
     middlewares:
     - name: dashboard_redirect@internal

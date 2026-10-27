@@ -99,42 +99,42 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: api-squirrelnet
+  name: api-squirrelhome
   namespace: marketinsights
 spec:
   entryPoints:
     - websecure
   tls: {}
   routes:
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/marketinsights-api`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/marketinsights-api`)
     kind: Rule
     middlewares:
     - name: marketinsights-api-stripprefix
     services:
     - name: marketinsights-api-service
       port: 80
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/model-server`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/model-server`)
     kind: Rule
     middlewares:
     - name: model-server-stripprefix
     services:
     - name: model-server-http-service
       port: 80
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/pricestore`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/pricestore`)
     kind: Rule
     middlewares:
     - name: pricestore-stripprefix
     services:
     - name: price-store-service
       port: 80
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/portfolio-mgr`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/portfolio-mgr`)
     kind: Rule
     middlewares:
     - name: portfolio-mgr-stripprefix
     services:
     - name: portfolio-mgr-service
       port: 80
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/squid`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/squid`)
     kind: Rule
     middlewares:
     - name: squid-api-path-root-redirect
@@ -145,7 +145,7 @@ spec:
     - name: squid-service
       namespace: media
       port: 8080
-  - match: Host(`api.squirrelnet.co.uk`) && PathPrefix(`/stremio-addon`)
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/stremio-addon`)
     kind: Rule
     middlewares:
     - name: stremio-addon-path-root-redirect
