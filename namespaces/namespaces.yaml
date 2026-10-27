@@ -53,3 +53,12 @@ metadata:
   labels:
     app: iot
   name: iot
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: cert-manager
+  name: cert-manager

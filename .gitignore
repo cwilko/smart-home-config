@@ -5,5 +5,8 @@ secrets/**/cert/*
 secrets/cert/model-server/*
 !secrets/cert/model-server/cert.conf
 !secrets/cert/model-server/generate-certs.sh
+!secrets/cert/fission/
+secrets/cert/fission/*
+!secrets/cert/fission/generate-secrets.sh
 secrets/**/*.txt
 .DS_Store

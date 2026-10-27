@@ -1,0 +1,27 @@
+# Wildcard cert for squirrelhome.co.uk, issued and renewed by cert-manager via Cloudflare DNS-01.
+# Start with letsencrypt-staging; switch to letsencrypt-prod once it goes Ready.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: squirrelhome-tls
+  namespace: system
+spec:
+  secretName: squirrelhome-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - squirrelhome.co.uk
+  - "*.squirrelhome.co.uk"
+
+---
+
+# Serve the cert for any TLS route that doesn't name its own secret.
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: system
+spec:
+  defaultCertificate:
+    secretName: squirrelhome-tls

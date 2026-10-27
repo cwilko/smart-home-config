@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: grafana.squirrelnet.co.uk
+  - host: grafana.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -31,7 +31,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: actions.squirrelnet.co.uk
+  - host: actions.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -54,7 +54,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: airflow.squirrelnet.co.uk
+  - host: airflow.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -77,7 +77,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: marketinsights-api.squirrelnet.co.uk
+  - host: marketinsights-api.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -100,7 +100,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: pricestore.squirrelnet.co.uk
+  - host: pricestore.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -123,7 +123,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: portfolio-mgr.squirrelnet.co.uk
+  - host: portfolio-mgr.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -146,7 +146,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: model-server.squirrelnet.co.uk
+  - host: model-server.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -169,7 +169,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: stremio-addon.squirrelnet.co.uk
+  - host: stremio-addon.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -206,7 +206,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: squid.squirrelnet.co.uk
+  - host: squid.squirrelhome.co.uk
     http:
       paths:
       - path: /
@@ -234,14 +234,14 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: squid-api-squirrelnet
+  name: squid-api-squirrelhome
   namespace: media
 spec:
   entryPoints:
     - websecure
   tls: {}
   routes:
-  - match: (Host(`squirrelnet.co.uk`) || Host(`www.squirrelnet.co.uk`)) && PathPrefix(`/squid`)
+  - match: (Host(`squirrelhome.co.uk`) || Host(`www.squirrelhome.co.uk`)) && PathPrefix(`/squid`)
     kind: Rule
     middlewares:
     - name: squid-api-stripprefix
@@ -266,14 +266,14 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: squirrel-stream-squirrelnet
+  name: squirrel-stream-squirrelhome
   namespace: media
 spec:
   entryPoints:
     - websecure
   tls: {}
   routes:
-  - match: (Host(`squirrelnet.co.uk`) || Host(`www.squirrelnet.co.uk`)) && PathPrefix(`/stremio-addon`)
+  - match: (Host(`squirrelhome.co.uk`) || Host(`www.squirrelhome.co.uk`)) && PathPrefix(`/stremio-addon`)
     kind: Rule
     middlewares:
     - name: squirrel-stream-stripprefix
