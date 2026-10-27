@@ -156,3 +156,30 @@ spec:
     - name: squirrel-stream
       namespace: media
       port: 3001
+
+---
+
+# One catch-all rule: anything on this host that no other route claims goes to the Fission router, which matches the path
+# against its HTTPTriggers. 
+#
+# priority: 1 makes this the lowest-priority route on the host, so the existing api-squirrelhome IngressRoute 
+# always wins over it. The flip side: a Fission function whose path starts with one of
+# those prefixes is shadowed and never reaches Fission, so do not give a function such a path.
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: fission-api-squirrelhome
+  namespace: automation
+spec:
+  entryPoints:
+    - websecure
+  tls: {}
+  routes:
+  - match: Host(`api.squirrelhome.co.uk`)
+    kind: Rule
+    priority: 1
+    services:
+    - name: router
+      namespace: automation
+      port: 80

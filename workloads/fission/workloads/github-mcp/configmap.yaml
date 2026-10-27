@@ -1,0 +1,25 @@
+apiVersion: v1
+data:
+  Caddyfile: "# Token-injecting reverse proxy in front of GitHub's hosted MCP server
+    (https://api.githubcopilot.com/mcp/).\n# There is no caller authentication: anything
+    that can reach this proxy gets the GitHub token's access. It is meant for\n# internal
+    clients only (HTTPS-only ingress, LAN). The real GitHub token lives only in a
+    Secret in this namespace and\n# arrives as an environment variable (see function.yaml).\n#\n#
+    configmap.yaml is generated from this file, so re-run this after any edit and
+    then apply it (run from this directory):\n#   kubectl create configmap github-mcp-caddyfile
+    --namespace services --from-file=Caddyfile=Caddyfile --dry-run=client -o yaml
+    > configmap.yaml\n{\n\tadmin off\n\tauto_https off\n}\n\n:8080 {\n\t# The Fission
+    router trims the /github-mcp prefix, so / becomes /mcp/ and /readonly becomes
+    /mcp/readonly.\n\trewrite * /mcp{uri}\n\treverse_proxy https://api.githubcopilot.com
+    {\n\t\t# Replace whatever credential the caller sent with the real one. This uses
+    the runtime placeholder env.NAME, not the\n\t\t# parse-time form: the parse-time
+    form is substituted before the config is adapted, so the token would end up in
+    the\n\t\t# config Caddy autosaves to disk. Caddy also sets the upstream Host header
+    itself for HTTPS upstreams.\n\t\theader_up Authorization \"Bearer {env.GITHUB_PERSONAL_ACCESS_TOKEN}\"\n\t\t#
+    Streamable HTTP responses can be SSE or chunked: never buffer them\n\t\tflush_interval
+    -1\n\t}\n}\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: github-mcp-caddyfile
+  namespace: services

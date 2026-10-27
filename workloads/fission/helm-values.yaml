@@ -1,0 +1,29 @@
+# Minimal Fission install for evaluating scale-to-zero on the single k3s node.
+# Used by generate-yamls.sh (helm template) to generate install/ and optional/. The control plane is rendered for the
+# automation namespace; functions live in the services namespace.
+
+# Don't take an address from the MetalLB pool - reach the router via Traefik instead
+routerServiceType: ClusterIP
+
+# Namespace functions/environments/triggers and function pods live in (the control plane is in automation)
+defaultNamespace: services
+
+# emptyDir instead of a PVC: packages are disposable in the sandbox
+persistence:
+  enabled: false
+
+analytics: false
+
+# Optional components not needed for the evaluation
+mqt_keda:
+  enabled: false
+kafka:
+  enabled: false
+influxdb:
+  enabled: false
+canaryDeployment:
+  enabled: false
+
+# Fission's internal HMAC auth between its own components - not needed on a single trusted node
+internalAuth:
+  enabled: false
