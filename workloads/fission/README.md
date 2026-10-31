@@ -105,6 +105,32 @@ How the fetcher treats a `url` Package (from `pkg/fetcher/fetcher.go`):
 - The chart leaves `metadata.namespace` off Deployments and Services; the generator adds it. Service names stay as the chart names them (`router`, `executor`, ...) because Fission finds its components by those names.
 - The three control-plane pods use about 45-60 MiB in total. A Python function pod uses about 40 MiB.
 
+## Endpoint metadata
+
+Every `HTTPTrigger` carries annotations that describe the endpoint to its callers. The trigger is the unit that is annotated (not the Function) because it is what a client sees: a path, methods and a contract. Fission ignores these annotations; they exist so a catalog (not built yet) and people running `kubectl get httptriggers -A -o yaml` can find out what an endpoint is and how to call it.
+
+All keys use the prefix `catalog.squirrelhome.co.uk/`.
+
+| Annotation | Required | Value |
+|---|---|---|
+| `description` | yes | One line: what the endpoint does and what it fronts |
+| `kind` | yes | `rest`, `mcp`, `webhook` or `other`. Decides how the rest of the metadata is read |
+| `openapi` | for `rest` | Absolute URL of the OpenAPI document. The spec lives with whoever defines the HTTP surface (see below) and is never copied into the cluster. Nothing fetches it: a catalog only links to it, so no function is woken until someone opens it |
+| `usage` | for `mcp`, `webhook`, `other` | Markdown: the full URL, accepted parameters and headers, variants, and a ready-to-paste client snippet. Free-form because OpenAPI does not describe these |
+
+Where the OpenAPI spec lives: with whoever defines the HTTP surface.
+- A Fission-wrapped function (a plain `main()`, or a container fronted by a Caddyfile) has no HTTP contract of its own; Fission supplies the method, path and request/response mapping, so the API only exists once function and trigger are deployed together. Its spec belongs in this repo, next to the function YAML, and may include `servers` and the real path. Point `openapi` at the raw file, e.g. `https://raw.githubusercontent.com/cwilko/smart-home-config/master/workloads/fission/example/hello-scale0.openapi.yaml`.
+- A self-contained API app (e.g. FastAPI behind the container executor) defines and generates its own routes, so its spec lives in the app's repo; point `openapi` at the raw file there or at a path the app serves.
+- The path appears in both the trigger and the spec, so keep them in step.
+
+Rules:
+- Document the path as a client calls it (the public host plus the prefix), not the path after the router trims the prefix.
+- The annotations are metadata only and must never hold a secret.
+- A trigger missing a required annotation is a defect. Add the annotations in the same change as the trigger. `policy/squirrel-annotations.yaml` checks this at apply time (currently in Warn mode, so it only prints a warning), and the `problems` list in the `/catalog` output reports what is missing.
+- For a function with several triggers, annotate each one.
+
+Example: `workloads/github-mcp/function.yaml`.
+
 ## Repository layout
 
 ```
@@ -113,6 +139,9 @@ helm-values.yaml    chart values (see "Control plane" below)
 install/            the control plane that is deployed: router, executor, buildermgr, misc-functions (shared RBAC and ConfigMap)
 optional/           components that are rendered but not deployed (see "Pods")
 secrets/            the sealed webhook certificate, only needed if the webhook is enabled
+policy/             admission policy that checks the endpoint metadata annotations on HTTPTriggers (see "Endpoint metadata")
+workloads/          functions that are deployed: github-mcp (token-injecting GitHub MCP proxy) and catalog (JSON list of the
+                    endpoints Fission fronts, served at /catalog; code in catalog/src/main.py, embedded as a literal Package)
 example/            demo manifests: an Environment, a poolmgr function, a newdeploy scale-to-zero function,
                     and a url Package built from a GitHub release (functions/hello.py is the source of the literal ones)
 ```
@@ -187,9 +216,10 @@ Repository contents:
 |---|---|
 | `main.py` | The function: module `main`, function `main` (the Python environment imports `module.function`, default `main.main`, with the unpacked archive on `sys.path`) |
 | `requirements.txt` | Dependencies, vendored into the archive at build time |
-| `build.sh` | `GITHUB_REPOSITORY=owner/repo ./build.sh <version>` produces `dist/<name>-<version>.zip`, its `.sha256`, and `dist/package.yaml` |
-| `fission/package.yaml.tmpl` | Template for the Package, Function and HTTPTrigger; `build.sh` fills in the URL, sha256 and names (`FISSION_NAMESPACE` and `FISSION_ENVIRONMENT` default to `services` and `python`) |
-| `scripts/prune-dev-releases.sh` | Deletes old development pre-releases |
+| `build.sh` | `./build.sh <version>` produces the plain package: `dist/<name>-<version>.zip` and its `.sha256`, with no Fission config in it |
+| `.github/scripts/build-fission-package.sh` | `GITHUB_REPOSITORY=owner/repo .github/scripts/build-fission-package.sh <version>`, run after `build.sh`, renders `dist/package.yaml` from the zip and checksum in `dist/` (`FISSION_NAMESPACE` and `FISSION_ENVIRONMENT` default to `services` and `python`) |
+| `.github/fission/package.yaml.tmpl` | Template for the Package, Function and HTTPTrigger; the script above fills in the URL, sha256 and names |
+| `.github/scripts/prune-dev-releases.sh` | Deletes old development pre-releases |
 | `.github/workflows/release.yml` | The pipeline below |
 
 What the workflow does:
@@ -200,7 +230,7 @@ What the workflow does:
 | push to `main` | `dev-<short sha>` | a GitHub **pre-release**, then prunes old `dev-*` pre-releases, keeping the newest 5 (`KEEP_DEV_RELEASES`); it only ever selects pre-releases whose tag starts with `dev-` |
 | push of a `v*` tag | the tag | a normal release |
 
-Each release has three assets: `<name>-<version>.zip` (the code with dependencies at the zip root), `<name>-<version>.zip.sha256`, and `package.yaml` (Package with the asset URL and sha256, a Function, and an HTTPTrigger).
+Each release has four assets: `<name>-<version>.zip` (the code with dependencies at the zip root), `<name>-<version>.zip.sha256`, and `package.yaml` (Package with the asset URL and sha256, a Function, and an HTTPTrigger), which a separate workflow step renders after the plain build, and `openapi.yaml` (the spec that the trigger's `openapi` annotation links to).
 
 Using it:
 

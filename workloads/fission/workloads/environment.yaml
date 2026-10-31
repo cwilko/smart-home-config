@@ -1,0 +1,11 @@
+apiVersion: fission.io/v1
+kind: Environment
+metadata:
+  name: python
+  namespace: services
+spec:
+  version: 3
+  runtime:
+    image: ghcr.io/fission/python-env
+  # Warm pool used by the poolmgr executor (pods idle in the pool, not per function)
+  poolsize: 1

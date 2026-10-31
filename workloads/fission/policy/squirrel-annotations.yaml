@@ -1,0 +1,50 @@
+# Checks that every Fission HTTPTrigger, in any namespace, carries the endpoint metadata annotations described in
+# ../README.md ("Endpoint metadata"): description and kind always, then openapi for kind rest, or usage for the other kinds.
+#
+# A ValidatingAdmissionPolicy is evaluated by the API server itself (CEL), so there is no webhook pod or certificate to
+# run. It needs Kubernetes 1.30+ (GA; beta before that). The binding is in Warn mode: a violating apply still succeeds and
+# kubectl prints the message. To enforce, change validationActions to [Deny] once the existing triggers are clean.
+# After applying, `kubectl get validatingadmissionpolicy squirrel-annotations -o yaml` shows CEL type-check problems
+# under status.typeChecking.
+#
+# This only sees the one object, so it cannot check that the openapi URL resolves or that the function exists; the
+# problems list in the /catalog output covers cross-resource checks.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: squirrel-annotations
+spec:
+  # Fail (the default) so that a broken expression surfaces as a violation instead of silently passing
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["fission.io"]
+      apiVersions: ["v1"]
+      resources: ["httptriggers"]
+      operations: ["CREATE", "UPDATE"]
+  variables:
+  - name: annotations
+    expression: "object.metadata.?annotations.orValue({})"
+  - name: kind
+    expression: "variables.annotations[?'catalog.squirrelhome.co.uk/kind'].orValue('')"
+  validations:
+  - expression: "variables.annotations[?'catalog.squirrelhome.co.uk/description'].orValue('') != ''"
+    message: "missing annotation catalog.squirrelhome.co.uk/description (one line: what the endpoint does)"
+    reason: Invalid
+  - expression: "variables.kind in ['rest', 'mcp', 'webhook', 'other']"
+    message: "annotation catalog.squirrelhome.co.uk/kind must be one of: rest, mcp, webhook, other"
+    reason: Invalid
+  - expression: "variables.kind != 'rest' || variables.annotations[?'catalog.squirrelhome.co.uk/openapi'].orValue('') != ''"
+    message: "kind rest requires annotation catalog.squirrelhome.co.uk/openapi (URL of the OpenAPI document)"
+    reason: Invalid
+  - expression: "!(variables.kind in ['mcp', 'webhook', 'other']) || variables.annotations[?'catalog.squirrelhome.co.uk/usage'].orValue('') != ''"
+    message: "kinds mcp, webhook and other require annotation catalog.squirrelhome.co.uk/usage (markdown on how to call the endpoint)"
+    reason: Invalid
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: squirrel-annotations
+spec:
+  policyName: squirrel-annotations
+  validationActions: ["Warn"]

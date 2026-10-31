@@ -1,0 +1,50 @@
+# Credentials and read access for the catalog function to the Fission HTTPTriggers and Functions in services.
+#
+# The function cannot use the pod's own ServiceAccount: Fission sets automountServiceAccountToken: false and mounts the
+# token only into its fetcher sidecar, not the runtime container where the code runs. So the function gets its own
+# ServiceAccount, a token Secret for it, and function.yaml lists that Secret under secrets: so Fission mounts it into
+# the runtime container. Only this account can read triggers and functions, not every function in services.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fission-catalog
+  namespace: services
+---
+# Holds no value in git: Kubernetes fills in token, ca.crt and namespace for the annotated ServiceAccount
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fission-catalog-token
+  namespace: services
+  annotations:
+    kubernetes.io/service-account.name: fission-catalog
+type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: fission-catalog-reader
+  namespace: services
+rules:
+- apiGroups:
+  - fission.io
+  resources:
+  - httptriggers
+  - functions
+  verbs:
+  - get
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fission-catalog-reader
+  namespace: services
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: fission-catalog-reader
+subjects:
+- kind: ServiceAccount
+  name: fission-catalog
+  namespace: services
