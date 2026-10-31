@@ -193,21 +193,6 @@ def build_launch_task(agent_type: str, arguments: list) -> KubernetesPodOperator
                     )
                 ),
             ),
-            # Fine-grained PAT, scoped to a single repo (cwilko/marketinsights-collector
-            # for data_collector today). Not referenced directly in any .mcp.json —
-            # present here so Claude's own process environment has it, and the
-            # ${GITHUB_PERSONAL_ACCESS_TOKEN} substitution in a skill's .mcp.json
-            # resolves to it rather than needing the literal value committed to git.
-            # Harmless for agents whose .mcp.json doesn't reference it.
-            k8s.V1EnvVar(
-                name="GITHUB_PERSONAL_ACCESS_TOKEN",
-                value_from=k8s.V1EnvVarSource(
-                    secret_key_ref=k8s.V1SecretKeySelector(
-                        name="ai-secrets",
-                        key="GITHUB_PERSONAL_ACCESS_TOKEN",
-                    )
-                ),
-            ),
         ],
         volumes=[
             k8s.V1Volume(
