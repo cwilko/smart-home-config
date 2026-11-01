@@ -26,6 +26,8 @@ spec:
         app: squid
     spec:
       serviceAccountName: squid-sa
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         kubernetes.io/arch: amd64
       initContainers:
@@ -50,7 +52,7 @@ spec:
         
         env:
         - name: SQUID_STORE_ID_LOG_LEVEL
-          value: "DEBUG"
+          value: "INFO"
         - name: SQUID_PREFETCH_DELAY
           value: "3.0"
         - name: SQUID_STORE_ID_LOG_TO_STDERR

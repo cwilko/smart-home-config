@@ -9,22 +9,22 @@ data:
     \        # filemaker\nacl Safe_ports port 777         # multiling http\n\n# Recommended
     default for manager:\nacl manager proto cache_object\n\n## Local network ACLs\nacl
     localnet src 192.168.0.0/16\n# For testing purposes - docker\nacl dockernet src
-    172.17.0.0/16\n# Kubernetes pod network\nacl k8snet src 10.244.0.0/16\n\n#\n#
-    Recommended minimum Access Permission configuration:\n#\n# Deny requests to certain
-    unsafe ports\nhttp_access deny !Safe_ports\n\n# Deny CONNECT to other than secure
-    SSL ports\nhttp_access deny CONNECT !SSL_ports\n\n# Only allow cachemgr access
-    from localhost\nhttp_access allow localhost manager\n# Allow cache manager access
-    from localnet\nhttp_access allow manager localnet\n\n\nhttp_access deny manager\n\n#
-    This default configuration only allows localhost requests because a more\n# permissive
-    Squid installation could introduce new attack vectors into the\n# network by proxying
-    external TCP connections to unprotected services.\nhttp_access allow localhost\n\n#
-    The two deny rules below are unnecessary in this default configuration\n# because
-    they are followed by a \"deny all\" rule. However, they may become\n# critically
-    important when you start allowing external requests below them.\n\n# Protect web
-    applications running on the same server as Squid. They often\n# assume that only
-    local users can access them at \"localhost\" ports.\n#http_access deny to_localhost\n\n#
-    Protect cloud servers that provide local users with sensitive info about\n# their
-    server via certain well-known link-local (a.k.a. APIPA) addresses.\n#http_access
+    172.17.0.0/16\n# Kubernetes pod network\n#acl k8snet src 10.244.0.0/16\nacl k8snet
+    src 10.42.0.0/16\n\n#\n# Recommended minimum Access Permission configuration:\n#\n#
+    Deny requests to certain unsafe ports\nhttp_access deny !Safe_ports\n\n# Deny
+    CONNECT to other than secure SSL ports\nhttp_access deny CONNECT !SSL_ports\n\n#
+    Only allow cachemgr access from localhost\nhttp_access allow localhost manager\n#
+    Allow cache manager access from localnet\nhttp_access allow manager localnet\n\n\nhttp_access
+    deny manager\n\n# This default configuration only allows localhost requests because
+    a more\n# permissive Squid installation could introduce new attack vectors into
+    the\n# network by proxying external TCP connections to unprotected services.\nhttp_access
+    allow localhost\n\n# The two deny rules below are unnecessary in this default
+    configuration\n# because they are followed by a \"deny all\" rule. However, they
+    may become\n# critically important when you start allowing external requests below
+    them.\n\n# Protect web applications running on the same server as Squid. They
+    often\n# assume that only local users can access them at \"localhost\" ports.\n#http_access
+    deny to_localhost\n\n# Protect cloud servers that provide local users with sensitive
+    info about\n# their server via certain well-known link-local (a.k.a. APIPA) addresses.\n#http_access
     deny to_linklocal\n\n# Local access rules\nhttp_access allow localnet\nhttp_access
     allow dockernet\nhttp_access allow k8snet\n\n# Cache ACLs - allow caching of successful
     responses\nacl success_status http_status 200 206 301 302 304\nacl real_debrid
