@@ -26,6 +26,11 @@ fit). `<entity-type>`: `device`, `sensor`, `pod`, `net`, `agent`. `<level>`: `OK
   (`smart-home-config/workloads/airflow/dags/agent-orchestration/skills/data_collector/SKILL.md`):
   `events/system/agent/data_collector/<attribute>/priority/<level>`, JSON payload
   with at least a `summary` field.
+- `log_analyst` Airflow agent
+  (`smart-home-config/workloads/airflow/dags/agent-orchestration/skills/log_analyst/SKILL.md`):
+  `events/system/agent/log_analyst/issue-raised/priority/<level>` (`WARNING` for an error
+  issue, `INFO` for a log-volume issue), JSON payload with `summary`, `issue_url`,
+  `issue_title` and `kind`. One event per GitHub issue it creates.
 
 `events-json/#` is a separate, one-off topic used only by `arlo2mqtt` for its own
 snapshot events (`events-json/system/sensor/arlo/<cam>/snapshot/priority/OK`, JSON:
