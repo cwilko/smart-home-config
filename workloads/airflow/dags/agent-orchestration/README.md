@@ -146,10 +146,11 @@ undocumented data source, opens a pull request proposing it — gated to one
 pending proposal at a time so the review queue never backs up. See
 `skills/data_collector/SKILL.md` for the full instructions it operates under.
 
-`log_analyst` runs nightly (`0 2 * * *`) and reviews the last 24 hours of cluster logs
+`log_analyst` runs weekly (`0 2 * * 1`, Mondays at 02:00 UTC) and reviews the last 24 hours of cluster logs
 in Loki: it finds containers that log far too much and real recurring errors, and raises
 GitHub issues on `cwilko/smart-home-config` titled `[log-analyst] ...`. Its guard rails
-are in its `SKILL.md`: never more than 5 open `[log-analyst]` issues, a fingerprint
+are in its `SKILL.md`: never more than 5 open `[log-analyst]` issues (checked first; when
+the backlog is full it skips the analysis and only records the day's volume), a fingerprint
 line in each issue body so the same problem is not raised twice, and a mandatory
 redaction pass (the repo is public). It queries Loki over `curl` through the public
 route `https://api.squirrelhome.co.uk/loki/api/v1/` (read endpoints only, see
