@@ -154,7 +154,9 @@ line in each issue body so the same problem is not raised twice, and a mandatory
 redaction pass (the repo is public). It queries Loki over `curl` through the public
 route `https://api.squirrelhome.co.uk/loki/api/v1/` (read endpoints only, see
 `workloads/traefik/ingress/ingressroute-api.yaml`) rather than an MCP server, so it
-can aggregate in Loki and keep large results out of its context.
+can aggregate in Loki and keep large results out of its context. For each issue it raises it
+publishes one event, `events/system/agent/log_analyst/issue-raised/priority/<level>`, the same
+way `data_collector` does.
 
 ### Getting skill files into the pod
 
@@ -232,8 +234,8 @@ PVCs above from inside a task.
 ## Agent tools (MCP)
 
 Agents get capabilities through MCP servers declared in their `.mcp.json`,
-auto-discovered from the workspace root. `data_collector`'s today (`log_analyst` only has
-the `github` entry, with `X-MCP-Toolsets: issues`):
+auto-discovered from the workspace root. `data_collector`'s today (`log_analyst` has both too, with
+`X-MCP-Toolsets: issues` on its `github` entry):
 
 - **`github`** — GitHub's hosted streamable-HTTP MCP server, reached through
   the in-cluster token-injecting proxy (Fission function `github-mcp`, served at

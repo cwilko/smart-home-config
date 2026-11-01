@@ -1,5 +1,16 @@
 {
     "mcpServers": {
+        "mqtt": {
+            "command": "sh",
+            "args": [
+                "-c",
+                "pip install -q mqtt-mcp-server && python3 -m mqtt_mcp.server"
+            ],
+            "env": {
+                "MQTT_HOST": "mqtt.automation.svc.cluster.local",
+                "MQTT_PORT": "1883"
+            }
+        },
         "github": {
             "type": "http",
             "url": "https://api.squirrelhome.co.uk/github-mcp/",

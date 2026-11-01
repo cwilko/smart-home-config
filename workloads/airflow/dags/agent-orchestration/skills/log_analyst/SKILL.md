@@ -123,6 +123,26 @@ Run the check again after any change. If you are unsure whether something is sen
   `log-analyst-fingerprint:` line.
 - No labels, assignees or mentions.
 
+## Raising an event
+
+You have an MQTT `publish` tool (via the `mqtt` MCP server). Publish **one event for each issue
+you actually create**, straight after creating it, and nothing otherwise: no event for a skipped
+candidate, a full backlog, or a quiet night.
+
+Publish to:
+
+```
+events/system/agent/log_analyst/issue-raised/priority/<level>
+```
+
+- `system`, `agent`, `log_analyst` and `issue-raised` are fixed.
+- `<level>`: `WARNING` for an issue about a real, recurring error; `INFO` for an issue about log
+  volume.
+
+Payload is a JSON object with `summary` (one short sentence), `issue_url`, `issue_title`, and
+`kind` (`volume` or `error`). It follows the same redaction rules as the issue: no raw log lines,
+no secrets, no IP addresses, since events are forwarded to other systems.
+
 ## State
 
 Keep `/workspace/state.json` between runs: today's date and the bytes per container from the volume
@@ -132,5 +152,5 @@ raised. Do not store log lines in it.
 ## When you finish
 
 Finish with a short plain summary: total volume, the top few containers, which issues you raised
-(titles and URLs), and anything you skipped and why (backlog full, duplicate, nothing notable). If
+(titles and URLs, each with its event published), and anything you skipped and why (backlog full, duplicate, nothing notable). If
 nothing needs raising, say so and stop.
