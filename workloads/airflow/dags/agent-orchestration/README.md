@@ -112,7 +112,7 @@ code change needed. **Removing/disabling an agent** is deleting its entry.
 section to the other, swapping `description` for `schedule`/`scheduled_task`
 (or vice versa).
 
-### Why only `data_collector` exists today
+### Agents not implemented yet
 
 Several other agent concepts were scoped during this project's design
 conversation but aren't implemented yet:
@@ -138,13 +138,23 @@ these files are re-fetched fresh on every launch, see below):
   Auto-discovered from the workspace root since `claude -p` is invoked
   without `--bare`.
 
-`data_collector` is the one implemented agent today: it compares
+Two agents are implemented. `data_collector` compares
 `cwilko/marketinsights-collector`'s documented pipeline coverage
 (`resources/API_SOURCES.md`) against its own prior proposals
 (`resources/CANDIDATE_SOURCES.md`), and if it finds a genuinely new,
 undocumented data source, opens a pull request proposing it — gated to one
 pending proposal at a time so the review queue never backs up. See
 `skills/data_collector/SKILL.md` for the full instructions it operates under.
+
+`log_analyst` runs nightly (`0 2 * * *`) and reviews the last 24 hours of cluster logs
+in Loki: it finds containers that log far too much and real recurring errors, and raises
+GitHub issues on `cwilko/smart-home-config` titled `[log-analyst] ...`. Its guard rails
+are in its `SKILL.md`: never more than 5 open `[log-analyst]` issues, a fingerprint
+line in each issue body so the same problem is not raised twice, and a mandatory
+redaction pass (the repo is public). It queries Loki over `curl` through the public
+route `https://api.squirrelhome.co.uk/loki/api/v1/` (read endpoints only, see
+`workloads/traefik/ingress/ingressroute-api.yaml`) rather than an MCP server, so it
+can aggregate in Loki and keep large results out of its context.
 
 ### Getting skill files into the pod
 
@@ -213,14 +223,6 @@ actually execute):
   one small classification call per event). `ChatGoogleGenerativeAI` picks
   this up automatically from the environment; no explicit wiring needed
   beyond the worker's `envFrom`.
-- `GITHUB_PERSONAL_ACCESS_TOKEN` — a fine-grained PAT scoped to one repo
-  (`cwilko/marketinsights-collector`, for `data_collector` today). Also
-  passed through explicitly as a pod env var. **Not** referenced directly in
-  any `.mcp.json` — instead, a skill's `.mcp.json` uses `${GITHUB_PERSONAL_ACCESS_TOKEN}`
-  and Claude Code's own CLI-only env substitution resolves it against the
-  pod's environment at startup. This is the load-bearing reason nothing here
-  ever commits a real secret value into a git-tracked `.mcp.json` — only the
-  `${VAR}` placeholder lives in git.
 
 The Airflow scheduler also needed one RBAC addition
 (`workloads/airflow/af-rbac.yaml`) — `get`/`list`/`create` on
@@ -230,14 +232,15 @@ PVCs above from inside a task.
 ## Agent tools (MCP)
 
 Agents get capabilities through MCP servers declared in their `.mcp.json`,
-auto-discovered from the workspace root. `data_collector`'s today:
+auto-discovered from the workspace root. `data_collector`'s today (`log_analyst` only has
+the `github` entry, with `X-MCP-Toolsets: issues`):
 
-- **`github`** — [`github/github-mcp-server`](https://github.com/github/github-mcp-server),
-  fetched as a native binary release at container start (`curl | tar`, stdio
-  transport) rather than via Docker-in-Docker. `GITHUB_TOOLSETS=repos,pull_requests`
-  scopes it to only what this agent needs — reading files, listing/creating
-  branches and PRs — nothing broader than that fine-grained PAT already
-  allows.
+- **`github`** — GitHub's hosted streamable-HTTP MCP server, reached through
+  the in-cluster token-injecting proxy (Fission function `github-mcp`, served at
+  `https://api.squirrelhome.co.uk/github-mcp/`; see `workloads/fission/workloads/github-mcp`).
+  The proxy adds the GitHub token, so the pod holds no GitHub credential.
+  The `X-MCP-Toolsets: repos,pull_requests` header scopes it to only what
+  this agent needs — reading files, listing/creating branches and PRs.
 - **`mqtt`** — [`eduard256/mqtt-mcp-server`](https://github.com/eduard256/mqtt-mcp-server),
   installed on the fly (`pip install -q mqtt-mcp-server`) and run over stdio.
   Chosen specifically *because* it's stdio, not HTTP — no persistent service

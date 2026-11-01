@@ -4,6 +4,10 @@
         "data_collector": {
             "schedule": "0 3 * * 0",
             "scheduled_task": "Review your skill file's existing data pipeline coverage and any already-documented candidate sources. Identify at most 1-2 new, currently-undocumented data sources relevant to this homelab's financial/macroeconomic data pipelines, and document each following your skill file's 'Proposing a candidate source' section. If nothing new is found, note that briefly and stop."
+        },
+        "log_analyst": {
+            "schedule": "0 2 * * *",
+            "scheduled_task": "Review the last 24 hours of cluster logs in Loki as described in your skill file. Find containers that log excessively and real recurring errors, and raise GitHub issues on cwilko/smart-home-config following your skill file's backlog (never more than 5 open), duplicate and redaction rules. If nothing needs raising, or the backlog is full, say so briefly and stop."
         }
     }
 }

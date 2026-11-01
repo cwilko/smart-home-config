@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "github": {
+            "type": "http",
+            "url": "https://api.squirrelhome.co.uk/github-mcp/",
+            "headers": {
+                "X-MCP-Toolsets": "issues"
+            }
+        }
+    }
+}
