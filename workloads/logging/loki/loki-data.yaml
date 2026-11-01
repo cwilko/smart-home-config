@@ -15,11 +15,11 @@ spec:
   csi:
     driver: org.democratic-csi.nvmeof
     fsType: ext4
-    volumeHandle: k8s-storage
+    volumeHandle: pvc-loki-data
     volumeAttributes:
       node_attach_driver: nvmeof
-      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-storage
-      nsid: "2"
+      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-storage-loki-data
+      nsid: "1"
       provisioner_driver: freenas-api-nvmeof
       transport: ""
       transports: tcp://10.0.0.1:4420  # Update to tcp://192.168.1.72:4420 if needed

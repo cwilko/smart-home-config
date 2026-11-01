@@ -156,6 +156,19 @@ spec:
     - name: squirrel-stream
       namespace: media
       port: 3001
+  # Loki's read API only, at its native paths (no prefix stripping), so logcli and a Grafana datasource work with
+  # https://api.squirrelhome.co.uk as the Loki URL. Matched: queries, label and series lookups, tail, index stats and
+  # volume, log patterns and detected fields/labels. Push (/loki/api/v1/push), delete and the status endpoints are
+  # deliberately not matched: there is no authentication on this host, so they stay inside the cluster.
+  - match: >-
+      Host(`api.squirrelhome.co.uk`) && (PathPrefix(`/loki/api/v1/query`) || PathPrefix(`/loki/api/v1/label`) ||
+      PathPrefix(`/loki/api/v1/series`) || PathPrefix(`/loki/api/v1/tail`) || PathPrefix(`/loki/api/v1/index`) ||
+      PathPrefix(`/loki/api/v1/patterns`) || PathPrefix(`/loki/api/v1/detected_`))
+    kind: Rule
+    services:
+    - name: loki
+      namespace: storage
+      port: 3100
 
 ---
 

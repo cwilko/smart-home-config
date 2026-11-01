@@ -54,7 +54,7 @@ data:
       join_members:
       - loki-memberlist.storage.svc.cluster.local
     pattern_ingester:
-      enabled: false
+      enabled: true
     querier:
       max_concurrent: 2
     query_range:
