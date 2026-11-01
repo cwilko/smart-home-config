@@ -15,10 +15,10 @@ spec:
   csi:
     driver: org.democratic-csi.nvmeof
     fsType: ext4
-    volumeHandle: k8s-storage
+    volumeHandle: pvc-postgres-data
     volumeAttributes:
       node_attach_driver: nvmeof
-      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-storage 
+      nqn: nqn.2011-06.com.truenas:uuid:66ed36b2-a5f0-4db8-9a3b-13ef91a18acd:k8s-storage-postgres-data
       nsid: "1"
       provisioner_driver: freenas-api-nvmeof
       transport: ""
