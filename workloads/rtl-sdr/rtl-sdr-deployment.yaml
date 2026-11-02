@@ -4,6 +4,8 @@ metadata:
   name: rtl-sdr
   namespace: iot
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: rtl-sdr
