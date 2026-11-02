@@ -254,7 +254,7 @@ auto-discovered from the workspace root. `data_collector`'s today (`log_analyst`
   claudebox image's `cmds`, which is deliberately never done — see below).
   The actual topic convention an agent publishes to is documented in each
   agent's own `SKILL.md` (see `skills/data_collector/SKILL.md`'s "Raising an
-  event" section) and in `MQTT_TOPICS.md` at the repo root, which is the
+  event" section) and in `MQTT_TOPICS.md` (in the `smart-home-docs` repo, under `reference/`), which is the
   canonical reference for this homelab's full set of MQTT conventions.
 
 This event-raising model is deliberately decoupled from Airflow: any number
