@@ -1,0 +1,32 @@
+# TEMPORARY: dynamic stepping stone for pinning the WhatsApp volume. Do not point the Deployment at this claim.
+#
+# The plan (see smart-home-docs/storage/PERSISTENT-VOLUMES.md, section 3c):
+#   1. Apply this PVC. democratic-csi creates a zvol pvc-<uuid> and a subsystem k8s-services-whatsapp-mcp-data-nvme.
+#   2. Write a marker file through volume-test-dynamic.yaml, then delete that pod.
+#   3. On TrueNAS, snapshot the zvol and clone it to SSD_pool/k8s/block/pvc-whatsapp-mcp-data, then export the clone
+#      through a subsystem named k8s-services-whatsapp-mcp-data.
+#   4. Replace this file with a static PV (whatsapp-mcp-data-pv) plus PVC (whatsapp-mcp-data), as in
+#      ../../../storage/postgres/pg-data.yaml, and keep this one as pvc.yaml.old. deployment.yaml already uses the final
+#      claim name whatsapp-mcp-data.
+# The suffix -nvme is deliberate: it keeps the dynamic subsystem name from clashing with the pinned one.
+#
+# 4Gi on purpose, so the pinned volume can be expanded to 5Gi as a test.
+#
+# WhatsApp session (whatsapp.db: the linked-device keys) and message history (messages.db), plus uploaded media.
+# Losing this volume means re-pairing the phone. Block storage (ext4) rather than NFS, because both files are SQLite and
+# SQLite locking is unreliable over NFS. The truenas-nvmeof class has reclaimPolicy Retain, so deleting the PVC leaves the
+# data behind on TrueNAS.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: whatsapp-mcp-data-nvme
+  namespace: services
+  labels:
+    app: whatsapp-mcp
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: truenas-nvmeof
+  resources:
+    requests:
+      storage: 4Gi

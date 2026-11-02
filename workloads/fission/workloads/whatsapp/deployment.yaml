@@ -1,0 +1,97 @@
+# WhatsApp MCP server (https://github.com/Sealjay/mcp-whatsapp): one Go process that holds the linked-device session, caches
+# messages in SQLite and serves MCP over HTTP at /mcp. This is a plain Deployment, not a Fission function: the session is a
+# long-lived websocket with state on disk, so it must stay up (no scale to zero) and must never run twice.
+#
+# - replicas 1 with the Recreate strategy: two pods on one session (even briefly during a rollout) fight over the link.
+#   The server also takes a flock on the store, which the RWO volume backs up.
+# - Auth: -allow-remote makes the server refuse to start unless WHATSAPP_MCP_TOKEN is set. It is a bearer token for /mcp and
+#   /pair/*, read from the sealed secret whatsapp-mcp-secret (see README.md). Without that secret the pod stays in
+#   CreateContainerConfigError, which is intended.
+# - The image is built from the upstream Dockerfile at a pinned tag (see README.md). It runs as a non-root user; the user and
+#   group below must match the image (check with `docker run --rm --entrypoint id <image>`) or the store is not writable.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whatsapp-mcp-sa
+  namespace: services
+automountServiceAccountToken: false
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whatsapp-mcp
+  namespace: services
+  labels:
+    app: whatsapp-mcp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: whatsapp-mcp
+  template:
+    metadata:
+      labels:
+        app: whatsapp-mcp
+    spec:
+      serviceAccountName: whatsapp-mcp-sa
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: whatsapp-mcp
+        image: wilkobets/whatsapp-mcp:v0.6.0
+        imagePullPolicy: IfNotPresent
+        # The image entrypoint is the whatsapp-mcp binary. Store defaults to ./store under the image's home, which is the
+        # mount below.
+        args:
+        - serve
+        - -addr
+        - 0.0.0.0:8765
+        - -allow-remote
+        env:
+        - name: WHATSAPP_MCP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: whatsapp-mcp-secret
+              key: WHATSAPP_MCP_TOKEN
+        ports:
+        - containerPort: 8765
+          name: http
+        # The server has no health route: a TCP check says the process is serving, not that WhatsApp is connected. For the
+        # session itself call the get_status MCP tool (see README.md).
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+        - name: store
+          mountPath: /home/app/store
+      volumes:
+      - name: store
+        persistentVolumeClaim:
+          claimName: whatsapp-mcp-data
