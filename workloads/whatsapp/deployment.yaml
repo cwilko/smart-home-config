@@ -5,8 +5,8 @@
 # - replicas 1 with the Recreate strategy: two pods on one session (even briefly during a rollout) fight over the link.
 #   The server also takes a flock on the store, which the RWO volume backs up.
 # - Auth: -allow-remote makes the server refuse to start unless WHATSAPP_MCP_TOKEN is set. It is a bearer token for /mcp and
-#   /pair/*, read from the sealed secret whatsapp-mcp-secret (see README.md). Without that secret the pod stays in
-#   CreateContainerConfigError, which is intended.
+#   /pair/*, taken from the shared SQUIRREL_API_TOKEN key of the squirrel-api-secret secret in services (see README.md).
+#   Without that secret the pod stays in CreateContainerConfigError, which is intended.
 # - The image is built from the upstream Dockerfile at a pinned tag (see README.md). It runs as a non-root user; the user and
 #   group below must match the image (check with `docker run --rm --entrypoint id <image>`) or the store is not writable.
 apiVersion: v1
@@ -58,11 +58,12 @@ spec:
         - 0.0.0.0:8765
         - -allow-remote
         env:
+        # The server only reads WHATSAPP_MCP_TOKEN; the value is the shared SQUIRREL_API_TOKEN.
         - name: WHATSAPP_MCP_TOKEN
           valueFrom:
             secretKeyRef:
-              name: whatsapp-mcp-secret
-              key: WHATSAPP_MCP_TOKEN
+              name: squirrel-api-secret
+              key: SQUIRREL_API_TOKEN
         ports:
         - containerPort: 8765
           name: http
@@ -84,6 +85,41 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+        - name: store
+          mountPath: /home/app/store
+      # Sidecar (source in the separate whatsapp-server repository, sidecar/): reads new incoming messages from messages.db and publishes them to MQTT, because the
+      # server itself cannot push. It shares the store volume, which has to be mounted read-write even though the program
+      # opens the database read-only: SQLite in WAL mode makes even a reader update the -shm file. It runs as the same
+      # uid/gid as the server (pod-level securityContext above) so it can read the 0600/0660 files. The broker has no
+      # authentication (see ../mosquitto). The image must be built first (whatsapp-server repository, .github/workflows/whatsapp-sidecar-image.yml),
+      # otherwise the pod never becomes ready and the MCP endpoint goes down with it.
+      - name: mqtt-sidecar
+        image: wilkobets/whatsapp-sidecar:v0.1.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_PATH
+          value: /home/app/store/messages.db
+        - name: MQTT_URL
+          value: tcp://mqtt.automation.svc.cluster.local:1883
+        - name: TOPIC
+          value: events/home/device/whatsapp/message-received/priority/INFO
+        - name: POLL_INTERVAL
+          value: 1s
+        # History syncs insert old messages as new rows; anything older than this is skipped, not published.
+        - name: MAX_AGE
+          value: 10m
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

@@ -97,6 +97,18 @@ spec:
 ---
 
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: whatsapp-mcp-stripprefix
+  namespace: services
+spec:
+  stripPrefix:
+    prefixes:
+      - /whatsapp
+
+---
+
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: api-squirrelhome
@@ -156,6 +168,20 @@ spec:
     - name: squirrel-stream
       namespace: media
       port: 3001
+  # WhatsApp MCP server (workloads/whatsapp), MCP endpoint only: /whatsapp/mcp -> /mcp. The server checks
+  # the bearer token itself, but it can send as the account and read its history, so keep this host LAN-only. Only
+  # /whatsapp/mcp is matched: /whatsapp/pair (the pairing QR, token injected) is not routed to the server, it falls through
+  # to the Fission catch-all below and reaches the pairing proxy (workloads/fission/workloads/whatsapp-pair).
+  # A 403 here usually means the server's DNS-rebinding protection rejected the Host header (see the whatsapp README).
+  - match: Host(`api.squirrelhome.co.uk`) && PathPrefix(`/whatsapp/mcp`)
+    kind: Rule
+    middlewares:
+    - name: whatsapp-mcp-stripprefix
+      namespace: services
+    services:
+    - name: whatsapp-mcp
+      namespace: services
+      port: 8765
   # Loki's read API only, at its native paths (no prefix stripping), so logcli and a Grafana datasource work with
   # https://api.squirrelhome.co.uk as the Loki URL. Matched: queries, label and series lookups, tail, index stats and
   # volume, log patterns and detected fields/labels. Push (/loki/api/v1/push), delete and the status endpoints are

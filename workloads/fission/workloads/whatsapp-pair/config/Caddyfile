@@ -1,0 +1,44 @@
+# Token-injecting proxy for the WhatsApp pairing QR image only, so it can be opened in a plain browser. The WhatsApp MCP server
+# wants "Authorization: Bearer <token>" on /pair/*, which a browser cannot send. There is no caller authentication here:
+# anything that can reach this proxy can see the pairing QR. Internal clients only (HTTPS-only ingress, LAN). The token lives
+# only in a Secret in this namespace and arrives as an environment variable (see function.yaml).
+#
+# Only the QR image is let through; everything else gets a 403, in particular /mcp (the tools that send
+# messages) and /pair/reset (the "Force re-pair" button, which would log the paired session out for anyone who can reach this).
+# While the account is paired there is no QR (the server answers 404), so this answers 404 too.
+#
+# configmap.yaml is generated from this file, so re-run this after any edit and then apply it (run from the pair-proxy directory):
+#   kubectl create configmap whatsapp-pair-caddyfile --namespace services --from-file=Caddyfile=config/Caddyfile --dry-run=client -o yaml > configmap.yaml
+{
+	admin off
+	auto_https off
+}
+
+(upstream) {
+	reverse_proxy whatsapp-mcp.services.svc.cluster.local:8765 {
+		# Replace whatever credential the caller sent with the real one. Runtime placeholder env.NAME (not the parse-time
+		# form), so the token is not written into the config Caddy autosaves.
+		header_up Authorization "Bearer {env.SQUIRREL_API_TOKEN}"
+		# The server's DNS-rebinding protection may reject a non-loopback Host header; present the one it expects.
+		header_up Host 127.0.0.1:8765
+	}
+}
+
+:8080 {
+	# One prefix trigger reaches this function (see function.yaml), /whatsapp/pair, and the Fission router trims the prefix, so
+	# /whatsapp/pair arrives as /. That one request is answered with the server's QR image (its /pair/qr.png), nothing else is
+	# forwarded. The QR rotates and the image does not reload itself, so refresh the browser to get the current one. If the
+	# account is already paired, or no QR is ready yet, the server answers 404 and so does this.
+	@qr {
+		method GET
+		path /
+	}
+
+	handle @qr {
+		rewrite * /pair/qr.png
+		import upstream
+	}
+	handle {
+		respond "forbidden" 403
+	}
+}

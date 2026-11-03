@@ -1,0 +1,130 @@
+# Token-injecting proxy in front of the WhatsApp pairing QR image, run by Fission's container executor from the stock Caddy image
+# (no custom image, no code), modelled on ../../github-mcp. The Caddyfile is in configmap.yaml (source: config/Caddyfile).
+#
+# Browsers cannot send the bearer header the WhatsApp MCP server requires on /pair/*, so this adds it (the shared
+# SQUIRREL_API_TOKEN from secret squirrel-api-secret, which must exist in the services namespace) and returns the QR image (GET /pair/qr.png on the whatsapp-mcp Service) for
+# a plain GET of the trigger path. Everything else, including /mcp and /pair/reset, is a 403.
+# There is no caller authentication: for internal clients only, behind the HTTPS-only ingress. Open
+# https://api.squirrelhome.co.uk/whatsapp/pair in a browser. It scales to zero, so the first load after a quiet period is a cold start.
+#
+# One prefix trigger, /whatsapp/pair. The Fission router trims the prefix, so the Caddyfile sees / and answers it with the
+# server's /pair/qr.png. The server's own pairing page is not used.
+#
+# Same shape as the Fission CLI output for github-mcp (fn run-container ... --spec, route create ... --dry), with the parts
+# the CLI has no flags for marked "added by hand".
+apiVersion: fission.io/v1
+kind: Function
+metadata:
+  name: whatsapp-pair
+  namespace: services
+spec:
+  InvokeStrategy:
+    ExecutionStrategy:
+      ExecutorType: container
+      MaxScale: 1
+      MinScale: 0
+      SpecializationTimeout: 120
+      TargetCPUPercent: 0
+    StrategyType: execution
+  environment:
+    namespace: ""
+  functionTimeout: 60
+  idletimeout: 120
+  package:
+    packageref:
+      namespace: ""
+  podspec:
+    containers:
+    - image: caddy:2.11.7-alpine
+      name: whatsapp-pair
+      # added by hand: the token comes from the shared secret in this namespace
+      env:
+      - name: SQUIRREL_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            key: SQUIRREL_API_TOKEN
+            name: squirrel-api-secret
+      ports:
+      - containerPort: 8080
+        name: http-env
+      # added by hand: do not send traffic until Caddy is listening
+      readinessProbe:
+        periodSeconds: 2
+        tcpSocket:
+          port: 8080
+      resources: {}
+      # added by hand: run unprivileged. The caddy image gives its binary a file capability, so NET_BIND_SERVICE
+      # has to stay in the bounding set or the binary will not start; it listens on 8080 and does not use it.
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          add:
+          - NET_BIND_SERVICE
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65532
+      # added by hand: the Caddyfile (read-only) and scratch space for Caddy, since the root filesystem is read-only
+      volumeMounts:
+      - mountPath: /etc/caddy
+        name: caddyfile
+        readOnly: true
+      - mountPath: /data
+        name: data
+      - mountPath: /config
+        name: config
+    imagePullSecrets:
+    - {}
+    terminationGracePeriodSeconds: 10
+    # added by hand
+    volumes:
+    - configMap:
+        name: whatsapp-pair-caddyfile
+      name: caddyfile
+    - emptyDir: {}
+      name: data
+    - emptyDir: {}
+      name: config
+  resources:
+    limits:
+      cpu: 250m
+      memory: 128Mi
+    requests:
+      cpu: 20m
+      memory: 32Mi
+status: {}
+---
+apiVersion: fission.io/v1
+kind: HTTPTrigger
+metadata:
+  name: whatsapp-pair
+  namespace: services
+  # Endpoint metadata, see "Endpoint metadata" in ../../../README.md
+  annotations:
+    catalog.squirrelhome.co.uk/description: The current WhatsApp pairing QR as a PNG, with the API token injected for the browser
+    catalog.squirrelhome.co.uk/kind: other
+    catalog.squirrelhome.co.uk/usage: |
+      Open https://api.squirrelhome.co.uk/whatsapp/pair in a browser; no Authorization header is needed.
+      Returns the current pairing QR as a PNG; it does not refresh itself, so reload to get the new one (the QR rotates).
+      Nothing else is forwarded to the server (including /mcp, its pairing page, the pairing-code form and /pair/reset): a 403.
+      Only useful while the WhatsApp account is unpaired; when paired there is no QR and this is a 404.
+      MCP clients use https://api.squirrelhome.co.uk/whatsapp/mcp with the bearer token instead.
+spec:
+  createingress: false
+  functionref:
+    functionweights: null
+    name: whatsapp-pair
+    type: name
+  host: ""
+  ingressconfig:
+    annotations: null
+    host: '*'
+    path: /whatsapp/pair
+    tls: ""
+  method: ""
+  methods:
+  - GET
+  prefix: /whatsapp/pair
+  relativeurl: ""
+status: {}
