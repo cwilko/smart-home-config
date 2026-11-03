@@ -17,6 +17,10 @@ Not in the repo: the sealed secret `whatsapp-mcp-secret` (step 2). Nothing in it
 
 There is no published image. Build the upstream Dockerfile at a pinned release tag. The cluster nodes are amd64, so build for that platform when building on an Apple Silicon Mac.
 
+**With GitHub Actions (preferred):** run the `Build WhatsApp MCP image` workflow (`.github/workflows/whatsapp-mcp-image.yml` at the repo root; GitHub only reads workflows from there, not from this directory) from the Actions tab, with the upstream tag as the `ref` input (default `v0.6.0`). It builds `linux/amd64`, logs the image's user and home in the "Show the image's user and home" step, then pushes `wilkobets/whatsapp-mcp:<ref>`. It needs the `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets. Use the logged `id` and `HOME` for the checks below. After bumping `ref`, update the image tag in `deployment.yaml` to match.
+
+**Locally, instead:**
+
 ```bash
 git clone --branch v0.6.0 --depth 1 https://github.com/Sealjay/mcp-whatsapp.git
 cd mcp-whatsapp
