@@ -43,5 +43,37 @@ spec:
         imagePullPolicy: Always
         envFrom:
           - secretRef:
-              name: actions-secrets  
-      
+              name: actions-secrets
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      # ConfigMap and Secret mounts are read-only, but Node-RED must write flows.json and
+      # flows_cred.json. The init container copies the image's /data plus those two files
+      # into an emptyDir that is mounted writable at /data. Edits made in the editor are
+      # lost on pod restart, and the files are re-seeded from the ConfigMap and Secret.
+      initContainers:
+      - name: seed-data
+        image: wilkobets/smart-home-actions:latest
+        imagePullPolicy: Always
+        command:
+        - sh
+        - -c
+        - cp -a /data/. /seed/ && cp /seed-flows/flows.json /seed/flows.json && cp /seed-cred/flows_cred.json /seed/flows_cred.json
+        volumeMounts:
+        - name: data
+          mountPath: /seed
+        - name: flows
+          mountPath: /seed-flows
+          readOnly: true
+        - name: flows-cred
+          mountPath: /seed-cred
+          readOnly: true
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: flows
+        configMap:
+          name: node-red-flows
+      - name: flows-cred
+        secret:
+          secretName: node-red-flows-cred
